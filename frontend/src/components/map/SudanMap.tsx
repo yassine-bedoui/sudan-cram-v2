@@ -1,53 +1,64 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from 'react-leaflet'
-import L from 'leaflet'
+import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
 interface SudanMapProps {
   backendAvailable: boolean
+  indicator: string
 }
 
-// Sudan center coordinates
 const SUDAN_CENTER: [number, number] = [15.5007, 32.5599]
 
-// Demo state data
-const DEMO_STATES = [
-  { name: 'Khartoum', position: [15.5007, 32.5599], risk: 'high', incidents: 245 },
-  { name: 'North Darfur', position: [13.6167, 24.9], risk: 'high', incidents: 189 },
-  { name: 'West Darfur', position: [12.8167, 22.9167], risk: 'high', incidents: 156 },
-  { name: 'South Darfur', position: [11.5, 24.8833], risk: 'medium', incidents: 98 },
-  { name: 'Gezira', position: [14.4, 33.5], risk: 'medium', incidents: 76 },
-  { name: 'White Nile', position: [13.3, 32.7], risk: 'low', incidents: 32 },
-  { name: 'Blue Nile', position: [11.9, 34.4], risk: 'low', incidents: 28 },
-  { name: 'Kassala', position: [15.4667, 36.4], risk: 'medium', incidents: 54 },
-  { name: 'Red Sea', position: [18.4333, 37.2167], risk: 'low', incidents: 19 },
-  { name: 'River Nile', position: [17.7, 33.9], risk: 'low', incidents: 15 },
-]
+const STATE_COORDINATES: Record<string, [number, number]> = {
+  'North Darfur': [15.7500, 24.8667],
+  'Khartoum': [15.5007, 32.5599],
+  'South Darfur': [11.5000, 24.8833],
+  'North Kordofan': [13.1667, 29.4167],
+  'Al Jazirah': [14.4000, 33.5000],
+  'West Kordofan': [11.5000, 27.5000],
+  'South Kordofan': [11.2000, 29.4167],
+  'White Nile': [13.3000, 32.7000],
+  'Central Darfur': [12.8500, 24.5833],
+  'Abyei': [10.2833, 28.9833],
+  'Blue Nile': [11.9000, 34.4000],
+  'East Darfur': [11.7833, 26.6500],
+  'Sennar': [13.5500, 33.6000],
+  'Northern': [19.5667, 30.4167],
+  'River Nile': [17.7000, 33.9000],
+  'West Darfur': [12.8167, 22.9167],
+  'Kassala': [15.4667, 36.4000],
+  'Gedaref': [14.0333, 35.4000],
+  'Red Sea': [18.4333, 37.2167],
+}
 
-const getRiskColor = (risk: string) => {
-  switch (risk) {
-    case 'high': return '#ef4444'
-    case 'medium': return '#f59e0b'
-    case 'low': return '#10b981'
-    default: return '#6b7280'
+const getRiskColor = (category: string): string => {
+  if (!category) return '#9ca3af'
+  
+  const normalized = category.toString().toUpperCase().trim()
+  
+  const colorMap: Record<string, string> = {
+    'VERY HIGH': '#dc2626',  // red-600
+    'HIGH': '#f97316',        // orange-500
+    'MODERATE': '#eab308',    // yellow-500
+    'LOW': '#22c55e',         // green-500
   }
+  
+  return colorMap[normalized] || '#9ca3af'
 }
 
-const getRiskRadius = (incidents: number) => {
-  return Math.sqrt(incidents) * 3
+const getRiskRadius = (incidents: number): number => {
+  return Math.max(Math.sqrt(incidents) * 2.5, 10)
 }
 
-export default function SudanMap({ backendAvailable }: SudanMapProps) {
-  const [stateData, setStateData] = useState(DEMO_STATES)
+export default function SudanMap({ backendAvailable, indicator }: SudanMapProps) {
+  const [stateData, setStateData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       if (!backendAvailable) {
-        // Use demo data
-        setStateData(DEMO_STATES)
         setLoading(false)
         return
       }
@@ -57,25 +68,37 @@ export default function SudanMap({ backendAvailable }: SudanMapProps) {
         const data = await response.json()
         
         if (data && data.data) {
-          // Transform API data to map format
-          const transformedData = data.data.map((state: any) => ({
-            name: state.state,
-            position: [state.latitude || 15, state.longitude || 32], // Use actual coords
-            risk: state.risk_level?.toLowerCase() || 'low',
-            incidents: state.incidents || 0
-          }))
+          const transformedData = data.data
+            .map((state: any) => {
+              const stateName = state.state || state.ADM1_NAME || 'Unknown'
+              const coords = STATE_COORDINATES[stateName]
+              
+              if (!coords) return null
+              
+              const riskCategory = state.cp_category || 'UNKNOWN'
+              const incidents = parseInt(state.incidents || 0)
+              
+              return {
+                name: stateName,
+                position: coords,
+                risk: riskCategory,
+                incidents: incidents,
+                score: parseFloat(state.cp_score || state.conflict_proneness_score || 0)
+              }
+            })
+            .filter((item: any) => item !== null)
+          
           setStateData(transformedData)
         }
       } catch (error) {
         console.error('Failed to fetch map data:', error)
-        setStateData(DEMO_STATES)
       } finally {
         setLoading(false)
       }
     }
 
     fetchData()
-  }, [backendAvailable])
+  }, [backendAvailable, indicator])
 
   if (loading) {
     return (
@@ -88,18 +111,29 @@ export default function SudanMap({ backendAvailable }: SudanMapProps) {
     )
   }
 
+  if (!stateData.length) {
+    return (
+      <div className="flex items-center justify-center h-full bg-slate-900">
+        <div className="text-white text-center">
+          <div className="text-4xl mb-4">📍</div>
+          <div className="text-xl font-semibold">No data available</div>
+          <p className="text-slate-400 mt-2">Check backend connection</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-full w-full relative">
-      {!backendAvailable && (
-        <div className="absolute top-4 left-4 z-[1000] bg-blue-900/90 text-white px-4 py-2 rounded-lg shadow-lg">
-          <span className="font-semibold">Demo Mode</span> - Using sample data
-        </div>
-      )}
+      {/* State count badge */}
+      <div className="absolute top-4 right-4 z-[1000] bg-slate-900/95 text-white px-4 py-2 rounded-lg shadow-lg border border-slate-700">
+        <span className="font-semibold">{stateData.length}</span> states
+      </div>
 
       <MapContainer
         center={SUDAN_CENTER}
         zoom={6}
-        style={{ height: '100%', width: '100%' }}
+        style={{ height: '100%', width: '100%', background: '#1e293b' }}
         className="z-0"
       >
         <TileLayer
@@ -107,58 +141,78 @@ export default function SudanMap({ backendAvailable }: SudanMapProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {stateData.map((state, index) => (
-          <CircleMarker
-            key={index}
-            center={state.position as [number, number]}
-            radius={getRiskRadius(state.incidents)}
-            pathOptions={{
-              color: getRiskColor(state.risk),
-              fillColor: getRiskColor(state.risk),
-              fillOpacity: 0.6,
-              weight: 2,
-            }}
-          >
-            <Popup>
-              <div className="p-2">
-                <h3 className="font-bold text-lg mb-1">{state.name}</h3>
-                <div className="space-y-1 text-sm">
-                  <p><span className="font-semibold">Risk Level:</span> 
-                    <span className={`ml-2 px-2 py-0.5 rounded ${
-                      state.risk === 'high' ? 'bg-red-100 text-red-800' :
-                      state.risk === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      {state.risk.toUpperCase()}
-                    </span>
-                  </p>
-                  <p><span className="font-semibold">Incidents:</span> {state.incidents}</p>
+        {stateData.map((state, index) => {
+          const color = getRiskColor(state.risk)
+          
+          return (
+            <CircleMarker
+              key={`${state.name}-${index}`}
+              center={state.position as [number, number]}
+              radius={getRiskRadius(state.incidents)}
+              pathOptions={{
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.65,
+                weight: 2,
+                opacity: 0.85,
+              }}
+            >
+              <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>
+                <div className="font-semibold">{state.name}</div>
+              </Tooltip>
+              
+              <Popup maxWidth={300}>
+                <div className="py-2 px-1">
+                  <h3 className="font-bold text-lg mb-3 text-slate-900 border-b pb-2">{state.name}</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-slate-700">Risk Level:</span>
+                      <span 
+                        className="px-3 py-1 rounded-full text-white font-bold text-xs"
+                        style={{ backgroundColor: color }}
+                      >
+                        {state.risk}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-slate-700">Conflict Events:</span>
+                      <span className="text-slate-900 font-medium">{state.incidents}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-slate-700">Risk Score:</span>
+                      <span className="text-slate-900 font-medium">{state.score.toFixed(1)}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </Popup>
-          </CircleMarker>
-        ))}
+              </Popup>
+            </CircleMarker>
+          )
+        })}
       </MapContainer>
 
       {/* Legend */}
       <div className="absolute bottom-6 right-6 z-[1000] bg-slate-900/95 text-white p-4 rounded-lg shadow-xl border border-slate-700">
         <h4 className="font-bold mb-3">Risk Levels</h4>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-red-500"></div>
-            <span className="text-sm">High Risk</span>
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#dc2626' }}></div>
+            <span className="text-sm font-medium">Very High</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-            <span className="text-sm">Medium Risk</span>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#f97316' }}></div>
+            <span className="text-sm font-medium">High</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-green-500"></div>
-            <span className="text-sm">Low Risk</span>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#eab308' }}></div>
+            <span className="text-sm font-medium">Moderate</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
+            <span className="text-sm font-medium">Low</span>
           </div>
         </div>
-        <div className="mt-3 pt-3 border-t border-slate-700 text-xs text-slate-400">
-          Circle size = incident count
+        <div className="mt-4 pt-3 border-t border-slate-700 text-xs text-slate-400">
+          Circle size = event count
         </div>
       </div>
     </div>
