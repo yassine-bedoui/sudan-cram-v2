@@ -1,0 +1,22 @@
+# Sudan regions coordinates (centroid of each state)
+SUDAN_COORDINATES = {
+    "North Darfur": {"lat": 14.0, "lon": 26.0},
+    "Khartoum": {"lat": 15.5, "lon": 32.5},
+    "Al Jazirah": {"lat": 14.0, "lon": 35.0},
+    "North Kordofan": {"lat": 16.5, "lon": 30.5},
+    "South Darfur": {"lat": 11.5, "lon": 25.0},
+    "West Kordofan": {"lat": 13.5, "lon": 27.0},
+    "White Nile": {"lat": 13.0, "lon": 32.0},
+    "South Kordofan": {"lat": 11.0, "lon": 30.0},
+    "Northern": {"lat": 18.5, "lon": 31.0},
+    "Red Sea": {"lat": 19.0, "lon": 37.5},
+    "Sennar": {"lat": 13.5, "lon": 34.5},
+    "East Darfur": {"lat": 12.5, "lon": 26.5},
+    "Blue Nile": {"lat": 12.0, "lon": 33.0},
+    "West Darfur": {"lat": 12.5, "lon": 22.5},
+    "Central Darfur": {"lat": 12.0, "lon": 24.5},
+    "River Nile": {"lat": 17.5, "lon": 30.5},
+    "Abyei": {"lat": 10.0, "lon": 29.0},
+    "Kassala": {"lat": 15.5, "lon": 36.0},
+    "Gedaref": {"lat": 14.5, "lon": 35.0},
+}

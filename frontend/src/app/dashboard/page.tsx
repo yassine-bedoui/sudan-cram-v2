@@ -3,39 +3,46 @@
 import React, { useEffect, useState } from 'react'
 import { Layout } from '@/components/layout/Layout'
 
-interface Stats {
-  total_events: number
-  total_states: number
-  assessments: number
-  confidence: number
+interface DashboardStats {
+  conflict_events: number
+  states_analyzed: number
+  risk_assessments: number
+  data_confidence: number
+  highest_risk_state: string
+  active_alerts: number
+  high_alerts: number
+  medium_alerts: number
+  trend_direction: string
+  trend_percentage: number
 }
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<Stats>({
-    total_events: 0,
-    total_states: 0,
-    assessments: 0,
-    confidence: 94.8
+  const [stats, setStats] = useState<DashboardStats>({
+    conflict_events: 0,
+    states_analyzed: 0,
+    risk_assessments: 0,
+    data_confidence: 94.8,
+    highest_risk_state: '...',
+    active_alerts: 0,
+    high_alerts: 0,
+    medium_alerts: 0,
+    trend_direction: 'Rising',
+    trend_percentage: 0
   })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch conflict proneness data
-        const response = await fetch('http://localhost:8000/api/conflict-proneness')
+        // Fetch dashboard stats from new endpoint
+        const response = await fetch('http://localhost:8000/api/alerts/dashboard-stats')
         const data = await response.json()
-        
-        if (data && data.data) {
-          setStats({
-            total_events: data.data.reduce((sum: number, state: any) => sum + (state.incidents || 0), 0),
-            total_states: data.data.length,
-            assessments: data.data.length,
-            confidence: 94.8
-          })
+
+        if (data && data.stats) {
+          setStats(data.stats)
         }
       } catch (error) {
-        console.error('Failed to fetch data:', error)
+        console.error('Failed to fetch dashboard data:', error)
       } finally {
         setLoading(false)
       }
@@ -64,7 +71,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="text-4xl font-bold text-red-400 mb-2">
-              {loading ? '...' : stats.total_events.toLocaleString()}
+              {loading ? '...' : stats.conflict_events.toLocaleString()}
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs px-2 py-1 rounded bg-green-900/30 text-green-400 font-medium">
@@ -83,7 +90,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="text-4xl font-bold text-orange-400 mb-2">
-              {loading ? '...' : stats.total_states}
+              {loading ? '...' : stats.states_analyzed}
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs px-2 py-1 rounded bg-green-900/30 text-green-400 font-medium">
@@ -102,7 +109,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="text-4xl font-bold text-yellow-400 mb-2">
-              {loading ? '...' : stats.assessments}
+              {loading ? '...' : stats.risk_assessments}
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs px-2 py-1 rounded bg-green-900/30 text-green-400 font-medium">
@@ -121,7 +128,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="text-4xl font-bold text-green-400 mb-2">
-              {stats.confidence}%
+              {loading ? '...' : stats.data_confidence}%
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs px-2 py-1 rounded bg-green-900/30 text-green-400 font-medium">
@@ -138,17 +145,21 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-2">
               <p className="text-sm text-slate-400 font-medium">Highest Risk State</p>
-              <p className="text-3xl font-bold text-red-400">Khartoum</p>
+              <p className="text-3xl font-bold text-red-400">{stats.highest_risk_state}</p>
               <div className="w-full bg-slate-700 rounded-full h-2">
                 <div className="bg-red-500 h-2 rounded-full" style={{ width: '85%' }}></div>
               </div>
             </div>
             <div className="space-y-2">
               <p className="text-sm text-slate-400 font-medium">Active Alerts</p>
-              <p className="text-3xl font-bold text-orange-400">8</p>
+              <p className="text-3xl font-bold text-orange-400">{loading ? '...' : stats.active_alerts}</p>
               <div className="flex gap-2 mt-2">
-                <span className="px-3 py-1 bg-orange-900/30 text-orange-400 rounded-full text-xs font-medium">3 High</span>
-                <span className="px-3 py-1 bg-yellow-900/30 text-yellow-400 rounded-full text-xs font-medium">5 Medium</span>
+                <span className="px-3 py-1 bg-orange-900/30 text-orange-400 rounded-full text-xs font-medium">
+                  {stats.high_alerts} High
+                </span>
+                <span className="px-3 py-1 bg-yellow-900/30 text-yellow-400 rounded-full text-xs font-medium">
+                  {stats.medium_alerts} Medium
+                </span>
               </div>
             </div>
             <div className="space-y-2">
@@ -156,8 +167,8 @@ export default function DashboardPage() {
               <div className="flex items-center gap-3">
                 <p className="text-3xl font-bold text-yellow-400">↗</p>
                 <div>
-                  <p className="text-xl font-bold text-yellow-400">Rising</p>
-                  <p className="text-sm text-slate-500">+18% trend</p>
+                  <p className="text-xl font-bold text-yellow-400">{stats.trend_direction}</p>
+                  <p className="text-sm text-slate-500">+{stats.trend_percentage}% trend</p>
                 </div>
               </div>
             </div>
@@ -169,9 +180,9 @@ export default function DashboardPage() {
           <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
           <div className="space-y-4">
             {[
-              { type: 'alert', text: 'New high-risk alert in Khartoum', time: '5 min ago', color: 'red' },
+              { type: 'alert', text: `New high-risk alert in ${stats.highest_risk_state}`, time: '5 min ago', color: 'red' },
               { type: 'update', text: 'Risk assessment updated for North Darfur', time: '12 min ago', color: 'blue' },
-              { type: 'event', text: '24 new conflict events recorded', time: '1 hour ago', color: 'orange' },
+              { type: 'event', text: `${stats.conflict_events} conflict events recorded`, time: '1 hour ago', color: 'orange' },
             ].map((activity, index) => (
               <div key={index} className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
                 <div className={`w-10 h-10 rounded-lg bg-${activity.color}-500/20 flex items-center justify-center flex-shrink-0`}>
