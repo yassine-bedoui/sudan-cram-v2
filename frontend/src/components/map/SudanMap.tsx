@@ -55,6 +55,7 @@ const getRiskRadius = (incidents: number): number => {
 export default function SudanMap({ backendAvailable, indicator }: SudanMapProps) {
   const [stateData, setStateData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<Record<string, number>>({})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +69,9 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
         const data = await response.json()
         
         if (data && data.data) {
+          // Count risk categories for debugging
+          const categoryCount: Record<string, number> = {}
+          
           const transformedData = data.data
             .map((state: any) => {
               const stateName = state.state || state.ADM1_NAME || 'Unknown'
@@ -77,6 +81,9 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
               
               const riskCategory = state.cp_category || 'UNKNOWN'
               const incidents = parseInt(state.incidents || 0)
+              
+              // Count categories
+              categoryCount[riskCategory] = (categoryCount[riskCategory] || 0) + 1
               
               return {
                 name: stateName,
@@ -88,6 +95,8 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
             })
             .filter((item: any) => item !== null)
           
+          console.log('Risk category breakdown:', categoryCount)
+          setStats(categoryCount)
           setStateData(transformedData)
         }
       } catch (error) {
@@ -127,7 +136,14 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
     <div className="h-full w-full relative">
       {/* State count badge */}
       <div className="absolute top-4 right-4 z-[1000] bg-slate-900/95 text-white px-4 py-2 rounded-lg shadow-lg border border-slate-700">
-        <span className="font-semibold">{stateData.length}</span> states
+        <div className="font-semibold">{stateData.length} states loaded</div>
+        {Object.keys(stats).length > 0 && (
+          <div className="text-xs text-slate-400 mt-1">
+            {Object.entries(stats).map(([cat, count]) => (
+              <div key={cat}>{cat}: {count}</div>
+            ))}
+          </div>
+        )}
       </div>
 
       <MapContainer
@@ -157,10 +173,26 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
                 opacity: 0.85,
               }}
             >
-              <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>
-                <div className="font-semibold">{state.name}</div>
+              {/* Enhanced Tooltip with Risk Level */}
+              <Tooltip 
+                direction="top" 
+                offset={[0, -10]} 
+                opacity={0.95}
+                className="custom-tooltip"
+              >
+                <div className="font-bold text-base mb-1">{state.name}</div>
+                <div 
+                  className="text-xs font-semibold px-2 py-0.5 rounded inline-block text-white"
+                  style={{ backgroundColor: color }}
+                >
+                  {state.risk}
+                </div>
+                <div className="text-xs text-slate-700 mt-1">
+                  {state.incidents} incidents
+                </div>
               </Tooltip>
               
+              {/* Detailed Popup */}
               <Popup maxWidth={300}>
                 <div className="py-2 px-1">
                   <h3 className="font-bold text-lg mb-3 text-slate-900 border-b pb-2">{state.name}</h3>
@@ -190,31 +222,45 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
         })}
       </MapContainer>
 
-      {/* Legend */}
+      {/* Legend with actual distribution */}
       <div className="absolute bottom-6 right-6 z-[1000] bg-slate-900/95 text-white p-4 rounded-lg shadow-xl border border-slate-700">
         <h4 className="font-bold mb-3">Risk Levels</h4>
         <div className="space-y-2.5">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#dc2626' }}></div>
-            <span className="text-sm font-medium">Very High</span>
+            <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ backgroundColor: '#dc2626' }}></div>
+            <span className="text-sm font-medium">Very High {stats['VERY HIGH'] ? `(${stats['VERY HIGH']})` : ''}</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#f97316' }}></div>
-            <span className="text-sm font-medium">High</span>
+            <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ backgroundColor: '#f97316' }}></div>
+            <span className="text-sm font-medium">High {stats['HIGH'] ? `(${stats['HIGH']})` : ''}</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#eab308' }}></div>
-            <span className="text-sm font-medium">Moderate</span>
+            <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ backgroundColor: '#eab308' }}></div>
+            <span className="text-sm font-medium">Moderate {stats['MODERATE'] ? `(${stats['MODERATE']})` : ''}</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
-            <span className="text-sm font-medium">Low</span>
+            <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ backgroundColor: '#22c55e' }}></div>
+            <span className="text-sm font-medium">Low {stats['LOW'] ? `(${stats['LOW']})` : ''}</span>
           </div>
         </div>
         <div className="mt-4 pt-3 border-t border-slate-700 text-xs text-slate-400">
           Circle size = event count
         </div>
       </div>
+
+      {/* Custom tooltip styles */}
+      <style jsx global>{`
+        .custom-tooltip {
+          background: white !important;
+          border: 2px solid #334155 !important;
+          border-radius: 8px !important;
+          padding: 8px 12px !important;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        }
+        .custom-tooltip::before {
+          border-top-color: white !important;
+        }
+      `}</style>
     </div>
   )
 }
