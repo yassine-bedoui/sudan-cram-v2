@@ -20,10 +20,8 @@ export function Layout({ children }: LayoutProps) {
         <TopBar />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          <div className="px-6 py-8 max-w-7xl mx-auto">
-            {children}
-          </div>
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+          {children}
         </main>
       </div>
     </div>

@@ -7,15 +7,15 @@ export function TopBar() {
     <header className="h-16 bg-slate-950 border-b border-slate-700 flex items-center justify-between px-6">
       {/* Breadcrumb / Page Title */}
       <div>
-        <h2 className="text-lg font-semibold text-white">Dashboard Overview</h2>
-        <p className="text-xs text-slate-400">Real-time conflict risk monitoring</p>
+        <h2 className="text-lg font-semibold text-white">Live Data</h2>
+        <p className="text-xs text-slate-400">Dashboard Overview</p>
       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-4">
         {/* Last Updated */}
         <div className="text-sm text-slate-400">
-          Updated: <span className="text-slate-200 font-medium">Now</span>
+          <span className="text-slate-500">Updated:</span> <span className="text-slate-200 font-medium">Now</span>
         </div>
 
         {/* User Menu */}
