@@ -1,0 +1,263 @@
+"""
+API Routes for Sudan CRAM v2
+Provides RESTful endpoints for all data sources
+"""
+from fastapi import APIRouter, HTTPException, Query
+from app.utils.data_loader import DataLoader
+import pandas as pd
+from typing import Optional
+import logging
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+data_loader = DataLoader()
+
+# ===== CONFLICT DATA ENDPOINTS =====
+
+@router.get("/conflict-data")
+async def get_conflict_data(
+    limit: Optional[int] = Query(None, description="Limit number of records returned"),
+    state: Optional[str] = Query(None, description="Filter by state name")
+):
+    """
+    Get ACLED conflict events with causes
+    - 383KB dataset with detailed conflict information
+    """
+    try:
+        df = data_loader.load_conflict_data()
+        
+        # Apply state filter if provided
+        if state:
+            df = df[df['admin1'] == state] if 'admin1' in df.columns else df
+        
+        # Apply limit if provided
+        if limit and limit > 0:
+            df = df.head(limit)
+        
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": "ACLED with Causes",
+            "columns": list(df.columns)
+        }
+    except Exception as e:
+        logger.error(f"Error loading conflict data: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/causes-by-state")
+async def get_causes_by_state():
+    """Get conflict causes aggregated by state"""
+    try:
+        df = data_loader.load_causes_by_state()
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": "Causes by State"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/conflict-proneness")
+async def get_conflict_proneness(version: str = "v2"):
+    """
+    Get conflict proneness scores
+    - version: 'v1' or 'v2' (default: v2)
+    """
+    try:
+        if version == "v1":
+            df = data_loader.load_conflict_proneness_v1()
+        else:
+            df = data_loader.load_conflict_proneness()
+        
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "version": version,
+            "source": f"Conflict Proneness {version.upper()}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ===== RISK ASSESSMENT ENDPOINTS =====
+
+@router.get("/risk-scores")
+async def get_risk_scores():
+    """Get comprehensive risk assessment scores (12KB dataset)"""
+    try:
+        df = data_loader.load_risk_scores()
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": "Risk Scores"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/combined-risk")
+async def get_combined_risk(include_igad: bool = False):
+    """
+    Get combined risk indicators
+    - include_igad: Include IGAD-specific data (default: False)
+    """
+    try:
+        if include_igad:
+            df = data_loader.load_combined_risk_igad()
+            source = "Combined Risk v2 (IGAD)"
+        else:
+            df = data_loader.load_combined_risk()
+            source = "Combined Risk v2"
+        
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": source
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/political-risk")
+async def get_political_risk():
+    """Get political risk analysis"""
+    try:
+        df = data_loader.load_political_risk()
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": "Political Risk v2"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/climate-risk")
+async def get_climate_risk():
+    """Get climate risk data (CDI v2 real)"""
+    try:
+        df = data_loader.load_climate_risk()
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": "Climate Risk CDI v2 (Real)"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ===== CLIMATE/WEATHER ENDPOINTS =====
+
+@router.get("/chirps-data")
+async def get_chirps_data():
+    """Get CHIRPS rainfall data (Sudan admin1 monthly)"""
+    try:
+        df = data_loader.load_chirps_data()
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": "CHIRPS Sudan Admin1 Monthly"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ===== ALERTS ENDPOINT =====
+
+@router.get("/alerts")
+async def get_alerts():
+    """Get alert configuration and data (JSON)"""
+    try:
+        data = data_loader.load_alerts()
+        return {
+            "alerts": data,
+            "source": "Alerts Configuration"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ===== VALIDATION ENDPOINTS =====
+
+@router.get("/validation-sample")
+async def get_validation_sample():
+    """Get data validation sample"""
+    try:
+        df = data_loader.load_validation_sample()
+        return {
+            "data": df.to_dict(orient="records"),
+            "total_records": len(df),
+            "source": "Validation Sample"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/validation-report")
+async def get_validation_report():
+    """Get data validation report (text)"""
+    try:
+        report = data_loader.load_validation_report()
+        return {
+            "report": report,
+            "source": "Validation Report"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ===== METADATA ENDPOINTS =====
+
+@router.get("/summary")
+async def get_data_summary():
+    """Get comprehensive summary of all available datasets"""
+    try:
+        # Load key datasets
+        conflict = data_loader.load_conflict_data()
+        proneness = data_loader.load_conflict_proneness()
+        causes = data_loader.load_causes_by_state()
+        risk = data_loader.load_risk_scores()
+        
+        # Get file info
+        file_info = data_loader.get_file_info()
+        
+        return {
+            "summary": {
+                "conflict_events": len(conflict),
+                "proneness_scores": len(proneness),
+                "states_analyzed": len(causes),
+                "risk_assessments": len(risk)
+            },
+            "files": file_info,
+            "latest_update": pd.Timestamp.now().isoformat(),
+            "available_endpoints": {
+                "conflict": [
+                    "/api/conflict-data",
+                    "/api/causes-by-state",
+                    "/api/conflict-proneness"
+                ],
+                "risk": [
+                    "/api/risk-scores",
+                    "/api/combined-risk",
+                    "/api/political-risk",
+                    "/api/climate-risk"
+                ],
+                "climate": [
+                    "/api/chirps-data"
+                ],
+                "system": [
+                    "/api/alerts",
+                    "/api/validation-sample",
+                    "/api/validation-report",
+                    "/api/files",
+                    "/api/summary"
+                ]
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/files")
+async def get_available_files():
+    """List all available data files with metadata"""
+    try:
+        file_info = data_loader.get_file_info()
+        return {
+            "files": file_info,
+            "total_files": len(file_info),
+            "total_size_mb": round(sum(f["size_mb"] for f in file_info.values()), 2)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

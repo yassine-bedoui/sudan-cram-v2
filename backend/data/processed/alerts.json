@@ -1,0 +1,82 @@
+[
+  {
+    "region": "River Nile",
+    "week": "2024-08-26",
+    "risk_score": 10.0,
+    "event_count": 2,
+    "alert_level": "SEVERE",
+    "explanation": "Events: 2, Risk score: 10.0"
+  },
+  {
+    "region": "South Darfur",
+    "week": "2024-09-30",
+    "risk_score": 9.43,
+    "event_count": 8,
+    "alert_level": "SEVERE",
+    "explanation": "Events: 8, Risk score: 9.43"
+  },
+  {
+    "region": "North Darfur",
+    "week": "2024-10-21",
+    "risk_score": 8.7,
+    "event_count": 5,
+    "alert_level": "SEVERE",
+    "explanation": "Events: 5, Risk score: 8.7"
+  },
+  {
+    "region": "South Darfur",
+    "week": "2024-10-07",
+    "risk_score": 8.14,
+    "event_count": 5,
+    "alert_level": "HIGH",
+    "explanation": "Events: 5, Risk score: 8.14"
+  },
+  {
+    "region": "Northern",
+    "week": "2024-10-14",
+    "risk_score": 7.98,
+    "event_count": 8,
+    "alert_level": "HIGH",
+    "explanation": "Events: 8, Risk score: 7.98"
+  },
+  {
+    "region": "Central Darfur",
+    "week": "2024-09-16",
+    "risk_score": 7.93,
+    "event_count": 6,
+    "alert_level": "HIGH",
+    "explanation": "Events: 6, Risk score: 7.93"
+  },
+  {
+    "region": "North Darfur",
+    "week": "2024-09-23",
+    "risk_score": 7.75,
+    "event_count": 5,
+    "alert_level": "HIGH",
+    "explanation": "Events: 5, Risk score: 7.75"
+  },
+  {
+    "region": "North Darfur",
+    "week": "2024-09-16",
+    "risk_score": 7.73,
+    "event_count": 6,
+    "alert_level": "HIGH",
+    "explanation": "Events: 6, Risk score: 7.73"
+  },
+  {
+    "region": "North Kordofan",
+    "week": "2024-09-23",
+    "risk_score": 7.64,
+    "event_count": 4,
+    "alert_level": "HIGH",
+    "explanation": "Events: 4, Risk score: 7.64"
+  },
+  {
+    "region": "Gezira",
+    "week": "2024-09-02",
+    "risk_score": 7.54,
+    "event_count": 6,
+    "alert_level": "HIGH",
+    "explanation": "Events: 6, Risk score: 7.54"
+  }
+]

@@ -1,0 +1,35 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.routes import data
+import os
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="Sudan CRAM API",
+    description="API for Sudan Conflict Risk Assessment and Monitoring Dashboard",
+    version="2.0.0"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Next.js frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(data.router, prefix="/api", tags=["data"])
+
+@app.get("/")
+async def root():
+    return {
+        "message": "Sudan CRAM API v2.0",
+        "status": "running",
+        "docs": "/docs"
+    }
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}

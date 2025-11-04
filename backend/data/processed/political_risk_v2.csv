@@ -1,0 +1,22 @@
+ADM1_NAME,events_6m,fatalities_6m,political_risk_score,risk_category,indicator,method,updated_at
+North Darfur,443,3172,10.0,EXTREME,political,ACLED aggregated (6-month rolling),2025-10-27
+North Kordofan,325,1634,9.753160701191558,EXTREME,political,ACLED aggregated (6-month rolling),2025-10-27
+West Kordofan,240,1394,9.44113394797782,EXTREME,political,ACLED aggregated (6-month rolling),2025-10-27
+South Kordofan,136,679,8.492356983493758,EXTREME,political,ACLED aggregated (6-month rolling),2025-10-27
+South Darfur,159,560,8.415326887071053,EXTREME,political,ACLED aggregated (6-month rolling),2025-10-27
+Khartoum,138,402,8.047474235635441,EXTREME,political,ACLED aggregated (6-month rolling),2025-10-27
+White Nile,49,123,6.435751243389864,VERY HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+Northern,43,52,5.625499415083999,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+Central Darfur,39,44,5.428683551071992,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+Abyei,21,55,5.272848254574738,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+Blue Nile,15,50,5.007883557109051,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+East Darfur,41,19,4.754287929408066,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+Sennar,3,73,4.529677505103193,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+Al Jazirah,16,16,4.09108048609852,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+River Nile,13,17,4.028459240063074,HIGH,political,ACLED aggregated (6-month rolling),2025-10-27
+Kassala,13,11,3.677171103914392,MODERATE,political,ACLED aggregated (6-month rolling),2025-10-27
+West Darfur,15,7,3.403009199829215,MODERATE,political,ACLED aggregated (6-month rolling),2025-10-27
+Red Sea,24,3,3.060248580702927,MODERATE,political,ACLED aggregated (6-month rolling),2025-10-27
+Gedaref,7,5,2.7534122772045984,MODERATE,political,ACLED aggregated (6-month rolling),2025-10-27
+Bahr el Ghazal,0,0,0.0,LOW,political,ACLED aggregated (6-month rolling),2025-10-27
+Equatoria,0,0,0.0,LOW,political,ACLED aggregated (6-month rolling),2025-10-27
