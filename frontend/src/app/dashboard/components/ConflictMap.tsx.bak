@@ -21,7 +21,7 @@ export function ConflictMap() {
           }
         ]}
         layout={{
-          title: { text: '' },
+          title: '',
           paper_bgcolor: 'rgba(15, 23, 42, 0)',
           plot_bgcolor: 'rgba(30, 41, 59, 0.5)',
           font: { color: '#e2e8f0' },
