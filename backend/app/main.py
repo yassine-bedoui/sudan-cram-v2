@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import alerts, conflict_proneness
+from app.routers import alerts, conflict_proneness, analytics
 
 app = FastAPI(
     title="Sudan CRAM API",
@@ -20,6 +20,7 @@ app.add_middleware(
 # Register routers
 app.include_router(alerts.router)
 app.include_router(conflict_proneness.router)
+app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 
 @app.get("/")
 async def root():
@@ -29,6 +30,8 @@ async def root():
         "endpoints": [
             "/api/alerts",
             "/api/conflict-proneness",
+            "/api/analytics",
+            "/api/regions",
             "/docs"
         ]
     }
@@ -36,7 +39,3 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
-
-# Add analytics router
-from .routers import analytics
-app.include_router(analytics.router)
