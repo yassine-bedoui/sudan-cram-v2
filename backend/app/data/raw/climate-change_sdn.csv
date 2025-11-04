@@ -1,0 +1,1281 @@
+Country Name,Country ISO3,Year,Indicator Name,Indicator Code,Value
+#country+name,#country+code,#date+year,#indicator+name,#indicator+code,#indicator+value+num
+Sudan,SDN,2023,Agricultural land (sq. km),AG.LND.AGRI.K2,1126650
+Sudan,SDN,2022,Agricultural land (sq. km),AG.LND.AGRI.K2,1126650
+Sudan,SDN,2021,Agricultural land (sq. km),AG.LND.AGRI.K2,1126650
+Sudan,SDN,2020,Agricultural land (sq. km),AG.LND.AGRI.K2,1126650
+Sudan,SDN,2019,Agricultural land (sq. km),AG.LND.AGRI.K2,1126650
+Sudan,SDN,2018,Agricultural land (sq. km),AG.LND.AGRI.K2,1126650
+Sudan,SDN,2017,Agricultural land (sq. km),AG.LND.AGRI.K2,1123597.2
+Sudan,SDN,2016,Agricultural land (sq. km),AG.LND.AGRI.K2,1120548
+Sudan,SDN,2015,Agricultural land (sq. km),AG.LND.AGRI.K2,1117498.8
+Sudan,SDN,2014,Agricultural land (sq. km),AG.LND.AGRI.K2,1114449.6
+Sudan,SDN,2013,Agricultural land (sq. km),AG.LND.AGRI.K2,1114533.6
+Sudan,SDN,2012,Agricultural land (sq. km),AG.LND.AGRI.K2,1114659.6
+Sudan,SDN,2023,Agricultural land (% of land area),AG.LND.AGRI.ZS,60.3131691648822
+Sudan,SDN,2022,Agricultural land (% of land area),AG.LND.AGRI.ZS,60.3131691648822
+Sudan,SDN,2021,Agricultural land (% of land area),AG.LND.AGRI.ZS,60.3131691648822
+Sudan,SDN,2020,Agricultural land (% of land area),AG.LND.AGRI.ZS,60.3131691648822
+Sudan,SDN,2019,Agricultural land (% of land area),AG.LND.AGRI.ZS,60.3131691648822
+Sudan,SDN,2018,Agricultural land (% of land area),AG.LND.AGRI.ZS,60.3131691648822
+Sudan,SDN,2017,Agricultural land (% of land area),AG.LND.AGRI.ZS,60.1497430406852
+Sudan,SDN,2016,Agricultural land (% of land area),AG.LND.AGRI.ZS,59.9865096359743
+Sudan,SDN,2015,Agricultural land (% of land area),AG.LND.AGRI.ZS,59.8232762312634
+Sudan,SDN,2014,Agricultural land (% of land area),AG.LND.AGRI.ZS,59.6600428265525
+Sudan,SDN,2013,Agricultural land (% of land area),AG.LND.AGRI.ZS,59.664539614561
+Sudan,SDN,2012,Agricultural land (% of land area),AG.LND.AGRI.ZS,59.6712847965739
+Sudan,SDN,2023,Arable land (% of land area),AG.LND.ARBL.ZS,11.2392933618844
+Sudan,SDN,2022,Arable land (% of land area),AG.LND.ARBL.ZS,11.2392933618844
+Sudan,SDN,2021,Arable land (% of land area),AG.LND.ARBL.ZS,11.2392933618844
+Sudan,SDN,2020,Arable land (% of land area),AG.LND.ARBL.ZS,11.2392933618844
+Sudan,SDN,2019,Arable land (% of land area),AG.LND.ARBL.ZS,11.2392933618844
+Sudan,SDN,2018,Arable land (% of land area),AG.LND.ARBL.ZS,11.2392933618844
+Sudan,SDN,2017,Arable land (% of land area),AG.LND.ARBL.ZS,11.0759743040685
+Sudan,SDN,2016,Arable land (% of land area),AG.LND.ARBL.ZS,10.9127408993576
+Sudan,SDN,2015,Arable land (% of land area),AG.LND.ARBL.ZS,10.7495074946467
+Sudan,SDN,2014,Arable land (% of land area),AG.LND.ARBL.ZS,10.6119700214133
+Sudan,SDN,2013,Arable land (% of land area),AG.LND.ARBL.ZS,10.6209635974304
+Sudan,SDN,2012,Arable land (% of land area),AG.LND.ARBL.ZS,10.6299571734475
+Sudan,SDN,2015,Rural land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.RU.K2,1536.24806884
+Sudan,SDN,2000,Rural land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.RU.K2,1542.04496725
+Sudan,SDN,1990,Rural land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.RU.K2,1546.27593635
+Sudan,SDN,2015,Rural land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.RU.ZS,0.0824304712530423
+Sudan,SDN,2000,Rural land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.RU.ZS,0.0827415154634499
+Sudan,SDN,1990,Rural land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.RU.ZS,0.0829685365959735
+Sudan,SDN,2015,Urban land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.UR.K2,22.71477095597
+Sudan,SDN,2000,Urban land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.UR.K2,16.91787254253
+Sudan,SDN,1990,Urban land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.UR.K2,12.68690344878
+Sudan,SDN,2015,Urban land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.UR.ZS,0.00121880659268743
+Sudan,SDN,2000,Urban land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.UR.ZS,0.000907762381976945
+Sudan,SDN,1990,Urban land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.UR.ZS,0.000680741249562735
+Sudan,SDN,2015,Land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.ZS,0.0836492778457297
+Sudan,SDN,2000,Land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.ZS,0.0836492778454268
+Sudan,SDN,1990,Land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.ZS,0.0836492778455362
+Sudan,SDN,2023,Forest area (sq. km),AG.LND.FRST.K2,178430.7
+Sudan,SDN,2022,Forest area (sq. km),AG.LND.FRST.K2,180150
+Sudan,SDN,2021,Forest area (sq. km),AG.LND.FRST.K2,181870
+Sudan,SDN,2020,Forest area (sq. km),AG.LND.FRST.K2,183600
+Sudan,SDN,2019,Forest area (sq. km),AG.LND.FRST.K2,185320
+Sudan,SDN,2018,Forest area (sq. km),AG.LND.FRST.K2,187040
+Sudan,SDN,2017,Forest area (sq. km),AG.LND.FRST.K2,188760.3
+Sudan,SDN,2016,Forest area (sq. km),AG.LND.FRST.K2,190481.9
+Sudan,SDN,2015,Forest area (sq. km),AG.LND.FRST.K2,192099.3
+Sudan,SDN,2014,Forest area (sq. km),AG.LND.FRST.K2,193841.78
+Sudan,SDN,2013,Forest area (sq. km),AG.LND.FRST.K2,195584.26
+Sudan,SDN,2012,Forest area (sq. km),AG.LND.FRST.K2,197326.74
+Sudan,SDN,2023,Forest area (% of land area),AG.LND.FRST.ZS,9.55196466809422
+Sudan,SDN,2022,Forest area (% of land area),AG.LND.FRST.ZS,9.64400428265525
+Sudan,SDN,2021,Forest area (% of land area),AG.LND.FRST.ZS,9.73608137044968
+Sudan,SDN,2020,Forest area (% of land area),AG.LND.FRST.ZS,9.82869379014989
+Sudan,SDN,2019,Forest area (% of land area),AG.LND.FRST.ZS,9.92077087794432
+Sudan,SDN,2018,Forest area (% of land area),AG.LND.FRST.ZS,10.0128479657388
+Sudan,SDN,2017,Forest area (% of land area),AG.LND.FRST.ZS,10.1049411134904
+Sudan,SDN,2016,Forest area (% of land area),AG.LND.FRST.ZS,10.1971038543897
+Sudan,SDN,2015,Forest area (% of land area),AG.LND.FRST.ZS,10.2836884368308
+Sudan,SDN,2014,Forest area (% of land area),AG.LND.FRST.ZS,10.3769689507495
+Sudan,SDN,2013,Forest area (% of land area),AG.LND.FRST.ZS,10.4702494646681
+Sudan,SDN,2012,Forest area (% of land area),AG.LND.FRST.ZS,10.5635299785867
+Sudan,SDN,2020,Agricultural irrigated land (% of total agricultural land),AG.LND.IRIG.AG.ZS,1.39049394221808
+Sudan,SDN,2019,Agricultural irrigated land (% of total agricultural land),AG.LND.IRIG.AG.ZS,1.3761230195713
+Sudan,SDN,2018,Agricultural irrigated land (% of total agricultural land),AG.LND.IRIG.AG.ZS,1.26784715750233
+Sudan,SDN,2017,Agricultural irrigated land (% of total agricultural land),AG.LND.IRIG.AG.ZS,0.453899315519832
+Sudan,SDN,2022,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2021,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2020,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2019,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2018,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2017,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2016,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2015,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2014,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2013,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2012,Average precipitation in depth (mm per year),AG.LND.PRCP.MM,250
+Sudan,SDN,2023,Cereal yield (kg per hectare),AG.YLD.CREL.KG,449.1
+Sudan,SDN,2022,Cereal yield (kg per hectare),AG.YLD.CREL.KG,678.1
+Sudan,SDN,2021,Cereal yield (kg per hectare),AG.YLD.CREL.KG,508.1
+Sudan,SDN,2020,Cereal yield (kg per hectare),AG.YLD.CREL.KG,595.2
+Sudan,SDN,2019,Cereal yield (kg per hectare),AG.YLD.CREL.KG,554.4
+Sudan,SDN,2018,Cereal yield (kg per hectare),AG.YLD.CREL.KG,731.8
+Sudan,SDN,2017,Cereal yield (kg per hectare),AG.YLD.CREL.KG,600.9
+Sudan,SDN,2016,Cereal yield (kg per hectare),AG.YLD.CREL.KG,686
+Sudan,SDN,2015,Cereal yield (kg per hectare),AG.YLD.CREL.KG,572.1
+Sudan,SDN,2014,Cereal yield (kg per hectare),AG.YLD.CREL.KG,683.4
+Sudan,SDN,2013,Cereal yield (kg per hectare),AG.YLD.CREL.KG,594.1
+Sudan,SDN,2012,Cereal yield (kg per hectare),AG.YLD.CREL.KG,539.4
+Sudan,SDN,2011,Cereal yield (kg per hectare),AG.YLD.CREL.KG,563.8
+Sudan,SDN,2010,Cereal yield (kg per hectare),AG.YLD.CREL.KG,451.7
+Sudan,SDN,2009,Cereal yield (kg per hectare),AG.YLD.CREL.KG,587.3
+Sudan,SDN,2008,Cereal yield (kg per hectare),AG.YLD.CREL.KG,567.1
+Sudan,SDN,2007,Cereal yield (kg per hectare),AG.YLD.CREL.KG,729.5
+Sudan,SDN,2006,Cereal yield (kg per hectare),AG.YLD.CREL.KG,644.8
+Sudan,SDN,2005,Cereal yield (kg per hectare),AG.YLD.CREL.KG,505.8
+Sudan,SDN,2004,Cereal yield (kg per hectare),AG.YLD.CREL.KG,657.2
+Sudan,SDN,2003,Cereal yield (kg per hectare),AG.YLD.CREL.KG,643.7
+Sudan,SDN,2002,Cereal yield (kg per hectare),AG.YLD.CREL.KG,487.2
+Sudan,SDN,2001,Cereal yield (kg per hectare),AG.YLD.CREL.KG,626.2
+Sudan,SDN,2000,Cereal yield (kg per hectare),AG.YLD.CREL.KG,505.2
+Sudan,SDN,1999,Cereal yield (kg per hectare),AG.YLD.CREL.KG,429.5
+Sudan,SDN,1998,Cereal yield (kg per hectare),AG.YLD.CREL.KG,594
+Sudan,SDN,1997,Cereal yield (kg per hectare),AG.YLD.CREL.KG,430.5
+Sudan,SDN,1996,Cereal yield (kg per hectare),AG.YLD.CREL.KG,607
+Sudan,SDN,1995,Cereal yield (kg per hectare),AG.YLD.CREL.KG,424.9
+Sudan,SDN,1994,Cereal yield (kg per hectare),AG.YLD.CREL.KG,508.3
+Sudan,SDN,1993,Cereal yield (kg per hectare),AG.YLD.CREL.KG,503.2
+Sudan,SDN,1992,Cereal yield (kg per hectare),AG.YLD.CREL.KG,651.6
+Sudan,SDN,1991,Cereal yield (kg per hectare),AG.YLD.CREL.KG,681.2
+Sudan,SDN,1990,Cereal yield (kg per hectare),AG.YLD.CREL.KG,463
+Sudan,SDN,1989,Cereal yield (kg per hectare),AG.YLD.CREL.KG,369.4
+Sudan,SDN,1988,Cereal yield (kg per hectare),AG.YLD.CREL.KG,628.3
+Sudan,SDN,1987,Cereal yield (kg per hectare),AG.YLD.CREL.KG,364.8
+Sudan,SDN,1986,Cereal yield (kg per hectare),AG.YLD.CREL.KG,565.4
+Sudan,SDN,1985,Cereal yield (kg per hectare),AG.YLD.CREL.KG,559.8
+Sudan,SDN,1984,Cereal yield (kg per hectare),AG.YLD.CREL.KG,290.4
+Sudan,SDN,1983,Cereal yield (kg per hectare),AG.YLD.CREL.KG,494.1
+Sudan,SDN,1982,Cereal yield (kg per hectare),AG.YLD.CREL.KG,480.3
+Sudan,SDN,1981,Cereal yield (kg per hectare),AG.YLD.CREL.KG,760.1
+Sudan,SDN,1980,Cereal yield (kg per hectare),AG.YLD.CREL.KG,629.5
+Sudan,SDN,1979,Cereal yield (kg per hectare),AG.YLD.CREL.KG,544
+Sudan,SDN,1978,Cereal yield (kg per hectare),AG.YLD.CREL.KG,722.4
+Sudan,SDN,1977,Cereal yield (kg per hectare),AG.YLD.CREL.KG,648.9
+Sudan,SDN,1976,Cereal yield (kg per hectare),AG.YLD.CREL.KG,776.8
+Sudan,SDN,1975,Cereal yield (kg per hectare),AG.YLD.CREL.KG,692.6
+Sudan,SDN,1974,Cereal yield (kg per hectare),AG.YLD.CREL.KG,672.1
+Sudan,SDN,1973,Cereal yield (kg per hectare),AG.YLD.CREL.KG,604.2
+Sudan,SDN,1972,Cereal yield (kg per hectare),AG.YLD.CREL.KG,604.7
+Sudan,SDN,1971,Cereal yield (kg per hectare),AG.YLD.CREL.KG,756.6
+Sudan,SDN,1970,Cereal yield (kg per hectare),AG.YLD.CREL.KG,721.2
+Sudan,SDN,1969,Cereal yield (kg per hectare),AG.YLD.CREL.KG,802.6
+Sudan,SDN,1968,Cereal yield (kg per hectare),AG.YLD.CREL.KG,668.5
+Sudan,SDN,1967,Cereal yield (kg per hectare),AG.YLD.CREL.KG,908
+Sudan,SDN,1966,Cereal yield (kg per hectare),AG.YLD.CREL.KG,605.3
+Sudan,SDN,1965,Cereal yield (kg per hectare),AG.YLD.CREL.KG,698.8
+Sudan,SDN,1964,Cereal yield (kg per hectare),AG.YLD.CREL.KG,783.6
+Sudan,SDN,1963,Cereal yield (kg per hectare),AG.YLD.CREL.KG,877.6
+Sudan,SDN,1962,Cereal yield (kg per hectare),AG.YLD.CREL.KG,811.2
+Sudan,SDN,1961,Cereal yield (kg per hectare),AG.YLD.CREL.KG,913.1
+Sudan,SDN,2023,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,1.37399372870934
+Sudan,SDN,2022,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,1.11000421594226
+Sudan,SDN,2021,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,1.52754029838982
+Sudan,SDN,2020,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,2.65193447042229
+Sudan,SDN,2019,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,2.55226968828806
+Sudan,SDN,2018,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.51269523880448
+Sudan,SDN,2017,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,2.58043876395005
+Sudan,SDN,2016,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,2.49532759301928
+Sudan,SDN,2015,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.34135261447755
+Sudan,SDN,2014,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,2.52698516017578
+Sudan,SDN,2013,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.92312074519106
+Sudan,SDN,2012,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,6.14212434699966
+Sudan,SDN,2011,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.15234852962884
+Sudan,SDN,2010,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.50004539535845
+Sudan,SDN,2009,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.3441756822644
+Sudan,SDN,2008,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,2.54980980762297
+Sudan,SDN,2007,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,2.53091571467554
+Sudan,SDN,2006,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,4.06910716037147
+Sudan,SDN,2005,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,4.4387993666553
+Sudan,SDN,2004,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,5.67090591014718
+Sudan,SDN,2003,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,6.31782319761386
+Sudan,SDN,2002,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.93215499570306
+Sudan,SDN,2001,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.65224475988548
+Sudan,SDN,2000,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.19972610023634
+Sudan,SDN,1999,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.47125085431825
+Sudan,SDN,1998,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,3.29504622454876
+Sudan,SDN,1997,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.838100557144089
+Sudan,SDN,1996,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.00443542538902241
+Sudan,SDN,1995,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0867656128706244
+Sudan,SDN,1994,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.775219565723085
+Sudan,SDN,1993,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,-0.00180159781633417
+Sudan,SDN,1992,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.00127987558620005
+Sudan,SDN,1991,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,-0.00140362969327896
+Sudan,SDN,1990,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,-0.0925352824411849
+Sudan,SDN,1989,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0162970421387532
+Sudan,SDN,1988,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0140545638678655
+Sudan,SDN,1987,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0963340683572216
+Sudan,SDN,1986,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,-0.0809536067458037
+Sudan,SDN,1985,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,-0.0376458485603618
+Sudan,SDN,1984,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0868803333848725
+Sudan,SDN,1983,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0767907880963063
+Sudan,SDN,1982,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.192269322880932
+Sudan,SDN,1981,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.179748939385306
+Sudan,SDN,1980,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.098862797426216
+Sudan,SDN,1979,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,-0.0315974239716941
+Sudan,SDN,1978,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0736893447518631
+Sudan,SDN,1977,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.110281286582518
+Sudan,SDN,1976,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0971194937119114
+Sudan,SDN,1975,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0269536738537573
+Sudan,SDN,1974,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,-0.0293008316300327
+Sudan,SDN,1973,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.00844909003639757
+Sudan,SDN,1972,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0245665046715244
+Sudan,SDN,1970,"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,0.0790389667058663
+Sudan,SDN,2023,Access to electricity (% of population),EG.ELC.ACCS.ZS,66
+Sudan,SDN,2022,Access to electricity (% of population),EG.ELC.ACCS.ZS,63.2
+Sudan,SDN,2021,Access to electricity (% of population),EG.ELC.ACCS.ZS,61.8
+Sudan,SDN,2020,Access to electricity (% of population),EG.ELC.ACCS.ZS,59.7
+Sudan,SDN,2019,Access to electricity (% of population),EG.ELC.ACCS.ZS,57.6
+Sudan,SDN,2018,Access to electricity (% of population),EG.ELC.ACCS.ZS,55.3
+Sudan,SDN,2017,Access to electricity (% of population),EG.ELC.ACCS.ZS,53
+Sudan,SDN,2016,Access to electricity (% of population),EG.ELC.ACCS.ZS,50.5
+Sudan,SDN,2015,Access to electricity (% of population),EG.ELC.ACCS.ZS,48
+Sudan,SDN,2014,Access to electricity (% of population),EG.ELC.ACCS.ZS,44.9
+Sudan,SDN,2013,Access to electricity (% of population),EG.ELC.ACCS.ZS,43.1
+Sudan,SDN,2012,Access to electricity (% of population),EG.ELC.ACCS.ZS,40.7
+Sudan,SDN,2011,Access to electricity (% of population),EG.ELC.ACCS.ZS,38.3
+Sudan,SDN,2010,Access to electricity (% of population),EG.ELC.ACCS.ZS,36
+Sudan,SDN,2009,Access to electricity (% of population),EG.ELC.ACCS.ZS,29
+Sudan,SDN,2008,Access to electricity (% of population),EG.ELC.ACCS.ZS,20
+Sudan,SDN,2007,Access to electricity (% of population),EG.ELC.ACCS.ZS,31.1
+Sudan,SDN,2006,Access to electricity (% of population),EG.ELC.ACCS.ZS,30.8
+Sudan,SDN,2005,Access to electricity (% of population),EG.ELC.ACCS.ZS,30.5
+Sudan,SDN,2004,Access to electricity (% of population),EG.ELC.ACCS.ZS,30.2
+Sudan,SDN,2003,Access to electricity (% of population),EG.ELC.ACCS.ZS,29.9
+Sudan,SDN,2002,Access to electricity (% of population),EG.ELC.ACCS.ZS,29.7
+Sudan,SDN,2001,Access to electricity (% of population),EG.ELC.ACCS.ZS,29.4
+Sudan,SDN,2000,Access to electricity (% of population),EG.ELC.ACCS.ZS,23
+Sudan,SDN,1999,Access to electricity (% of population),EG.ELC.ACCS.ZS,30.7767562866211
+Sudan,SDN,1998,Access to electricity (% of population),EG.ELC.ACCS.ZS,30.3065280914307
+Sudan,SDN,1997,Access to electricity (% of population),EG.ELC.ACCS.ZS,29.8314571380615
+Sudan,SDN,1996,Access to electricity (% of population),EG.ELC.ACCS.ZS,29.35231590271
+Sudan,SDN,1995,Access to electricity (% of population),EG.ELC.ACCS.ZS,28.8697834014893
+Sudan,SDN,1994,Access to electricity (% of population),EG.ELC.ACCS.ZS,28.3845348358154
+Sudan,SDN,1993,Access to electricity (% of population),EG.ELC.ACCS.ZS,27.897253036499
+Sudan,SDN,1992,Access to electricity (% of population),EG.ELC.ACCS.ZS,27.4086132049561
+Sudan,SDN,1991,Access to electricity (% of population),EG.ELC.ACCS.ZS,26.9192943572998
+Sudan,SDN,1990,Access to electricity (% of population),EG.ELC.ACCS.ZS,32.8
+Sudan,SDN,2021,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2020,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2019,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2018,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2017,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2016,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2015,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2014,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2013,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2012,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2011,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2010,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2009,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2008,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2007,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2006,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2005,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2004,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2003,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2002,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2001,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2000,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1999,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1998,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1997,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1996,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1995,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1994,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1993,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1992,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1991,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,1990,Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,0
+Sudan,SDN,2022,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,71.3646532438479
+Sudan,SDN,2021,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,62.3412856573478
+Sudan,SDN,2020,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,64.5231256228384
+Sudan,SDN,2019,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,63.4713415392267
+Sudan,SDN,2018,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,59.4094124884651
+Sudan,SDN,2017,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,60.1402650881482
+Sudan,SDN,2016,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,55.7973525538845
+Sudan,SDN,2015,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,64.5359086380011
+Sudan,SDN,2014,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,78.3491561181435
+Sudan,SDN,2013,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,80.853753403345
+Sudan,SDN,2012,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,70.1462484103434
+Sudan,SDN,2011,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,76.4872856298048
+Sudan,SDN,2010,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,82.7043605814109
+Sudan,SDN,2009,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,49.7303959328301
+Sudan,SDN,2008,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,26.5710134398838
+Sudan,SDN,2007,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,28.8986257717586
+Sudan,SDN,2006,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,30.3030303030303
+Sudan,SDN,2005,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,32.9587036069002
+Sudan,SDN,2004,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,31.9296221517162
+Sudan,SDN,2003,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,34.6750149075731
+Sudan,SDN,2002,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,41.6100872938894
+Sudan,SDN,2001,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,44.6478873239437
+Sudan,SDN,2000,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,46.0490463215259
+Sudan,SDN,1999,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,49.9380932728023
+Sudan,SDN,1998,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,53.0518819938962
+Sudan,SDN,1997,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,49.0232558139535
+Sudan,SDN,1996,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,52.0601066408144
+Sudan,SDN,1995,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,52.1459227467811
+Sudan,SDN,1994,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,60.3336921420883
+Sudan,SDN,1993,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,64.7093712930012
+Sudan,SDN,1992,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,66.6462668298654
+Sudan,SDN,1991,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,62.4924744130042
+Sudan,SDN,1990,Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,63.2343234323432
+Sudan,SDN,2021,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2020,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2019,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2018,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2017,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2016,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2015,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2014,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2013,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2012,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2011,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2010,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2009,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2008,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2007,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2006,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2005,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2004,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2003,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2002,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2001,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2000,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1999,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1998,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1997,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1996,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1995,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1994,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1993,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1992,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1991,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,1990,Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,0
+Sudan,SDN,2021,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2020,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2019,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2018,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2017,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2016,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2015,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2014,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2013,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2012,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2011,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2010,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2009,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2008,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2007,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2006,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2005,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2004,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2003,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2002,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2001,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2000,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1999,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1998,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1997,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1996,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1995,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1994,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1993,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1992,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1991,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,1990,Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,0
+Sudan,SDN,2022,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,28.629300441381
+Sudan,SDN,2021,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,37.6587143426522
+Sudan,SDN,2020,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,35.4768743771616
+Sudan,SDN,2019,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,36.5286584607733
+Sudan,SDN,2018,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,40.5905875115349
+Sudan,SDN,2017,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,39.8597349118518
+Sudan,SDN,2016,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,44.2026474461155
+Sudan,SDN,2015,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,35.4640913619989
+Sudan,SDN,2014,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,21.6508438818565
+Sudan,SDN,2013,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,19.146246596655
+Sudan,SDN,2012,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,29.8537515896566
+Sudan,SDN,2011,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,23.5127143701952
+Sudan,SDN,2010,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,17.2956394185891
+Sudan,SDN,2009,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,50.2696040671699
+Sudan,SDN,2008,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,73.4289865601162
+Sudan,SDN,2007,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,71.1013742282414
+Sudan,SDN,2006,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,69.6969696969697
+Sudan,SDN,2005,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,67.0412963930998
+Sudan,SDN,2004,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,68.0703778482838
+Sudan,SDN,2003,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,65.324985092427
+Sudan,SDN,2002,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,58.3899127061106
+Sudan,SDN,2001,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,55.3521126760563
+Sudan,SDN,2000,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,53.9509536784741
+Sudan,SDN,1999,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,50.0619067271977
+Sudan,SDN,1998,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,46.9481180061038
+Sudan,SDN,1997,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,50.9767441860465
+Sudan,SDN,1996,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,47.9398933591857
+Sudan,SDN,1995,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,47.8540772532189
+Sudan,SDN,1994,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,39.6663078579117
+Sudan,SDN,1993,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,35.2906287069988
+Sudan,SDN,1992,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,33.3537331701346
+Sudan,SDN,1991,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,37.5075255869958
+Sudan,SDN,1990,Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,36.7656765676568
+Sudan,SDN,2021,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,58.048966577464
+Sudan,SDN,2020,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,65.2923969752037
+Sudan,SDN,2019,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,64.2827924903643
+Sudan,SDN,2018,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,60.2839741617964
+Sudan,SDN,2017,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,61.1051344743276
+Sudan,SDN,2016,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,56.7572250329198
+Sudan,SDN,2015,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,65.5426534835594
+Sudan,SDN,2014,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,79.487517580872
+Sudan,SDN,2013,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,82.3250680669
+Sudan,SDN,2012,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,71.5162144976685
+Sudan,SDN,2011,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,77.9641632170313
+Sudan,SDN,2010,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,84.5182024269903
+Sudan,SDN,2009,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,52.0628562625173
+Sudan,SDN,2008,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,29.2905920813658
+Sudan,SDN,2007,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,31.8799044015136
+Sudan,SDN,2006,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,33.4072107940721
+Sudan,SDN,2005,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,36.7195504443283
+Sudan,SDN,2004,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,35.9590423997693
+Sudan,SDN,2003,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,38.551580202743
+Sudan,SDN,2002,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,45.4904623343033
+Sudan,SDN,2001,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,47.3968309859155
+Sudan,SDN,2000,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,49.9275982872713
+Sudan,SDN,1999,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,49.9380932728023
+Sudan,SDN,1998,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,53.0518819938962
+Sudan,SDN,1997,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,49.0232558139535
+Sudan,SDN,1996,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,52.0601066408144
+Sudan,SDN,1995,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,52.1459227467811
+Sudan,SDN,1994,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,60.3336921420883
+Sudan,SDN,1993,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,64.7093712930012
+Sudan,SDN,1992,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,66.6462668298654
+Sudan,SDN,1991,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,62.4924744130042
+Sudan,SDN,1990,Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,63.2343234323432
+Sudan,SDN,2021,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,-753860000
+Sudan,SDN,2020,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,131230000
+Sudan,SDN,2019,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,130530000
+Sudan,SDN,2018,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,142160000
+Sudan,SDN,2017,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,149960000
+Sudan,SDN,2016,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,138500000
+Sudan,SDN,2015,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,131350000
+Sudan,SDN,2014,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,129500000
+Sudan,SDN,2013,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,151310000
+Sudan,SDN,2012,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,129270000
+Sudan,SDN,2011,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,124870000
+Sudan,SDN,2010,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,136020000
+Sudan,SDN,2009,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,151400000
+Sudan,SDN,2008,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,149740000
+Sudan,SDN,2007,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,149690000
+Sudan,SDN,2006,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,140340000
+Sudan,SDN,2005,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,143890000
+Sudan,SDN,2004,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,139700000
+Sudan,SDN,2003,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,130020000
+Sudan,SDN,2002,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,120020000
+Sudan,SDN,2001,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,78070000
+Sudan,SDN,2000,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,99640000
+Sudan,SDN,1999,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1998,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1997,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1996,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1995,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1994,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1993,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1992,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1991,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,1990,"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,0
+Sudan,SDN,2021,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,-4.29231907988385
+Sudan,SDN,2020,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0.76927135236532
+Sudan,SDN,2019,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0.811450951137635
+Sudan,SDN,2018,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0.874561673331283
+Sudan,SDN,2017,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0.964869386179385
+Sudan,SDN,2016,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0.959872479035276
+Sudan,SDN,2015,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,1.00674484555837
+Sudan,SDN,2014,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,1.13836146272855
+Sudan,SDN,2013,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,1.47131466355504
+Sudan,SDN,2012,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,1.36996608732514
+Sudan,SDN,2011,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,1.47687758722649
+Sudan,SDN,2010,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,1.81384184557941
+Sudan,SDN,2009,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,2.33246032968726
+Sudan,SDN,2008,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,2.71957864148202
+Sudan,SDN,2007,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,2.98127862975503
+Sudan,SDN,2006,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,3.1041804910418
+Sudan,SDN,2005,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,3.76084683742812
+Sudan,SDN,2004,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,4.02942024805307
+Sudan,SDN,2003,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,3.87656529516995
+Sudan,SDN,2002,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,3.88037504041384
+Sudan,SDN,2001,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,2.74894366197183
+Sudan,SDN,2000,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,3.87855196574543
+Sudan,SDN,1999,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1998,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1997,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1996,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1995,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1994,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1993,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1992,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1991,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,1990,"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,0
+Sudan,SDN,2021,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,61
+Sudan,SDN,2020,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,62.6
+Sudan,SDN,2019,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,59.4
+Sudan,SDN,2018,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,59.8
+Sudan,SDN,2017,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,59.4
+Sudan,SDN,2016,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,58.9
+Sudan,SDN,2015,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,61.9
+Sudan,SDN,2014,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,63.7
+Sudan,SDN,2013,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,64.3
+Sudan,SDN,2012,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,63.7
+Sudan,SDN,2011,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,63.7
+Sudan,SDN,2010,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,61.3
+Sudan,SDN,2009,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,63.1
+Sudan,SDN,2008,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,63.5
+Sudan,SDN,2007,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,65.6
+Sudan,SDN,2006,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,69.2
+Sudan,SDN,2005,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,72.3
+Sudan,SDN,2004,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,75.4
+Sudan,SDN,2003,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,77
+Sudan,SDN,2002,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,76.8
+Sudan,SDN,2001,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,79.4
+Sudan,SDN,2000,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,80.4
+Sudan,SDN,1999,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,80.8
+Sudan,SDN,1998,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,81.9
+Sudan,SDN,1997,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,80.5
+Sudan,SDN,1996,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,83.6
+Sudan,SDN,1995,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,81.5
+Sudan,SDN,1994,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,79.5
+Sudan,SDN,1993,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,85.6
+Sudan,SDN,1992,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,77.4
+Sudan,SDN,1991,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,76.2
+Sudan,SDN,1990,Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,73.3
+Sudan,SDN,2022,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,131.472024903574
+Sudan,SDN,2021,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,131.153353541557
+Sudan,SDN,2020,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,124.137031796904
+Sudan,SDN,2019,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,120.092348693552
+Sudan,SDN,2018,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,114.013156928836
+Sudan,SDN,2017,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,109.108988804128
+Sudan,SDN,2016,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,107.426055363695
+Sudan,SDN,2015,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,111.406596307256
+Sudan,SDN,2014,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,113.050970059341
+Sudan,SDN,2013,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,114.852805298464
+Sudan,SDN,2012,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,94.2280732624004
+Sudan,SDN,2011,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,91.588621218955
+Sudan,SDN,2010,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,82.6205178629404
+Sudan,SDN,2009,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,90.7380872573415
+Sudan,SDN,2008,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,84.242181450002
+Sudan,SDN,2007,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,86.093632532212
+Sudan,SDN,2006,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,94.6084922905074
+Sudan,SDN,2005,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,94.1292390936269
+Sudan,SDN,2004,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,96.3174112510393
+Sudan,SDN,2003,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,101.139399156083
+Sudan,SDN,2002,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,110.700908507385
+Sudan,SDN,2001,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,109.309853135834
+Sudan,SDN,2000,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,111.896539815805
+Sudan,SDN,1999,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,123.471807610371
+Sudan,SDN,1998,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,114.74098943154
+Sudan,SDN,1997,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,118.376973500001
+Sudan,SDN,1996,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,137.207735407001
+Sudan,SDN,1995,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,141.870593750673
+Sudan,SDN,1994,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,149.817509041812
+Sudan,SDN,1993,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,130.55292139451
+Sudan,SDN,1992,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,140.568260874277
+Sudan,SDN,1991,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,149.915547416847
+Sudan,SDN,1990,"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2021 PPP)",EG.USE.COMM.GD.PP.KD,161.486134001809
+Sudan,SDN,2022,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,278.81869324934
+Sudan,SDN,2021,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,304.138454959173
+Sudan,SDN,2020,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,300.4537518473
+Sudan,SDN,2019,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,282.711656394576
+Sudan,SDN,2018,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,304.856846152378
+Sudan,SDN,2017,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,311.230621422247
+Sudan,SDN,2016,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,286.913014702026
+Sudan,SDN,2015,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,250.971712752144
+Sudan,SDN,2014,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,237.048260532497
+Sudan,SDN,2013,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,233.685367238936
+Sudan,SDN,2012,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,217.993153243743
+Sudan,SDN,2011,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,194.184933230321
+Sudan,SDN,2010,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,178.373773899142
+Sudan,SDN,2009,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,153.287126574523
+Sudan,SDN,2008,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,133.684352655456
+Sudan,SDN,2007,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,122.725657185822
+Sudan,SDN,2006,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,113.589353233038
+Sudan,SDN,2005,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,101.495583646627
+Sudan,SDN,2004,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,86.1024071464409
+Sudan,SDN,2003,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,85.1283456150623
+Sudan,SDN,2002,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,80.2977153264321
+Sudan,SDN,2001,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,68.7665538558539
+Sudan,SDN,2000,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,81.0303290338248
+Sudan,SDN,1999,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,78.5459583976226
+Sudan,SDN,1998,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,53.4411751555681
+Sudan,SDN,1997,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,55.3104612625026
+Sudan,SDN,1996,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,58.4982407724177
+Sudan,SDN,1995,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,57.3521319165506
+Sudan,SDN,1994,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,58.1435295068846
+Sudan,SDN,1993,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,56.0873020395476
+Sudan,SDN,1992,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,58.3146202429369
+Sudan,SDN,1991,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,58.1646942886809
+Sudan,SDN,1990,Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,59.8052419816814
+Sudan,SDN,2022,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,411.780538179181
+Sudan,SDN,2021,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,426.11403674166
+Sudan,SDN,2020,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,422.22104307002
+Sudan,SDN,2019,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,435.397595484311
+Sudan,SDN,2018,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,435.149435651597
+Sudan,SDN,2017,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,443.093596413321
+Sudan,SDN,2016,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,448.456631655364
+Sudan,SDN,2015,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,463.361659242171
+Sudan,SDN,2014,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,475.661985814283
+Sudan,SDN,2013,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,474.39791148882
+Sudan,SDN,2012,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,390.663141094355
+Sudan,SDN,2011,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,467.4243451203
+Sudan,SDN,2010,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,444.591378410567
+Sudan,SDN,2009,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,481.629873791934
+Sudan,SDN,2008,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,472.804911242702
+Sudan,SDN,2007,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,477.508307525311
+Sudan,SDN,2006,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,508.243151523165
+Sudan,SDN,2005,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,485.749820750348
+Sudan,SDN,2004,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,481.357152467204
+Sudan,SDN,2003,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,491.363979157765
+Sudan,SDN,2002,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,517.547585761207
+Sudan,SDN,2001,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,494.123605509951
+Sudan,SDN,2000,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,486.895648884188
+Sudan,SDN,1999,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,517.980162387418
+Sudan,SDN,1998,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,478.711864498464
+Sudan,SDN,1997,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,485.578928301363
+Sudan,SDN,1996,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,486.421910396116
+Sudan,SDN,1995,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,485.611785120867
+Sudan,SDN,1994,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,496.439746631402
+Sudan,SDN,1993,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,439.22493414856
+Sudan,SDN,1992,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,462.480044376231
+Sudan,SDN,1991,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,472.196993545664
+Sudan,SDN,1990,Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,482.757306781047
+Sudan,SDN,2009,"Droughts, floods, extreme temperatures (% of population, average 1990-2009)",EN.CLC.MDAT.ZS,2.76541558191951
+Sudan,SDN,2015,Rural population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.RU.ZS,0.0923792031027797
+Sudan,SDN,2000,Rural population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.RU.ZS,0.0698804975039818
+Sudan,SDN,1990,Rural population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.RU.ZS,0.199141731187503
+Sudan,SDN,2015,Urban population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.UR.ZS,0.416263007556351
+Sudan,SDN,2000,Urban population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.UR.ZS,0.359896212485003
+Sudan,SDN,1990,Urban population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.UR.ZS,0.171584816322768
+Sudan,SDN,2015,Population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.ZS,0.508642210659131
+Sudan,SDN,2000,Population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.ZS,0.429776709988985
+Sudan,SDN,1990,Population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.ZS,0.370726547510271
+Sudan,SDN,2024,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.9676996532119
+Sudan,SDN,2023,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.6778460457971
+Sudan,SDN,2022,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.4745030440019
+Sudan,SDN,2021,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.4597613111253
+Sudan,SDN,2020,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.4576913862936
+Sudan,SDN,2019,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.4657486276893
+Sudan,SDN,2018,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.5118797856579
+Sudan,SDN,2017,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.6313137336236
+Sudan,SDN,2016,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.7488288141908
+Sudan,SDN,2015,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.8129691587621
+Sudan,SDN,2014,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.8783093706725
+Sudan,SDN,2013,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.9002712099972
+Sudan,SDN,2012,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.8707989328546
+Sudan,SDN,2011,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.8198579743905
+Sudan,SDN,2010,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.754919263207
+Sudan,SDN,2009,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.739308642371
+Sudan,SDN,2008,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.7691367886847
+Sudan,SDN,2007,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.7758111117538
+Sudan,SDN,2006,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.7565032170887
+Sudan,SDN,2005,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.7276357536218
+Sudan,SDN,2004,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.6961484668617
+Sudan,SDN,2003,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.6514569574193
+Sudan,SDN,2002,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.6164132977806
+Sudan,SDN,2001,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.6077392355446
+Sudan,SDN,2000,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.6019633138241
+Sudan,SDN,1999,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.596832957663
+Sudan,SDN,1998,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.593295763003
+Sudan,SDN,1997,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.5918005400115
+Sudan,SDN,1996,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.5535877177157
+Sudan,SDN,1995,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.516448206384
+Sudan,SDN,1994,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.5220034580012
+Sudan,SDN,1993,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,12.5201701027639
+Sudan,SDN,1992,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,11.9919938431625
+Sudan,SDN,1991,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,11.3355601762938
+Sudan,SDN,1990,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,10.7169676735184
+Sudan,SDN,1989,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,10.1336535851154
+Sudan,SDN,1988,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,9.58539448836103
+Sudan,SDN,1987,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,9.06615167112101
+Sudan,SDN,1986,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,8.57257293610219
+Sudan,SDN,1985,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,8.09531478952542
+Sudan,SDN,1984,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,7.63924416653433
+Sudan,SDN,1983,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,7.23899345727343
+Sudan,SDN,1982,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,7.02276156652546
+Sudan,SDN,1981,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.91418701265628
+Sudan,SDN,1980,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.8247874057567
+Sudan,SDN,1979,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.74013008096677
+Sudan,SDN,1978,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.65100860445837
+Sudan,SDN,1977,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.55205999172512
+Sudan,SDN,1976,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.42498453641787
+Sudan,SDN,1975,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.30198883766407
+Sudan,SDN,1974,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.18029688110125
+Sudan,SDN,1973,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,6.09067219237178
+Sudan,SDN,1972,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,5.96505100314052
+Sudan,SDN,1971,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,5.78977937289699
+Sudan,SDN,1970,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,5.62095478784597
+Sudan,SDN,1969,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,5.4575138756428
+Sudan,SDN,1968,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,5.29811369281129
+Sudan,SDN,1967,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,5.14211660250126
+Sudan,SDN,1966,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,4.99017511805254
+Sudan,SDN,1965,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,4.84190046084258
+Sudan,SDN,1964,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,4.69779539820602
+Sudan,SDN,1963,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,4.55566817243987
+Sudan,SDN,1962,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,4.41640053153774
+Sudan,SDN,1961,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,4.27877851163083
+Sudan,SDN,1960,Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,4.14354062752668
+Sudan,SDN,2022,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2021,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2020,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2019,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2018,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2017,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2016,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2015,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2014,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2013,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2012,"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,26.935
+Sudan,SDN,2022,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2021,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2020,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2019,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2018,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2017,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2016,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2015,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2014,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2013,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2012,"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,673.375
+Sudan,SDN,2024,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2023,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2022,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2021,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2020,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2019,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2018,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2017,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2016,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2015,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2
+Sudan,SDN,2014,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2
+Sudan,SDN,2013,Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,2.3
+Sudan,SDN,2024,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,17
+Sudan,SDN,2023,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2022,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2021,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2020,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2019,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2018,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2017,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2016,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,16
+Sudan,SDN,2015,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,0
+Sudan,SDN,2014,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,0
+Sudan,SDN,2013,Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,13.3
+Sudan,SDN,2024,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2023,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2022,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2021,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2020,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2019,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2018,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2017,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2016,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.8
+Sudan,SDN,2015,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,1.9
+Sudan,SDN,2014,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,1.9
+Sudan,SDN,2013,Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,2.6
+Sudan,SDN,2024,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,1.5
+Sudan,SDN,2023,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,1.8
+Sudan,SDN,2022,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,1.8
+Sudan,SDN,2021,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,1.9
+Sudan,SDN,2020,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.1
+Sudan,SDN,2019,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.1
+Sudan,SDN,2018,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.1
+Sudan,SDN,2017,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2016,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2015,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2014,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2013,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2012,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2011,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2010,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2009,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.2
+Sudan,SDN,2008,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.3
+Sudan,SDN,2007,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.3
+Sudan,SDN,2006,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.3
+Sudan,SDN,2005,CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,2.4
+Sudan,SDN,2024,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,22.075886738306
+Sudan,SDN,2023,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,30.2756760074835
+Sudan,SDN,2022,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,5.03129266150122
+Sudan,SDN,2021,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,6.35709212800824
+Sudan,SDN,2020,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,20.3208627544265
+Sudan,SDN,2019,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,20.1640153484443
+Sudan,SDN,2018,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,21.9934731580502
+Sudan,SDN,2017,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,21.2305403131037
+Sudan,SDN,2016,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,22.9775814159681
+Sudan,SDN,2015,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,31.5564513257888
+Sudan,SDN,2014,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,32.6242708162674
+Sudan,SDN,2013,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,29.6076364571032
+Sudan,SDN,2012,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,33.774624171049
+Sudan,SDN,2011,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,27.8476934681736
+Sudan,SDN,2010,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,31.8522211122842
+Sudan,SDN,2009,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,33.5066805707755
+Sudan,SDN,2008,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,36.1831633212385
+Sudan,SDN,2007,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,35.6675143701418
+Sudan,SDN,2006,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,31.8201079594306
+Sudan,SDN,2005,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,33.199920468691
+Sudan,SDN,2004,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.0060768565709
+Sudan,SDN,2003,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,38.416611009222
+Sudan,SDN,2002,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,37.662742261404
+Sudan,SDN,2001,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,35.7807746157648
+Sudan,SDN,2000,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,40.6821739143403
+Sudan,SDN,1999,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,43.2654994233288
+Sudan,SDN,1998,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,44.394590603038
+Sudan,SDN,1997,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,45.042249161223
+Sudan,SDN,1996,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,42.3848519608798
+Sudan,SDN,1995,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,37.2802811576655
+Sudan,SDN,1994,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.5307043097102
+Sudan,SDN,1993,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,39.9000684515911
+Sudan,SDN,1992,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,38.5429544336647
+Sudan,SDN,1991,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,40.1843515959888
+Sudan,SDN,1990,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,39.0195890623607
+Sudan,SDN,1989,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,37.369013821345
+Sudan,SDN,1988,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,39.3728788663579
+Sudan,SDN,1987,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,31.611631753032
+Sudan,SDN,1986,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.5177463783912
+Sudan,SDN,1985,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,31.4663327170314
+Sudan,SDN,1984,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,28.6064541779869
+Sudan,SDN,1983,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,31.1911170928668
+Sudan,SDN,1982,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.1053391053391
+Sudan,SDN,1981,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,33.3799231268407
+Sudan,SDN,1980,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,29.9135369422909
+Sudan,SDN,1979,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,32.1293144011736
+Sudan,SDN,1978,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.7434978163092
+Sudan,SDN,1977,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,35.6043198529412
+Sudan,SDN,1976,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.3776865030089
+Sudan,SDN,1975,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,35.8104084792188
+Sudan,SDN,1974,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,39.601015596663
+Sudan,SDN,1973,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,39.841343910406
+Sudan,SDN,1972,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,38.5380522785103
+Sudan,SDN,1971,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,38.8177710843374
+Sudan,SDN,1970,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,38.1649118009025
+Sudan,SDN,1969,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.5095600808332
+Sudan,SDN,1968,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,32.5402259500171
+Sudan,SDN,1967,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,34.8579596212257
+Sudan,SDN,1966,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,35.1325207970594
+Sudan,SDN,1965,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,41.9412465263994
+Sudan,SDN,1964,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,41.8287132809268
+Sudan,SDN,1963,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,44.845908607864
+Sudan,SDN,1962,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,49.8810810810811
+Sudan,SDN,1961,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,51.5030530765618
+Sudan,SDN,1960,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,51.4278429372769
+Sudan,SDN,2018,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.957329988479614
+Sudan,SDN,2017,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.962260007858276
+Sudan,SDN,2016,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.946269989013672
+Sudan,SDN,2015,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.934849977493286
+Sudan,SDN,2014,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.918290019035339
+Sudan,SDN,2013,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.910600006580353
+Sudan,SDN,2012,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.895709991455078
+Sudan,SDN,2011,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.893079996109009
+Sudan,SDN,2010,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.887639999389648
+Sudan,SDN,2009,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.883520007133484
+Sudan,SDN,2008,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.876590013504028
+Sudan,SDN,2007,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.859740018844604
+Sudan,SDN,2006,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.888979971408844
+Sudan,SDN,2005,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.891969978809357
+Sudan,SDN,2004,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.875590026378632
+Sudan,SDN,2003,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.874180018901825
+Sudan,SDN,2002,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.875729978084564
+Sudan,SDN,2001,"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,0.836049973964691
+Sudan,SDN,2019,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,60.1234397888184
+Sudan,SDN,2018,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,58.9140090942383
+Sudan,SDN,2017,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,56.8698196411133
+Sudan,SDN,2016,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,55.3826217651367
+Sudan,SDN,2015,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,55.0168800354004
+Sudan,SDN,2014,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,54.0362892150879
+Sudan,SDN,2013,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,54.0575103759766
+Sudan,SDN,2012,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,53.8266105651855
+Sudan,SDN,2010,"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,57.8696594238281
+Sudan,SDN,2023,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,50.1
+Sudan,SDN,2022,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,51.8
+Sudan,SDN,2021,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,53.6
+Sudan,SDN,2020,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,55.3
+Sudan,SDN,2019,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,57.1
+Sudan,SDN,2018,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,58.9
+Sudan,SDN,2017,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,60.7
+Sudan,SDN,2016,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,62.6
+Sudan,SDN,2015,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,64.5
+Sudan,SDN,2014,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,66.4
+Sudan,SDN,2013,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,68.3
+Sudan,SDN,2012,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,70.2
+Sudan,SDN,2011,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,72.2
+Sudan,SDN,2010,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,74.2
+Sudan,SDN,2009,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,76.4
+Sudan,SDN,2008,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,78.8
+Sudan,SDN,2007,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,81.3
+Sudan,SDN,2006,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,84
+Sudan,SDN,2005,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,100.1
+Sudan,SDN,2004,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,102.6
+Sudan,SDN,2003,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,93.1
+Sudan,SDN,2002,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,96.5
+Sudan,SDN,2001,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,99.9
+Sudan,SDN,2000,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,103.4
+Sudan,SDN,1999,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,106.9
+Sudan,SDN,1998,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,110.2
+Sudan,SDN,1997,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,113.4
+Sudan,SDN,1996,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,116.4
+Sudan,SDN,1995,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,119.3
+Sudan,SDN,1994,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,122
+Sudan,SDN,1993,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,124.6
+Sudan,SDN,1992,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,127.1
+Sudan,SDN,1991,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,129.5
+Sudan,SDN,1990,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,131.8
+Sudan,SDN,1989,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,134.1
+Sudan,SDN,1988,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,136.2
+Sudan,SDN,1987,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,138.3
+Sudan,SDN,1986,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,140.1
+Sudan,SDN,1985,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,178.3
+Sudan,SDN,1984,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,180.2
+Sudan,SDN,1983,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,182.2
+Sudan,SDN,1982,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,145.4
+Sudan,SDN,1981,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,146.4
+Sudan,SDN,1980,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,147.5
+Sudan,SDN,1979,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,148.6
+Sudan,SDN,1978,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,149.7
+Sudan,SDN,1977,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,150.9
+Sudan,SDN,1976,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,152
+Sudan,SDN,1975,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,153.1
+Sudan,SDN,1974,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,154.2
+Sudan,SDN,1973,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,155.2
+Sudan,SDN,1972,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,156.1
+Sudan,SDN,1971,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,157
+Sudan,SDN,1970,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,158
+Sudan,SDN,1969,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,159
+Sudan,SDN,1968,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,160.2
+Sudan,SDN,1967,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,161.6
+Sudan,SDN,1966,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,163.3
+Sudan,SDN,1965,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,165.2
+Sudan,SDN,1964,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,167.4
+Sudan,SDN,1963,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,169.8
+Sudan,SDN,1962,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,172.4
+Sudan,SDN,1961,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,175
+Sudan,SDN,1960,"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,177.8
+Sudan,SDN,2004,"Community health workers (per 1,000 people)",SH.MED.CMHW.P3,0.151
+Sudan,SDN,2014,"Prevalence of underweight, weight for age (% of children under 5)",SH.STA.MALN.ZS,33
+Sudan,SDN,2010,"Prevalence of underweight, weight for age (% of children under 5)",SH.STA.MALN.ZS,29.8
+Sudan,SDN,2006,"Prevalence of underweight, weight for age (% of children under 5)",SH.STA.MALN.ZS,27
+Sudan,SDN,2014,Poverty headcount ratio at $3.00 a day (2021 PPP) (% of population),SI.POV.DDAY,10.1
+Sudan,SDN,2009,Poverty headcount ratio at $3.00 a day (2021 PPP) (% of population),SI.POV.DDAY,13.1
+Sudan,SDN,2024,Population growth (annual %),SP.POP.GROW,0.808373216038761
+Sudan,SDN,2023,Population growth (annual %),SP.POP.GROW,1.32652175747925
+Sudan,SDN,2022,Population growth (annual %),SP.POP.GROW,2.70189520043666
+Sudan,SDN,2021,Population growth (annual %),SP.POP.GROW,2.6941220236505
+Sudan,SDN,2020,Population growth (annual %),SP.POP.GROW,2.6882512565735
+Sudan,SDN,2019,Population growth (annual %),SP.POP.GROW,2.93537902352139
+Sudan,SDN,2018,Population growth (annual %),SP.POP.GROW,3.48828675547566
+Sudan,SDN,2017,Population growth (annual %),SP.POP.GROW,3.46430091592296
+Sudan,SDN,2016,Population growth (annual %),SP.POP.GROW,3.04008474256183
+Sudan,SDN,2015,Population growth (annual %),SP.POP.GROW,3.04689971719172
+Sudan,SDN,2014,Population growth (annual %),SP.POP.GROW,2.70863780408064
+Sudan,SDN,2013,Population growth (annual %),SP.POP.GROW,2.30951835174238
+Sudan,SDN,2012,Population growth (annual %),SP.POP.GROW,2.14168968629865
+Sudan,SDN,2011,Population growth (annual %),SP.POP.GROW,2.0304098222439
+Sudan,SDN,2010,Population growth (annual %),SP.POP.GROW,2.41578933319134
+Sudan,SDN,2009,Population growth (annual %),SP.POP.GROW,2.77210926299041
+Sudan,SDN,2008,Population growth (annual %),SP.POP.GROW,2.59050308685206
+Sudan,SDN,2007,Population growth (annual %),SP.POP.GROW,2.38350034195252
+Sudan,SDN,2006,Population growth (annual %),SP.POP.GROW,2.30819636827177
+Sudan,SDN,2005,Population growth (annual %),SP.POP.GROW,2.28355924873297
+Sudan,SDN,2004,Population growth (annual %),SP.POP.GROW,2.18560495236388
+Sudan,SDN,2003,Population growth (annual %),SP.POP.GROW,2.25738358789851
+Sudan,SDN,2002,Population growth (annual %),SP.POP.GROW,2.46596917532427
+Sudan,SDN,2001,Population growth (annual %),SP.POP.GROW,2.48541577821616
+Sudan,SDN,2000,Population growth (annual %),SP.POP.GROW,2.49754561643296
+Sudan,SDN,1999,Population growth (annual %),SP.POP.GROW,2.50663940455787
+Sudan,SDN,1998,Population growth (annual %),SP.POP.GROW,2.52287733643727
+Sudan,SDN,1997,Population growth (annual %),SP.POP.GROW,2.22732302778578
+Sudan,SDN,1996,Population growth (annual %),SP.POP.GROW,2.24195302329294
+Sudan,SDN,1995,Population growth (annual %),SP.POP.GROW,2.57914709353572
+Sudan,SDN,1994,Population growth (annual %),SP.POP.GROW,2.52008196636254
+Sudan,SDN,1993,Population growth (annual %),SP.POP.GROW,2.23517636613403
+Sudan,SDN,1992,Population growth (annual %),SP.POP.GROW,2.01195688460037
+Sudan,SDN,1991,Population growth (annual %),SP.POP.GROW,2.0192784229958
+Sudan,SDN,1990,Population growth (annual %),SP.POP.GROW,2.03430893863514
+Sudan,SDN,1989,Population growth (annual %),SP.POP.GROW,2.05825384870159
+Sudan,SDN,1988,Population growth (annual %),SP.POP.GROW,2.07221777730043
+Sudan,SDN,1987,Population growth (annual %),SP.POP.GROW,2.03292711670026
+Sudan,SDN,1986,Population growth (annual %),SP.POP.GROW,1.90265456774078
+Sudan,SDN,1985,Population growth (annual %),SP.POP.GROW,1.82170888297285
+Sudan,SDN,1984,Population growth (annual %),SP.POP.GROW,2.25979521551364
+Sudan,SDN,1983,Population growth (annual %),SP.POP.GROW,3.31511430933211
+Sudan,SDN,1982,Population growth (annual %),SP.POP.GROW,3.89421789560568
+Sudan,SDN,1981,Population growth (annual %),SP.POP.GROW,4.14340457719432
+Sudan,SDN,1980,Population growth (annual %),SP.POP.GROW,4.21171715460334
+Sudan,SDN,1979,Population growth (annual %),SP.POP.GROW,4.12128017913598
+Sudan,SDN,1978,Population growth (annual %),SP.POP.GROW,3.9534520847615
+Sudan,SDN,1977,Population growth (annual %),SP.POP.GROW,3.48627326798893
+Sudan,SDN,1976,Population growth (annual %),SP.POP.GROW,3.52700479626027
+Sudan,SDN,1975,Population growth (annual %),SP.POP.GROW,3.50237191752093
+Sudan,SDN,1974,Population growth (annual %),SP.POP.GROW,3.99157188026824
+Sudan,SDN,1973,Population growth (annual %),SP.POP.GROW,4.07809970400618
+Sudan,SDN,1972,Population growth (annual %),SP.POP.GROW,3.42915284758565
+Sudan,SDN,1971,Population growth (annual %),SP.POP.GROW,3.44357929812784
+Sudan,SDN,1970,Population growth (annual %),SP.POP.GROW,3.45187614793846
+Sudan,SDN,1969,Population growth (annual %),SP.POP.GROW,3.42958502252999
+Sudan,SDN,1968,Population growth (annual %),SP.POP.GROW,3.42302657689166
+Sudan,SDN,1967,Population growth (annual %),SP.POP.GROW,3.40322048848927
+Sudan,SDN,1966,Population growth (annual %),SP.POP.GROW,3.38638896216967
+Sudan,SDN,1965,Population growth (annual %),SP.POP.GROW,3.37252712365509
+Sudan,SDN,1964,Population growth (annual %),SP.POP.GROW,3.33946327702524
+Sudan,SDN,1963,Population growth (annual %),SP.POP.GROW,3.29794754408435
+Sudan,SDN,1962,Population growth (annual %),SP.POP.GROW,3.2370093127031
+Sudan,SDN,1961,Population growth (annual %),SP.POP.GROW,3.18216342107723
+Sudan,SDN,2024,"Population, total",SP.POP.TOTL,50448963
+Sudan,SDN,2023,"Population, total",SP.POP.TOTL,50042791
+Sudan,SDN,2022,"Population, total",SP.POP.TOTL,49383346
+Sudan,SDN,2021,"Population, total",SP.POP.TOTL,48066924
+Sudan,SDN,2020,"Population, total",SP.POP.TOTL,46789231
+Sudan,SDN,2019,"Population, total",SP.POP.TOTL,45548175
+Sudan,SDN,2018,"Population, total",SP.POP.TOTL,44230596
+Sudan,SDN,2017,"Population, total",SP.POP.TOTL,42714306
+Sudan,SDN,2016,"Population, total",SP.POP.TOTL,41259892
+Sudan,SDN,2015,"Population, total",SP.POP.TOTL,40024431
+Sudan,SDN,2014,"Population, total",SP.POP.TOTL,38823318
+Sudan,SDN,2013,"Population, total",SP.POP.TOTL,37785849
+Sudan,SDN,2012,"Population, total",SP.POP.TOTL,36923178
+Sudan,SDN,2011,"Population, total",SP.POP.TOTL,36140806
+Sudan,SDN,2010,"Population, total",SP.POP.TOTL,35414399
+Sudan,SDN,2009,"Population, total",SP.POP.TOTL,34569113
+Sudan,SDN,2008,"Population, total",SP.POP.TOTL,33623980
+Sudan,SDN,2007,"Population, total",SP.POP.TOTL,32764135
+Sudan,SDN,2006,"Population, total",SP.POP.TOTL,31992435
+Sudan,SDN,2005,"Population, total",SP.POP.TOTL,31262444
+Sudan,SDN,2004,"Population, total",SP.POP.TOTL,30556637
+Sudan,SDN,2003,"Population, total",SP.POP.TOTL,29896035
+Sudan,SDN,2002,"Population, total",SP.POP.TOTL,29228727
+Sudan,SDN,2001,"Population, total",SP.POP.TOTL,28516770
+Sudan,SDN,2000,"Population, total",SP.POP.TOTL,27816745
+Sudan,SDN,1999,"Population, total",SP.POP.TOTL,27130613
+Sudan,SDN,1998,"Population, total",SP.POP.TOTL,26458999
+Sudan,SDN,1997,"Population, total",SP.POP.TOTL,25799821
+Sudan,SDN,1996,"Population, total",SP.POP.TOTL,25231528
+Sudan,SDN,1995,"Population, total",SP.POP.TOTL,24672143
+Sudan,SDN,1994,"Population, total",SP.POP.TOTL,24043948
+Sudan,SDN,1993,"Population, total",SP.POP.TOTL,23445592
+Sudan,SDN,1992,"Population, total",SP.POP.TOTL,22927355
+Sudan,SDN,1991,"Population, total",SP.POP.TOTL,22470676
+Sudan,SDN,1990,"Population, total",SP.POP.TOTL,22021481
+Sudan,SDN,1989,"Population, total",SP.POP.TOTL,21578022
+Sudan,SDN,1988,"Population, total",SP.POP.TOTL,21138431
+Sudan,SDN,1987,"Population, total",SP.POP.TOTL,20704904
+Sudan,SDN,1986,"Population, total",SP.POP.TOTL,20288238
+Sudan,SDN,1985,"Population, total",SP.POP.TOTL,19905872
+Sudan,SDN,1984,"Population, total",SP.POP.TOTL,19546528
+Sudan,SDN,1983,"Population, total",SP.POP.TOTL,19109770
+Sudan,SDN,1982,"Population, total",SP.POP.TOTL,18486645
+Sudan,SDN,1981,"Population, total",SP.POP.TOTL,17780572
+Sudan,SDN,1980,"Population, total",SP.POP.TOTL,17058905
+Sudan,SDN,1979,"Population, total",SP.POP.TOTL,16355352
+Sudan,SDN,1978,"Population, total",SP.POP.TOTL,15695003
+Sudan,SDN,1977,"Population, total",SP.POP.TOTL,15086614
+Sudan,SDN,1976,"Population, total",SP.POP.TOTL,14569716
+Sudan,SDN,1975,"Population, total",SP.POP.TOTL,14064798
+Sudan,SDN,1974,"Population, total",SP.POP.TOTL,13580723
+Sudan,SDN,1973,"Population, total",SP.POP.TOTL,13049315
+Sudan,SDN,1972,"Population, total",SP.POP.TOTL,12527856
+Sudan,SDN,1971,"Population, total",SP.POP.TOTL,12105539
+Sudan,SDN,1970,"Population, total",SP.POP.TOTL,11695771
+Sudan,SDN,1969,"Population, total",SP.POP.TOTL,11298936
+Sudan,SDN,1968,"Population, total",SP.POP.TOTL,10917999
+Sudan,SDN,1967,"Population, total",SP.POP.TOTL,10550597
+Sudan,SDN,1966,"Population, total",SP.POP.TOTL,10197578
+Sudan,SDN,1965,"Population, total",SP.POP.TOTL,9858030
+Sudan,SDN,1964,"Population, total",SP.POP.TOTL,9531109
+Sudan,SDN,1963,"Population, total",SP.POP.TOTL,9218077
+Sudan,SDN,1962,"Population, total",SP.POP.TOTL,8919028
+Sudan,SDN,1961,"Population, total",SP.POP.TOTL,8634941
+Sudan,SDN,1960,"Population, total",SP.POP.TOTL,8364489
+Sudan,SDN,2024,Urban population growth (annual %),SP.URB.GROW,1.93022930430759
+Sudan,SDN,2023,Urban population growth (annual %),SP.URB.GROW,2.39433339837656
+Sudan,SDN,2022,Urban population growth (annual %),SP.URB.GROW,3.71659528836346
+Sudan,SDN,2021,Urban population growth (annual %),SP.URB.GROW,3.6539538387845
+Sudan,SDN,2020,Urban population growth (annual %),SP.URB.GROW,3.59153786524751
+Sudan,SDN,2019,Urban population growth (annual %),SP.URB.GROW,3.78047657303897
+Sudan,SDN,2018,Urban population growth (annual %),SP.URB.GROW,4.27655892191725
+Sudan,SDN,2017,Urban population growth (annual %),SP.URB.GROW,4.19140535908839
+Sudan,SDN,2016,Urban population growth (annual %),SP.URB.GROW,3.70758618724419
+Sudan,SDN,2015,Urban population growth (annual %),SP.URB.GROW,3.65356259642528
+Sudan,SDN,2014,Urban population growth (annual %),SP.URB.GROW,3.25034444214343
+Sudan,SDN,2013,Urban population growth (annual %),SP.URB.GROW,2.79116918753168
+Sudan,SDN,2012,Urban population growth (annual %),SP.URB.GROW,2.55940675017704
+Sudan,SDN,2011,Urban population growth (annual %),SP.URB.GROW,2.38638984610147
+Sudan,SDN,2010,Urban population growth (annual %),SP.URB.GROW,2.70633746853911
+Sudan,SDN,2009,Urban population growth (annual %),SP.URB.GROW,2.99664699181075
+Sudan,SDN,2008,Urban population growth (annual %),SP.URB.GROW,2.75163066352792
+Sudan,SDN,2007,Urban population growth (annual %),SP.URB.GROW,2.54489212423752
+Sudan,SDN,2006,Urban population growth (annual %),SP.URB.GROW,2.46984781904201
+Sudan,SDN,2005,Urban population growth (annual %),SP.URB.GROW,2.44547893190422
+Sudan,SDN,2004,Urban population growth (annual %),SP.URB.GROW,2.34778132625022
+Sudan,SDN,2003,Urban population growth (annual %),SP.URB.GROW,2.41982356465178
+Sudan,SDN,2002,Urban population growth (annual %),SP.URB.GROW,2.62867335891803
+Sudan,SDN,2001,Urban population growth (annual %),SP.URB.GROW,2.6483848825569
+Sudan,SDN,2000,Urban population growth (annual %),SP.URB.GROW,2.66078293859686
+Sudan,SDN,1999,Urban population growth (annual %),SP.URB.GROW,2.66704610271123
+Sudan,SDN,1998,Urban population growth (annual %),SP.URB.GROW,2.68664612021698
+Sudan,SDN,1997,Urban population growth (annual %),SP.URB.GROW,2.39136116097846
+Sudan,SDN,1996,Urban population growth (annual %),SP.URB.GROW,2.40314890519445
+Sudan,SDN,1995,Urban population growth (annual %),SP.URB.GROW,2.74371398555987
+Sudan,SDN,1994,Urban population growth (annual %),SP.URB.GROW,2.68181293596669
+Sudan,SDN,1993,Urban population growth (annual %),SP.URB.GROW,5.47442704530323
+Sudan,SDN,1992,Urban population growth (annual %),SP.URB.GROW,6.15739974258321
+Sudan,SDN,1991,Urban population growth (annual %),SP.URB.GROW,6.22862491219815
+Sudan,SDN,1990,Urban population growth (annual %),SP.URB.GROW,6.31915028032065
+Sudan,SDN,1989,Urban population growth (annual %),SP.URB.GROW,6.40530556795863
+Sudan,SDN,1988,Urban population growth (annual %),SP.URB.GROW,6.50129554538764
+Sudan,SDN,1987,Urban population growth (annual %),SP.URB.GROW,6.52136772189692
+Sudan,SDN,1986,Urban population growth (annual %),SP.URB.GROW,6.45374260410301
+Sudan,SDN,1985,Urban population growth (annual %),SP.URB.GROW,6.43448393249975
+Sudan,SDN,1984,Urban population growth (annual %),SP.URB.GROW,6.94245616135413
+Sudan,SDN,1983,Urban population growth (annual %),SP.URB.GROW,5.85903461731432
+Sudan,SDN,1982,Urban population growth (annual %),SP.URB.GROW,4.93019973859145
+Sudan,SDN,1981,Urban population growth (annual %),SP.URB.GROW,5.17518082513129
+Sudan,SDN,1980,Urban population growth (annual %),SP.URB.GROW,5.25426726200965
+Sudan,SDN,1979,Urban population growth (annual %),SP.URB.GROW,5.16457695974548
+Sudan,SDN,1978,Urban population growth (annual %),SP.URB.GROW,4.99738389900953
+Sudan,SDN,1977,Urban population growth (annual %),SP.URB.GROW,4.53079504798557
+Sudan,SDN,1976,Urban population growth (annual %),SP.URB.GROW,4.57726686081151
+Sudan,SDN,1975,Urban population growth (annual %),SP.URB.GROW,4.55844959527954
+Sudan,SDN,1974,Urban population growth (annual %),SP.URB.GROW,5.04275415917843
+Sudan,SDN,1973,Urban population growth (annual %),SP.URB.GROW,7.40542313974329
+Sudan,SDN,1972,Urban population growth (annual %),SP.URB.GROW,7.53086955125839
+Sudan,SDN,1971,Urban population growth (annual %),SP.URB.GROW,7.57541560730563
+Sudan,SDN,1970,Urban population growth (annual %),SP.URB.GROW,7.62288870481533
+Sudan,SDN,1969,Urban population growth (annual %),SP.URB.GROW,7.62410946250501
+Sudan,SDN,1968,Urban population growth (annual %),SP.URB.GROW,7.65697261543344
+Sudan,SDN,1967,Urban population growth (annual %),SP.URB.GROW,7.66660761677477
+Sudan,SDN,1966,Urban population growth (annual %),SP.URB.GROW,7.67509302972521
+Sudan,SDN,1965,Urban population growth (annual %),SP.URB.GROW,7.68931385266487
+Sudan,SDN,1964,Urban population growth (annual %),SP.URB.GROW,7.69588457560502
+Sudan,SDN,1963,Urban population growth (annual %),SP.URB.GROW,7.67389342145288
+Sudan,SDN,1962,Urban population growth (annual %),SP.URB.GROW,7.63487486144538
+Sudan,SDN,1961,Urban population growth (annual %),SP.URB.GROW,7.60553159088062
+Sudan,SDN,2024,Urban population,SP.URB.TOTL,18541003
+Sudan,SDN,2023,Urban population,SP.URB.TOTL,18186551
+Sudan,SDN,2022,Urban population,SP.URB.TOTL,17756276
+Sudan,SDN,2021,Urban population,SP.URB.TOTL,17108460
+Sudan,SDN,2020,Urban population,SP.URB.TOTL,16494608
+Sudan,SDN,2019,Urban population,SP.URB.TOTL,15912710
+Sudan,SDN,2018,Urban population,SP.URB.TOTL,15322363
+Sudan,SDN,2017,Urban population,SP.URB.TOTL,14680907
+Sudan,SDN,2016,Urban population,SP.URB.TOTL,14078288
+Sudan,SDN,2015,Urban population,SP.URB.TOTL,13565881
+Sudan,SDN,2014,Urban population,SP.URB.TOTL,13079188
+Sudan,SDN,2013,Urban population,SP.URB.TOTL,12660904
+Sudan,SDN,2012,Urban population,SP.URB.TOTL,12312403
+Sudan,SDN,2011,Urban population,SP.URB.TOTL,12001277
+Sudan,SDN,2010,Urban population,SP.URB.TOTL,11718270
+Sudan,SDN,2009,Urban population,SP.URB.TOTL,11405387
+Sudan,SDN,2008,Urban population,SP.URB.TOTL,11068678
+Sudan,SDN,2007,Urban population,SP.URB.TOTL,10768261
+Sudan,SDN,2006,Urban population,SP.URB.TOTL,10497678
+Sudan,SDN,2005,Urban population,SP.URB.TOTL,10241577
+Sudan,SDN,2004,Urban population,SP.URB.TOTL,9994159
+Sudan,SDN,2003,Urban population,SP.URB.TOTL,9762251
+Sudan,SDN,2002,Urban population,SP.URB.TOTL,9528857
+Sudan,SDN,2001,Urban population,SP.URB.TOTL,9281638
+Sudan,SDN,2000,Urban population,SP.URB.TOTL,9039051
+Sudan,SDN,1999,Urban population,SP.URB.TOTL,8801713
+Sudan,SDN,1998,Urban population,SP.URB.TOTL,8570070
+Sudan,SDN,1997,Urban population,SP.URB.TOTL,8342888
+Sudan,SDN,1996,Urban population,SP.URB.TOTL,8145746
+Sudan,SDN,1995,Urban population,SP.URB.TOTL,7952325
+Sudan,SDN,1994,Urban population,SP.URB.TOTL,7737102
+Sudan,SDN,1993,Urban population,SP.URB.TOTL,7532365
+Sudan,SDN,1992,Urban population,SP.URB.TOTL,7131095
+Sudan,SDN,1991,Urban population,SP.URB.TOTL,6705250
+Sudan,SDN,1990,Urban population,SP.URB.TOTL,6300346
+Sudan,SDN,1989,Urban population,SP.URB.TOTL,5914536
+Sudan,SDN,1988,Urban population,SP.URB.TOTL,5547570
+Sudan,SDN,1987,Urban population,SP.URB.TOTL,5198380
+Sudan,SDN,1986,Urban population,SP.URB.TOTL,4870192
+Sudan,SDN,1985,Urban population,SP.URB.TOTL,4565810
+Sudan,SDN,1984,Urban population,SP.URB.TOTL,4281276
+Sudan,SDN,1983,Urban population,SP.URB.TOTL,3994133
+Sudan,SDN,1982,Urban population,SP.URB.TOTL,3766839
+Sudan,SDN,1981,Urban population,SP.URB.TOTL,3585630
+Sudan,SDN,1980,Urban population,SP.URB.TOTL,3404787
+Sudan,SDN,1979,Urban population,SP.URB.TOTL,3230509
+Sudan,SDN,1978,Urban population,SP.URB.TOTL,3067902
+Sudan,SDN,1977,Urban population,SP.URB.TOTL,2918355
+Sudan,SDN,1976,Urban population,SP.URB.TOTL,2789081
+Sudan,SDN,1975,Urban population,SP.URB.TOTL,2664295
+Sudan,SDN,1974,Urban population,SP.URB.TOTL,2545571
+Sudan,SDN,1973,Urban population,SP.URB.TOTL,2420387
+Sudan,SDN,1972,Urban population,SP.URB.TOTL,2247623
+Sudan,SDN,1971,Urban population,SP.URB.TOTL,2084574
+Sudan,SDN,1970,Urban population,SP.URB.TOTL,1932492
+Sudan,SDN,1969,Urban population,SP.URB.TOTL,1790655
+Sudan,SDN,1968,Urban population,SP.URB.TOTL,1659208
+Sudan,SDN,1967,Urban population,SP.URB.TOTL,1536905
+Sudan,SDN,1966,Urban population,SP.URB.TOTL,1423480
+Sudan,SDN,1965,Urban population,SP.URB.TOTL,1318314
+Sudan,SDN,1964,Urban population,SP.URB.TOTL,1220744
+Sudan,SDN,1963,Urban population,SP.URB.TOTL,1130321
+Sudan,SDN,1962,Urban population,SP.URB.TOTL,1046826
+Sudan,SDN,1961,Urban population,SP.URB.TOTL,969877
+Sudan,SDN,1960,Urban population,SP.URB.TOTL,898848
+Sudan,SDN,2024,Urban population (% of total population),SP.URB.TOTL.IN.ZS,36.752
+Sudan,SDN,2023,Urban population (% of total population),SP.URB.TOTL.IN.ZS,36.342
+Sudan,SDN,2022,Urban population (% of total population),SP.URB.TOTL.IN.ZS,35.956
+Sudan,SDN,2021,Urban population (% of total population),SP.URB.TOTL.IN.ZS,35.593
+Sudan,SDN,2020,Urban population (% of total population),SP.URB.TOTL.IN.ZS,35.253
+Sudan,SDN,2019,Urban population (% of total population),SP.URB.TOTL.IN.ZS,34.936
+Sudan,SDN,2018,Urban population (% of total population),SP.URB.TOTL.IN.ZS,34.642
+Sudan,SDN,2017,Urban population (% of total population),SP.URB.TOTL.IN.ZS,34.37
+Sudan,SDN,2016,Urban population (% of total population),SP.URB.TOTL.IN.ZS,34.121
+Sudan,SDN,2015,Urban population (% of total population),SP.URB.TOTL.IN.ZS,33.894
+Sudan,SDN,2014,Urban population (% of total population),SP.URB.TOTL.IN.ZS,33.689
+Sudan,SDN,2013,Urban population (% of total population),SP.URB.TOTL.IN.ZS,33.507
+Sudan,SDN,2012,Urban population (% of total population),SP.URB.TOTL.IN.ZS,33.346
+Sudan,SDN,2011,Urban population (% of total population),SP.URB.TOTL.IN.ZS,33.207
+Sudan,SDN,2010,Urban population (% of total population),SP.URB.TOTL.IN.ZS,33.089
+Sudan,SDN,2009,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.993
+Sudan,SDN,2008,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.919
+Sudan,SDN,2007,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.866
+Sudan,SDN,2006,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.813
+Sudan,SDN,2005,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.76
+Sudan,SDN,2004,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.707
+Sudan,SDN,2003,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.654
+Sudan,SDN,2002,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.601
+Sudan,SDN,2001,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.548
+Sudan,SDN,2000,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.495
+Sudan,SDN,1999,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.442
+Sudan,SDN,1998,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.39
+Sudan,SDN,1997,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.337
+Sudan,SDN,1996,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.284
+Sudan,SDN,1995,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.232
+Sudan,SDN,1994,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.179
+Sudan,SDN,1993,Urban population (% of total population),SP.URB.TOTL.IN.ZS,32.127
+Sudan,SDN,1992,Urban population (% of total population),SP.URB.TOTL.IN.ZS,31.103
+Sudan,SDN,1991,Urban population (% of total population),SP.URB.TOTL.IN.ZS,29.84
+Sudan,SDN,1990,Urban population (% of total population),SP.URB.TOTL.IN.ZS,28.61
+Sudan,SDN,1989,Urban population (% of total population),SP.URB.TOTL.IN.ZS,27.41
+Sudan,SDN,1988,Urban population (% of total population),SP.URB.TOTL.IN.ZS,26.244
+Sudan,SDN,1987,Urban population (% of total population),SP.URB.TOTL.IN.ZS,25.107
+Sudan,SDN,1986,Urban population (% of total population),SP.URB.TOTL.IN.ZS,24.005
+Sudan,SDN,1985,Urban population (% of total population),SP.URB.TOTL.IN.ZS,22.937
+Sudan,SDN,1984,Urban population (% of total population),SP.URB.TOTL.IN.ZS,21.903
+Sudan,SDN,1983,Urban population (% of total population),SP.URB.TOTL.IN.ZS,20.901
+Sudan,SDN,1982,Urban population (% of total population),SP.URB.TOTL.IN.ZS,20.376
+Sudan,SDN,1981,Urban population (% of total population),SP.URB.TOTL.IN.ZS,20.166
+Sudan,SDN,1980,Urban population (% of total population),SP.URB.TOTL.IN.ZS,19.959
+Sudan,SDN,1979,Urban population (% of total population),SP.URB.TOTL.IN.ZS,19.752
+Sudan,SDN,1978,Urban population (% of total population),SP.URB.TOTL.IN.ZS,19.547
+Sudan,SDN,1977,Urban population (% of total population),SP.URB.TOTL.IN.ZS,19.344
+Sudan,SDN,1976,Urban population (% of total population),SP.URB.TOTL.IN.ZS,19.143
+Sudan,SDN,1975,Urban population (% of total population),SP.URB.TOTL.IN.ZS,18.943
+Sudan,SDN,1974,Urban population (% of total population),SP.URB.TOTL.IN.ZS,18.744
+Sudan,SDN,1973,Urban population (% of total population),SP.URB.TOTL.IN.ZS,18.548
+Sudan,SDN,1972,Urban population (% of total population),SP.URB.TOTL.IN.ZS,17.941
+Sudan,SDN,1971,Urban population (% of total population),SP.URB.TOTL.IN.ZS,17.22
+Sudan,SDN,1970,Urban population (% of total population),SP.URB.TOTL.IN.ZS,16.523
+Sudan,SDN,1969,Urban population (% of total population),SP.URB.TOTL.IN.ZS,15.848
+Sudan,SDN,1968,Urban population (% of total population),SP.URB.TOTL.IN.ZS,15.197
+Sudan,SDN,1967,Urban population (% of total population),SP.URB.TOTL.IN.ZS,14.567
+Sudan,SDN,1966,Urban population (% of total population),SP.URB.TOTL.IN.ZS,13.959
+Sudan,SDN,1965,Urban population (% of total population),SP.URB.TOTL.IN.ZS,13.373
+Sudan,SDN,1964,Urban population (% of total population),SP.URB.TOTL.IN.ZS,12.808
+Sudan,SDN,1963,Urban population (% of total population),SP.URB.TOTL.IN.ZS,12.262
+Sudan,SDN,1962,Urban population (% of total population),SP.URB.TOTL.IN.ZS,11.737
+Sudan,SDN,1961,Urban population (% of total population),SP.URB.TOTL.IN.ZS,11.232
+Sudan,SDN,1960,Urban population (% of total population),SP.URB.TOTL.IN.ZS,10.746
+Sudan,SDN,2001,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,36.2999992370605
+Sudan,SDN,2000,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,36.2999992370605
+Sudan,SDN,1999,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,36.2999992370605
+Sudan,SDN,1998,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,36.2999992370605
+Sudan,SDN,1997,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,36.2999992370605
+Sudan,SDN,1996,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,36.2999992370605
+Sudan,SDN,1995,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,36.2000007629395
+Sudan,SDN,1994,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,35.4000015258789
+Sudan,SDN,1993,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,34.5
+Sudan,SDN,1992,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,33.7000007629395
+Sudan,SDN,1991,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,33.7000007629395
+Sudan,SDN,1990,"Roads, paved (% of total roads)",IS.ROD.PAVE.ZS,33.7999992370605
