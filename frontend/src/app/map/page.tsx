@@ -26,7 +26,7 @@ export default function MapPage() {
     // Check if backend is available
     const checkBackend = async () => {
       try {
-        const response = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/conflict-proneness')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000"}/api/conflict-proneness`)
         if (response.ok) {
           setIsBackendAvailable(true)
         }

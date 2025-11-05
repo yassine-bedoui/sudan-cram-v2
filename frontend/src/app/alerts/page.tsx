@@ -37,7 +37,7 @@ export default function AlertsPage() {
     try {
       console.log('Fetching alerts from backend...')
       
-      const response = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/alerts')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000"}/api/alerts`)
       console.log('Response status:', response.status)
       
       if (!response.ok) {
