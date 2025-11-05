@@ -35,7 +35,7 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         // Fetch dashboard stats from new endpoint
-        const response = await fetch('http://localhost:8000/api/alerts/dashboard-stats')
+        const response = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/alerts/dashboard-stats')
         const data = await response.json()
 
         if (data && data.stats) {

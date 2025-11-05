@@ -21,7 +21,7 @@ export default function ReportsPage() {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:8000/api/generate-brief', {
+      const response = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/generate-brief', {
         method: 'POST',
       })
 

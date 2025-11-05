@@ -18,11 +18,11 @@ export function useMapData() {
     const fetchData = async () => {
       try {
         // Fetch conflict proneness data
-        const cpResponse = await fetch('http://localhost:8000/api/conflict-proneness')
+        const cpResponse = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/conflict-proneness')
         const cpData = await cpResponse.json()
 
         // Fetch combined risk data
-        const riskResponse = await fetch('http://localhost:8000/api/combined-risk')
+        const riskResponse = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/combined-risk')
         const riskData = await riskResponse.json()
 
         // Merge data by state name

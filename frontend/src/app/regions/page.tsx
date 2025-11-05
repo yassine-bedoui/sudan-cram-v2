@@ -69,7 +69,7 @@ export default function RegionsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/regions')
+        const response = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/api/regions')
         const result = await response.json()
         setData(result)
       } catch (error) {
