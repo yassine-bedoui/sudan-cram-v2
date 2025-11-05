@@ -191,6 +191,17 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
         
         const geoJsonLayer = L.geoJSON(geojsonData, {
           style: (feature) => {
+            // TypeScript guard for production builds
+            if (!feature || !feature.properties) {
+              return {
+                fillColor: '#6b7280',
+                weight: 2,
+                opacity: 1,
+                color: '#000000',
+                fillOpacity: 0.3
+              }
+            }
+
             const geoJsonName = getRegionName(feature.properties)
             const normalizedName = normalizeRegionName(geoJsonName)
             const regionInfo = regionData[normalizedName]
@@ -265,7 +276,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
         console.error('❌ [GEOJSON] Error:', err)
         setError(`GeoJSON failed: ${err.message}`)
       })
-  }, [mapReady])
+  }, [mapReady, regionData])
 
   // Update colors when backend data arrives
   useEffect(() => {
