@@ -19,9 +19,6 @@ interface RegionData {
 
 const SUDAN_CENTER: [number, number] = [15.5007, 32.5599]
 
-// Backend URL from environment variable
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
-
 // Helper functions
 const getRegionName = (properties: any): string => {
   return properties.shapeName || properties.ADM1_EN || properties.name || 'Unknown'
@@ -51,7 +48,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
   const mapRef = useRef<L.Map | null>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null)
-
+  
   const [regionData, setRegionData] = useState<Record<string, RegionData>>({})
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<Record<string, number>>({})
@@ -63,8 +60,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
     const fetchData = async () => {
       console.log('🔵 [DATA FETCH] Starting...')
       console.log('🔵 Backend available:', backendAvailable)
-      console.log('🔵 Backend URL:', BACKEND_URL)
-
+      
       if (!backendAvailable) {
         console.log('⚠️ [DATA FETCH] Backend unavailable, skipping')
         setLoading(false)
@@ -72,13 +68,13 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
       }
 
       try {
-        console.log(`🔵 [DATA FETCH] Fetching from ${BACKEND_URL}/api/conflict-proneness`)
-        const response = await fetch(`${BACKEND_URL}/api/conflict-proneness`)
-
+        console.log('🔵 [DATA FETCH] Fetching from http://localhost:8000/api/conflict-proneness')
+        const response = await fetch('http://localhost:8000/api/conflict-proneness')
+        
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
         }
-
+        
         const data = await response.json()
         console.log('✅ [DATA FETCH] Success! Received data:', data)
 
@@ -105,7 +101,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
 
           console.log('✅ [DATA FETCH] Processed regions:', Object.keys(regionMap))
           console.log('✅ [DATA FETCH] Stats:', categoryCount)
-
+          
           setRegionData(regionMap)
           setStats(categoryCount)
         } else {
@@ -127,13 +123,13 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log('🗺️ [MAP INIT] Starting...')
-
+      
       if (!mapContainerRef.current) {
         console.error('❌ [MAP INIT] Container ref is null')
         setError('Map container failed to load')
         return
       }
-
+      
       if (mapRef.current) {
         console.log('⚠️ [MAP INIT] Map already exists')
         return
@@ -174,14 +170,14 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
     console.log('📍 [GEOJSON] Loading trigger...')
     console.log('📍 Map ready:', mapReady)
     console.log('📍 GeoJSON layer exists:', !!geoJsonLayerRef.current)
-
+    
     if (!mapReady || geoJsonLayerRef.current) {
       console.log('⚠️ [GEOJSON] Skipping: map not ready or layer already exists')
       return
     }
 
     console.log('📍 [GEOJSON] Fetching /data/sudan-states.geojson...')
-
+    
     fetch('/data/sudan-states.geojson')
       .then(res => {
         console.log('📍 [GEOJSON] Response status:', res.status, res.statusText)
@@ -192,7 +188,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
         console.log('✅ [GEOJSON] Loaded successfully')
         console.log('📍 [GEOJSON] Features count:', geojsonData.features?.length)
         console.log('📍 [GEOJSON] Backend data keys:', Object.keys(regionData))
-
+        
         const geoJsonLayer = L.geoJSON(geojsonData, {
           style: (feature) => {
             // TypeScript guard for production builds
@@ -287,7 +283,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
     console.log('🎨 [COLOR UPDATE] Trigger...')
     console.log('🎨 GeoJSON layer exists:', !!geoJsonLayerRef.current)
     console.log('🎨 Backend data count:', Object.keys(regionData).length)
-
+    
     if (!geoJsonLayerRef.current || Object.keys(regionData).length === 0) {
       console.log('⚠️ [COLOR UPDATE] Skipping: no layer or no data')
       return
@@ -302,7 +298,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
         const geoJsonName = getRegionName(layer.feature.properties)
         const normalizedName = normalizeRegionName(geoJsonName)
         const regionInfo = regionData[normalizedName]
-
+        
         if (regionInfo) {
           matchedCount++
           console.log(`✅ [COLOR UPDATE] ${geoJsonName} → ${normalizedName} → ${regionInfo.riskLevel}`)
@@ -310,7 +306,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
           unmatchedRegions.push(geoJsonName)
           console.log(`❌ [COLOR UPDATE] No data for: ${geoJsonName} (normalized: ${normalizedName})`)
         }
-
+        
         layer.setStyle({
           fillColor: getRiskColor(regionInfo?.riskLevel || 'UNKNOWN'),
           weight: 2,
