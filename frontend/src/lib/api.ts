@@ -1,15 +1,29 @@
 // src/lib/api.ts
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
 
-// ========= MATCH YOUR ACTUAL BACKEND RESPONSE =========
+// ✅ Match backend response exactly
 interface AnalyticsResponse {
   summary: {
     total_regions: number;
+    avg_conflict_proneness: number;  // Fixed: was avg_conflict_risk
     avg_climate_risk: number;
-    avg_conflict_risk: number;
     total_events: number;
     total_fatalities: number;
     highest_risk_region: string;
+    high_proneness_count: number;
+  };
+  indicator_averages: {
+    avg_incidents: number;
+    avg_causes_pct: number;
+    avg_actors: number;
+    avg_trend: number;
+  };
+  distribution: {
+    EXTREME: number;
+    VERY_HIGH: number;
+    HIGH: number;
+    MODERATE: number;
+    LOW: number;
   };
   risk_distribution: {
     climate: Record<string, number>;
@@ -54,7 +68,6 @@ interface RegionsResponse {
   };
 }
 
-// ========= NEW: DASHBOARD INTERFACE =========
 interface DashboardStats {
   summary: {
     conflict_events: number;
@@ -83,7 +96,7 @@ interface DashboardStats {
     total_events: number;
     total_fatalities: number;
     avg_climate_risk: number;
-    avg_conflict_risk: number;
+    avg_conflict_proneness: number;  // Fixed: was avg_conflict_risk
   };
 }
 
@@ -121,7 +134,6 @@ class CRAMAPIService {
     return this.fetchWithTimeout(`${API_BASE_URL}/api/regions`);
   }
 
-  // ========= NEW: DASHBOARD METHOD =========
   async getDashboardStats(): Promise<DashboardStats> {
     return this.fetchWithTimeout(`${API_BASE_URL}/api/dashboard`);
   }

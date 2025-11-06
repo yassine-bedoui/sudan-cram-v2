@@ -22,9 +22,9 @@ export default function BivariateCards({ analytics }: BivariateCardsProps) {
           </div>
         </div>
         <div className="text-4xl font-bold text-blue-400 mb-2">
-          {summary.total_regions}
+          {summary.total_regions ?? 0}
         </div>
-        <div className="text-xs text-slate-500">Analyzed regions</div>
+        <div className="text-xs text-slate-500">States monitored</div>
       </div>
 
       {/* Average Climate Risk */}
@@ -36,9 +36,9 @@ export default function BivariateCards({ analytics }: BivariateCardsProps) {
           </div>
         </div>
         <div className="text-4xl font-bold text-amber-400 mb-2">
-          {summary.avg_climate_risk.toFixed(1)}
+          {(summary.avg_climate_risk ?? 0).toFixed(1)}
         </div>
-        <div className="text-xs text-slate-500">Drought severity index</div>
+        <div className="text-xs text-slate-500">Climate vulnerability</div>
       </div>
 
       {/* Average Conflict Risk */}
@@ -50,25 +50,23 @@ export default function BivariateCards({ analytics }: BivariateCardsProps) {
           </div>
         </div>
         <div className="text-4xl font-bold text-red-400 mb-2">
-          {summary.avg_conflict_risk.toFixed(1)}
+          {(summary.avg_conflict_proneness ?? 0).toFixed(1)}
         </div>
         <div className="text-xs text-slate-500">Political violence index</div>
       </div>
 
-      {/* Total Events & Fatalities */}
+      {/* Total Fatalities */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 shadow-xl hover:shadow-2xl transition-all">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-slate-400 text-sm font-medium">Conflict Impact (6mo)</span>
+          <span className="text-slate-400 text-sm font-medium">Total Fatalities</span>
           <div className="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center">
             <span className="text-2xl">📊</span>
           </div>
         </div>
         <div className="text-4xl font-bold text-purple-400 mb-2">
-          {summary.total_events.toLocaleString()}
+          {(summary.total_fatalities ?? 0).toLocaleString()}
         </div>
-        <div className="text-xs text-slate-500">
-          {summary.total_fatalities.toLocaleString()} fatalities
-        </div>
+        <div className="text-xs text-slate-500">Conflict impact</div>
       </div>
     </div>
   );
