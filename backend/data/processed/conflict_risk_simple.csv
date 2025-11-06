@@ -1,0 +1,20 @@
+region,conflict_risk_score,conflict_risk_level,incidents,fatalities
+North Darfur,10.0,EXTREME,349,8116
+Khartoum,6.69,VERY HIGH,300,2030
+North Kordofan,5.57,HIGH,245,2236
+South Darfur,5.29,HIGH,254,955
+Al Jazirah,3.96,MODERATE,185,1387
+West Kordofan,3.65,MODERATE,169,1497
+South Kordofan,3.16,MODERATE,157,862
+White Nile,2.35,MODERATE,125,567
+East Darfur,1.32,LOW,86,61
+Northern,1.28,LOW,84,57
+Red Sea,1.08,LOW,76,3
+River Nile,0.94,LOW,69,38
+Central Darfur,0.89,LOW,66,57
+Blue Nile,0.84,LOW,61,225
+West Darfur,0.76,LOW,60,53
+Sennar,0.69,LOW,55,167
+Abyei,0.5,LOW,47,117
+Kassala,0.24,LOW,37,13
+Gedaref,0.02,LOW,26,48

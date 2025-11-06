@@ -13,6 +13,8 @@ interface RegionData {
   name: string
   proneness_level: string
   proneness_score: number
+  conflict_risk_level: string  // ✅ NEW
+  conflict_risk_score: number  // ✅ NEW
   incidents: number
   fatalities: number
   climate_risk_level: string
@@ -28,11 +30,9 @@ const getRegionName = (properties: any): string => {
   return properties.shapeName || properties.ADM1_EN || properties.name || 'Unknown'
 }
 
-// ✅ FIXED: Proper color mapping with type safety
 const getRiskColor = (level: string | undefined, riskScore?: number): string => {
   if (!level && riskScore === undefined) return '#6b7280'
 
-  // For combined risk, use score-based coloring
   if (riskScore !== undefined) {
     if (riskScore >= 7.5) return '#8B0000'
     if (riskScore >= 6) return '#DC143C'
@@ -62,7 +62,6 @@ const getRiskColor = (level: string | undefined, riskScore?: number): string => 
   return colorMap[normalized] || '#6b7280'
 }
 
-// ✅ FIXED: Corrected state name normalization
 const normalizeRegionName = (name: string): string => {
   const nameMap: Record<string, string> = {
     'Abyei PCA': 'Abyei',
@@ -84,7 +83,7 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
   const [mapReady, setMapReady] = useState(false)
   const [selectedIndicator, setSelectedIndicator] = useState<RiskIndicator>('conflict-proneness')
 
-  // ✅ Fetch backend data
+  // ✅ Fetch backend data - NOW LOADS BOTH CP AND CR
   useEffect(() => {
     const fetchData = async () => {
       console.log('🔵 [DATA FETCH] Starting...')
@@ -98,40 +97,50 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
       }
 
       try {
-        console.log(`🔵 [DATA FETCH] Fetching from ${BACKEND_URL}/api/conflict-proneness`)
-        const response = await fetch(`${BACKEND_URL}/api/conflict-proneness`)
+        // ✅ Fetch both CP and CR in parallel
+        const [cpRes, crRes] = await Promise.all([
+          fetch(`${BACKEND_URL}/api/conflict-proneness`),
+          fetch(`${BACKEND_URL}/api/conflict-risk`)
+        ])
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        if (!cpRes.ok || !crRes.ok) {
+          throw new Error(`HTTP error: CP ${cpRes.status}, CR ${crRes.status}`)
         }
 
-        const data = await response.json()
-        console.log('✅ [DATA FETCH] Success! Received data:', data)
+        const cpData = await cpRes.json()
+        const crData = await crRes.json()
 
-        // ✅ Handle dict format
-        let regionsArray = Array.isArray(data) ? data : Object.values(data)
+        console.log('✅ [DATA FETCH] Success! CP regions:', Object.keys(cpData).length, 'CR regions:', Object.keys(crData).length)
 
-        if (!regionsArray || regionsArray.length === 0) {
-          throw new Error('No region data received')
-        }
-
+        // ✅ Merge both datasets
         const regionMap: Record<string, RegionData> = {}
 
-        regionsArray.forEach((region: any) => {
-          const stateName = region.region || region.name
-
-          regionMap[stateName] = {
-            name: stateName,
-            proneness_level: (region.proneness_level || 'UNKNOWN').toString().toUpperCase().trim(),
-            proneness_score: parseFloat(region.conflict_proneness || region.proneness_score || 0),
-            climate_risk_level: (region.climate_risk_level || region.cdi_category || 'UNKNOWN').toString().toUpperCase().trim(),
-            climate_risk_score: parseFloat(region.climate_risk_score || 0),
-            incidents: parseInt(region.high_risk_events || region.incidents || 0),
-            fatalities: parseInt(region.fatalities || 0),
+        // Start with CP data
+        Object.entries(cpData).forEach(([name, cp]: any) => {
+          regionMap[name] = {
+            name,
+            proneness_level: cp.proneness_level || 'UNKNOWN',
+            proneness_score: cp.proneness_score || 0,
+            conflict_risk_level: 'UNKNOWN',  // Will be filled from CR
+            conflict_risk_score: 0,           // Will be filled from CR
+            incidents: cp.high_risk_events || 0,
+            fatalities: cp.fatalities || 0,
+            climate_risk_level: cp.climate_risk_level || 'UNKNOWN',
+            climate_risk_score: cp.climate_risk_score || 0,
           }
         })
 
-        console.log('✅ [DATA FETCH] Processed regions:', Object.keys(regionMap).length)
+        // Merge CR data
+        Object.entries(crData).forEach(([name, cr]: any) => {
+          if (regionMap[name]) {
+            regionMap[name].conflict_risk_level = cr.conflict_risk_level
+            regionMap[name].conflict_risk_score = cr.conflict_risk_score
+            regionMap[name].incidents = cr.incidents  // Update with CR incidents
+            regionMap[name].fatalities = cr.fatalities  // Update with CR fatalities
+          }
+        })
+
+        console.log('✅ [DATA FETCH] Merged regions:', Object.keys(regionMap).length)
         setRegionData(regionMap)
       } catch (err: any) {
         console.error('❌ [DATA FETCH] Error:', err)
@@ -142,7 +151,7 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
     }
 
     fetchData()
-  }, [backendAvailable, initialIndicator])
+  }, [backendAvailable])
 
   // ✅ Initialize map
   useEffect(() => {
@@ -232,8 +241,11 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
 
             let fillColor = '#6b7280'
             if (regionInfo) {
-              if (selectedIndicator === 'conflict-risk' || selectedIndicator === 'conflict-proneness') {
+              // ✅ FIXED: Use conflict_risk_level for conflict-risk indicator
+              if (selectedIndicator === 'conflict-proneness') {
                 fillColor = getRiskColor(regionInfo.proneness_level)
+              } else if (selectedIndicator === 'conflict-risk') {
+                fillColor = getRiskColor(regionInfo.conflict_risk_level)
               } else if (selectedIndicator === 'climate-risk') {
                 fillColor = getRiskColor(regionInfo.climate_risk_level)
               } else if (selectedIndicator === 'combined-risk') {
@@ -272,8 +284,10 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
                 const target = e.target as L.Path
                 let fillColor = '#6b7280'
                 if (regionInfo) {
-                  if (selectedIndicator === 'conflict-risk' || selectedIndicator === 'conflict-proneness') {
+                  if (selectedIndicator === 'conflict-proneness') {
                     fillColor = getRiskColor(regionInfo.proneness_level)
+                  } else if (selectedIndicator === 'conflict-risk') {
+                    fillColor = getRiskColor(regionInfo.conflict_risk_level)
                   } else if (selectedIndicator === 'climate-risk') {
                     fillColor = getRiskColor(regionInfo.climate_risk_level)
                   } else if (selectedIndicator === 'combined-risk') {
@@ -306,8 +320,10 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
     const statsMap: Record<string, number> = {}
     Object.values(regionData).forEach(region => {
       let level = ''
-      if (selectedIndicator === 'conflict-risk' || selectedIndicator === 'conflict-proneness') {
+      if (selectedIndicator === 'conflict-proneness') {
         level = region.proneness_level
+      } else if (selectedIndicator === 'conflict-risk') {
+        level = region.conflict_risk_level  // ✅ NEW
       } else if (selectedIndicator === 'climate-risk') {
         level = region.climate_risk_level
       } else if (selectedIndicator === 'combined-risk') {
@@ -328,7 +344,7 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
     setStats(calculateStats())
   }, [calculateStats])
 
-  // ✅ Update colors when indicator changes - COMPLETE VERSION
+  // ✅ Update colors when indicator changes
   useEffect(() => {
     console.log('🎨 [COLOR UPDATE] Trigger...')
     console.log('🎨 GeoJSON layer exists:', !!geoJsonLayerRef.current)
@@ -350,19 +366,20 @@ export default function SudanMap({ backendAvailable, indicator: initialIndicator
 
         let fillColor = '#6b7280'
 
-        // ✅ FIXED: Proper handling of all indicators including combined-risk
         if (regionInfo) {
-          if (selectedIndicator === 'conflict-risk' || selectedIndicator === 'conflict-proneness') {
+          if (selectedIndicator === 'conflict-proneness') {
             fillColor = getRiskColor(regionInfo.proneness_level)
             console.log(`  📌 ${geoJsonName}: ${regionInfo.proneness_level} → ${fillColor}`)
+          } else if (selectedIndicator === 'conflict-risk') {
+            fillColor = getRiskColor(regionInfo.conflict_risk_level)  // ✅ NEW
+            console.log(`  📌 ${geoJsonName}: ${regionInfo.conflict_risk_level} → ${fillColor}`)
           } else if (selectedIndicator === 'climate-risk') {
             fillColor = getRiskColor(regionInfo.climate_risk_level)
             console.log(`  📌 ${geoJsonName}: ${regionInfo.climate_risk_level} → ${fillColor}`)
           } else if (selectedIndicator === 'combined-risk') {
-            // ✅ FIXED: Calculate average score and get color
             const avgScore = (parseFloat(String(regionInfo.proneness_score)) + parseFloat(String(regionInfo.climate_risk_score))) / 2
             fillColor = getRiskColor(undefined, avgScore)
-            console.log(`  📌 ${geoJsonName}: combined(${regionInfo.proneness_score}+${regionInfo.climate_risk_score})/2 = ${avgScore} → ${fillColor}`)
+            console.log(`  📌 ${geoJsonName}: combined = ${avgScore} → ${fillColor}`)
           }
         }
 
@@ -482,17 +499,33 @@ function getPopupContent(
     </h3>
     <div style="font-size: 12px;">`
 
-  if (indicator === 'conflict-proneness' || indicator === 'conflict-risk') {
+  if (indicator === 'conflict-proneness') {
     const color = getRiskColor(regionInfo.proneness_level)
     content += `
       <div style="margin: 6px 0; padding: 4px; background: ${color}22;">
-        <strong>${indicator === 'conflict-proneness' ? 'CONFLICT PRONENESS' : 'CONFLICT RISK'}:</strong> <span style="color: ${color};">${regionInfo.proneness_level}</span>
+        <strong>CONFLICT PRONENESS:</strong> <span style="color: ${color};">${regionInfo.proneness_level}</span>
       </div>
       <div style="margin: 6px 0; padding: 4px;">
         <strong>SCORE:</strong> ${regionInfo.proneness_score.toFixed(1)}/10
       </div>
       <div style="margin: 6px 0; padding: 4px;">
-        <strong>EVENTS (6M):</strong> ${regionInfo.incidents}
+        <strong>EVENTS:</strong> ${regionInfo.incidents}
+      </div>
+      <div style="margin: 6px 0; padding: 4px;">
+        <strong>FATALITIES:</strong> ${regionInfo.fatalities}
+      </div>
+    `
+  } else if (indicator === 'conflict-risk') {  // ✅ NEW
+    const color = getRiskColor(regionInfo.conflict_risk_level)
+    content += `
+      <div style="margin: 6px 0; padding: 4px; background: ${color}22;">
+        <strong>CONFLICT RISK:</strong> <span style="color: ${color};">${regionInfo.conflict_risk_level}</span>
+      </div>
+      <div style="margin: 6px 0; padding: 4px;">
+        <strong>SCORE:</strong> ${regionInfo.conflict_risk_score.toFixed(1)}/10
+      </div>
+      <div style="margin: 6px 0; padding: 4px;">
+        <strong>EVENTS:</strong> ${regionInfo.incidents}
       </div>
       <div style="margin: 6px 0; padding: 4px;">
         <strong>FATALITIES:</strong> ${regionInfo.fatalities}
@@ -506,9 +539,6 @@ function getPopupContent(
       </div>
       <div style="margin: 6px 0; padding: 4px;">
         <strong>SCORE:</strong> ${regionInfo.climate_risk_score.toFixed(1)}/10
-      </div>
-      <div style="margin: 6px 0; padding: 4px;">
-        <strong>CONFLICT PRONENESS:</strong> ${regionInfo.proneness_level}
       </div>
     `
   } else if (indicator === 'combined-risk') {
