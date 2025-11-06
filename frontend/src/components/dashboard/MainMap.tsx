@@ -1,6 +1,6 @@
 'use client'
 
-export default function MainMap({ indicator }) {
+export default function MainMap({ indicator }: { indicator: string }) {
   return (
     <section className="flex-1">
       <div className="bg-white border border-gray-300 h-full rounded overflow-hidden flex items-center justify-center">

@@ -5,13 +5,13 @@ export default function DownloadOptions() {
         Download & Export
       </h3>
       <div className="space-y-2">
-        <button className="w-full text-left text-xs text-orange-600 hover:text-orange-700 py-3 px-2 flex items-center gap-2 font-medium border border-gray-300 bg-white hover:bg-gray-50 rounded transition">
+        <button className="w-full text-left text-xs text-orange-600 hover:text-orange-700 py-2 flex items-center gap-2 font-medium transition">
           <i>📥</i>Download Data (CSV)
         </button>
-        <button className="w-full text-left text-xs text-orange-600 hover:text-orange-700 py-3 px-2 flex items-center gap-2 font-medium border border-gray-300 bg-white hover:bg-gray-50 rounded transition">
+        <button className="w-full text-left text-xs text-orange-600 hover:text-orange-700 py-2 flex items-center gap-2 font-medium transition">
           <i>📄</i>Generate Narrative Report
         </button>
-        <button className="w-full text-left text-xs text-orange-600 hover:text-orange-700 py-3 px-2 flex items-center gap-2 font-medium border border-gray-300 bg-white hover:bg-gray-50 rounded transition">
+        <button className="w-full text-left text-xs text-orange-600 hover:text-orange-700 py-2 flex items-center gap-2 font-medium transition">
           <i>🖼️</i>Export Map Image
         </button>
       </div>

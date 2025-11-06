@@ -1,9 +1,9 @@
-export default function RiskIndicators({ summary }) {
+export default function RiskIndicators({ summary }: { summary: any }) {
   return (
     <div className="border border-gray-300 p-4 bg-white rounded">
       <h3 className="text-xs uppercase tracking-widest text-gray-600 mb-4 flex justify-between items-center font-bold">
         Current Risk Indicators
-        <button className="text-orange-600 hover:text-orange-700 transition"><i>−</i></button>
+        <button className="text-orange-600 hover:text-orange-700 transition">−</button>
       </h3>
       
       <div className="grid grid-cols-2 gap-4">

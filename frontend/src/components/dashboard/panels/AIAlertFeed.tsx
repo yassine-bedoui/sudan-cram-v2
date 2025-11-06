@@ -24,15 +24,14 @@ export default function AIAlertFeed() {
   ]
 
   return (
-    <div className="border border-gray-300 p-4 bg-white rounded">
+    <div className="border border-gray-300 p-4 bg-white">
       <h3 className="text-xs uppercase tracking-widest text-gray-600 mb-4 flex justify-between items-center font-bold">
         <span><i className="mr-2">🔔</i>AI Alert Feed</span>
-        <button className="text-orange-600 hover:text-orange-700 transition text-lg">↻</button>
+        <button className="text-orange-600 hover:text-orange-700 transition">↻</button>
       </h3>
-
       <div className="space-y-3">
         {alerts.map(alert => (
-          <div key={alert.id} className={`border-l-4 ${alert.borderColor} pl-3 py-2 bg-orange-50 p-2 rounded`}>
+          <div key={alert.id} className={`border-l-4 ${alert.borderColor} pl-3 py-2`}>
             <p className="text-xs font-bold text-gray-900">{alert.title}</p>
             <p className="text-xs text-gray-600 mt-1">{alert.description}</p>
             <p className="text-xs text-gray-500 mt-2">{alert.timestamp}</p>

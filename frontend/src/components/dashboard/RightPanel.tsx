@@ -1,16 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import CountryHeader from './panels/CountryHeader'
-import RiskIndicators from './panels/RiskIndicators'
-import RiskChart from './panels/RiskChart'
+import { useState, useEffect } from 'react'
 import AIAlertFeed from './panels/AIAlertFeed'
+import RiskIndicators from './panels/RiskIndicators'
+import RiskTrendChart from './panels/RiskChart'
+import CountryHeader from './panels/CountryHeader'
 import Description from './panels/Description'
 import DownloadOptions from './panels/DownloadOptions'
 import DataSources from './panels/DataSources'
 
 export default function RightPanel() {
-  const [analytics, setAnalytics] = useState(null)
+  const [analytics, setAnalytics] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function RightPanel() {
     <aside className="w-80 space-y-4 overflow-y-auto">
       <CountryHeader />
       {analytics && <RiskIndicators summary={analytics.summary} />}
-      <RiskChart />
+      <RiskTrendChart />
       <AIAlertFeed />
       <Description />
       <DownloadOptions />
