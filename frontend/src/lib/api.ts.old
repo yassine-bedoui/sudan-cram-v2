@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:80
 interface AnalyticsResponse {
   summary: {
     total_regions: number;
-    avg_conflict_proneness: number;
+    avg_conflict_proneness: number;  // Fixed: was avg_conflict_risk
     avg_climate_risk: number;
     total_events: number;
     total_fatalities: number;
@@ -47,15 +47,12 @@ interface AnalyticsResponse {
   }>;
 }
 
-// ✅ FIXED: Added conflict_risk_score and conflict_risk_level
 interface Region {
   region: string;
   climate_risk_score: number;
   cdi_category: string;
   political_risk_score: number;
   risk_category: string;
-  conflict_risk_score: number;        // ✅ NEW
-  conflict_risk_level: string;        // ✅ NEW
   bivariate_category: string;
   events_6m: number;
   fatalities_6m: number;
@@ -99,7 +96,7 @@ interface DashboardStats {
     total_events: number;
     total_fatalities: number;
     avg_climate_risk: number;
-    avg_conflict_proneness: number;
+    avg_conflict_proneness: number;  // Fixed: was avg_conflict_risk
   };
 }
 
