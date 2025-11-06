@@ -1,52 +1,83 @@
 'use client'
 
-import Link from 'next/link'
+import React, { useState, useEffect } from 'react'
+import Header from '@/components/dashboard/Header'
+import Sidebar from '@/components/dashboard/Sidebar'
+import MainMap from '@/components/dashboard/MainMap'
+import RightPanel from '@/components/dashboard/RightPanel'
 
-export default function HomePage() {
+export default function DashboardPage() {
+  const [selectedRegion, setSelectedRegion] = useState('All Regions')
+  const [selectedDistrict, setSelectedDistrict] = useState('All Districts')
+  const [selectedDate, setSelectedDate] = useState('2025-10-01')
+  const [selectedIndicator, setSelectedIndicator] = useState('conflict-risk')
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-      <div className="text-center px-4">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-2xl">
-            <span className="text-white font-bold text-5xl">🇸🇩</span>
+    <div className="flex h-screen bg-white text-gray-900" style={{ fontFamily: "'Roboto', 'Open Sans', sans-serif" }}>
+      {/* Sidebar */}
+      <Sidebar 
+        selectedIndicator={selectedIndicator}
+        onSelectIndicator={setSelectedIndicator}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <Header />
+
+        {/* Filter Bar */}
+        <div className="border-b border-gray-200 bg-white px-6 py-4">
+          <p className="text-xs text-gray-600 mb-4">
+            Filter the map to visualize climate and conflict risks in Sudan by region and district.
+          </p>
+          <div className="flex gap-4">
+            <select 
+              value={selectedRegion}
+              onChange={(e) => setSelectedRegion(e.target.value)}
+              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900"
+            >
+              <option>All Regions</option>
+              <option>Khartoum</option>
+              <option>White Nile</option>
+              <option>Blue Nile</option>
+              <option>Gezira</option>
+              <option>Kassala</option>
+              <option>Red Sea</option>
+              <option>North Darfur</option>
+              <option>South Darfur</option>
+              <option>West Darfur</option>
+              <option>North Kordofan</option>
+              <option>South Kordofan</option>
+              <option>Sennar</option>
+            </select>
+
+            <select 
+              value={selectedDistrict}
+              onChange={(e) => setSelectedDistrict(e.target.value)}
+              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900"
+            >
+              <option>All Districts</option>
+              <option>Khartoum District</option>
+              <option>Omdurman</option>
+              <option>Bahri</option>
+            </select>
+
+            <input 
+              type="date" 
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900"
+            />
           </div>
         </div>
 
-        {/* Title */}
-        <h1 className="text-5xl font-bold text-white mb-4">Sudan CRAM v2.0</h1>
-        <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
-          Comprehensive conflict risk assessment and monitoring platform for Sudan
-        </p>
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto flex gap-6 p-6">
+          {/* Map Section */}
+          <MainMap indicator={selectedIndicator} />
 
-        {/* CTA Button */}
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl"
-        >
-          <span>Enter Dashboard</span>
-          <span>→</span>
-        </Link>
-
-        {/* Features */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-            <div className="text-4xl mb-3">📊</div>
-            <h3 className="text-white font-semibold mb-2">Real-time Data</h3>
-            <p className="text-sm text-slate-400">Live conflict monitoring across 19 Sudanese states</p>
-          </div>
-
-          <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-            <div className="text-4xl mb-3">🗺️</div>
-            <h3 className="text-white font-semibold mb-2">Interactive Maps</h3>
-            <p className="text-sm text-slate-400">Geospatial risk visualization and analysis</p>
-          </div>
-
-          <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-            <div className="text-4xl mb-3">📈</div>
-            <h3 className="text-white font-semibold mb-2">Forecasting</h3>
-            <p className="text-sm text-slate-400">Predictive analytics for conflict trends</p>
-          </div>
+          {/* Right Panel */}
+          <RightPanel />
         </div>
       </div>
     </div>
