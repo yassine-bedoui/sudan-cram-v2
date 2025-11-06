@@ -19,7 +19,8 @@ interface RegionData {
 
 const SUDAN_CENTER: [number, number] = [15.5007, 32.5599]
 
-// Helper functions
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
+
 const getRegionName = (properties: any): string => {
   return properties.shapeName || properties.ADM1_EN || properties.name || 'Unknown'
 }
@@ -27,15 +28,20 @@ const getRegionName = (properties: any): string => {
 const getRiskColor = (level: string): string => {
   const normalized = level.toString().toUpperCase().trim()
   const colorMap: Record<string, string> = {
-    'SEVERE': '#dc2626',
-    'HIGH': '#f97316',
-    'MEDIUM': '#eab308',
-    'LOW': '#22c55e',
+    'EXTREME': '#8B0000',
+    'VERY HIGH': '#DC143C',
+    'HIGH': '#FF6347',
+    'SEVERE': '#FF4500',
+    'MODERATE': '#FFD700',
+    'LOW': '#00A86B',
+    'ALERT': '#FFA500',
+    'WARNING': '#FFFF00',
+    'WATCH': '#90EE90',
+    'NORMAL': '#90EE90',
   }
   return colorMap[normalized] || '#6b7280'
 }
 
-// Normalize region names for backend matching
 const normalizeRegionName = (name: string): string => {
   const nameMap: Record<string, string> = {
     'Abyei PCA': 'Abyei',
@@ -48,19 +54,20 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
   const mapRef = useRef<L.Map | null>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null)
-  
+
   const [regionData, setRegionData] = useState<Record<string, RegionData>>({})
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<Record<string, number>>({})
   const [error, setError] = useState<string | null>(null)
   const [mapReady, setMapReady] = useState(false)
 
-  // Fetch backend data
+  // ✅ Fetch backend data
   useEffect(() => {
     const fetchData = async () => {
       console.log('🔵 [DATA FETCH] Starting...')
       console.log('🔵 Backend available:', backendAvailable)
-      
+      console.log('🔵 Backend URL:', BACKEND_URL)
+
       if (!backendAvailable) {
         console.log('⚠️ [DATA FETCH] Backend unavailable, skipping')
         setLoading(false)
@@ -68,46 +75,49 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
       }
 
       try {
-        console.log('🔵 [DATA FETCH] Fetching from http://localhost:8000/api/conflict-proneness')
-        const response = await fetch('http://localhost:8000/api/conflict-proneness')
-        
+        console.log(`🔵 [DATA FETCH] Fetching from ${BACKEND_URL}/api/conflict-proneness`)
+        const response = await fetch(`${BACKEND_URL}/api/conflict-proneness`)
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
         }
-        
+
         const data = await response.json()
         console.log('✅ [DATA FETCH] Success! Received data:', data)
 
-        if (data && data.regions) {
-          const categoryCount: Record<string, number> = {}
-          const regionMap: Record<string, RegionData> = {}
-
-          data.regions.forEach((region: any) => {
-            const stateName = region.region
-            const riskLevel = (region.level || 'UNKNOWN').toString().toUpperCase().trim()
-            const events = parseInt(region.events || 0)
-            const fatalities = parseInt(region.fatalities || 0)
-            const riskScore = parseFloat(region.risk_score || 0)
-
-            categoryCount[riskLevel] = (categoryCount[riskLevel] || 0) + 1
-            regionMap[stateName] = {
-              name: stateName,
-              riskLevel,
-              riskScore,
-              incidents: events,
-              fatalities
-            }
-          })
-
-          console.log('✅ [DATA FETCH] Processed regions:', Object.keys(regionMap))
-          console.log('✅ [DATA FETCH] Stats:', categoryCount)
-          
-          setRegionData(regionMap)
-          setStats(categoryCount)
-        } else {
-          console.error('❌ [DATA FETCH] Invalid data structure:', data)
-          setError('Invalid backend response')
+        // ✅ Handle both array and dict formats
+        let regionsArray = Array.isArray(data) ? data : Object.values(data)
+        
+        if (!regionsArray || regionsArray.length === 0) {
+          throw new Error('No region data received')
         }
+
+        const categoryCount: Record<string, number> = {}
+        const regionMap: Record<string, RegionData> = {}
+
+        regionsArray.forEach((region: any) => {
+          // ✅ Support both 'level' and 'risk_level' field names
+          const riskLevel = (region.level || region.risk_level || 'UNKNOWN').toString().toUpperCase().trim()
+          const stateName = region.region
+          const events = parseInt(region.events || 0)
+          const fatalities = parseInt(region.fatalities || 0)
+          const riskScore = parseFloat(region.risk_score || 0)
+
+          categoryCount[riskLevel] = (categoryCount[riskLevel] || 0) + 1
+          regionMap[stateName] = {
+            name: stateName,
+            riskLevel,
+            riskScore,
+            incidents: events,
+            fatalities
+          }
+        })
+
+        console.log('✅ [DATA FETCH] Processed regions:', Object.keys(regionMap).length)
+        console.log('✅ [DATA FETCH] Stats:', categoryCount)
+
+        setRegionData(regionMap)
+        setStats(categoryCount)
       } catch (err: any) {
         console.error('❌ [DATA FETCH] Error:', err)
         setError(`Backend error: ${err.message}`)
@@ -119,17 +129,17 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
     fetchData()
   }, [backendAvailable, indicator])
 
-  // Initialize map
+  // ✅ Initialize map
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log('🗺️ [MAP INIT] Starting...')
-      
+
       if (!mapContainerRef.current) {
         console.error('❌ [MAP INIT] Container ref is null')
         setError('Map container failed to load')
         return
       }
-      
+
       if (mapRef.current) {
         console.log('⚠️ [MAP INIT] Map already exists')
         return
@@ -165,19 +175,19 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
     }
   }, [])
 
-  // Load GeoJSON (always, even without backend data)
+  // ✅ Load GeoJSON
   useEffect(() => {
     console.log('📍 [GEOJSON] Loading trigger...')
     console.log('📍 Map ready:', mapReady)
     console.log('📍 GeoJSON layer exists:', !!geoJsonLayerRef.current)
-    
+
     if (!mapReady || geoJsonLayerRef.current) {
       console.log('⚠️ [GEOJSON] Skipping: map not ready or layer already exists')
       return
     }
 
     console.log('📍 [GEOJSON] Fetching /data/sudan-states.geojson...')
-    
+
     fetch('/data/sudan-states.geojson')
       .then(res => {
         console.log('📍 [GEOJSON] Response status:', res.status, res.statusText)
@@ -187,11 +197,10 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
       .then(geojsonData => {
         console.log('✅ [GEOJSON] Loaded successfully')
         console.log('📍 [GEOJSON] Features count:', geojsonData.features?.length)
-        console.log('📍 [GEOJSON] Backend data keys:', Object.keys(regionData))
-        
+        console.log('📍 [GEOJSON] Backend data keys:', Object.keys(regionData).length)
+
         const geoJsonLayer = L.geoJSON(geojsonData, {
           style: (feature) => {
-            // TypeScript guard for production builds
             if (!feature || !feature.properties) {
               return {
                 fillColor: '#6b7280',
@@ -278,12 +287,12 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
       })
   }, [mapReady, regionData])
 
-  // Update colors when backend data arrives
+  // ✅ Update colors when backend data arrives
   useEffect(() => {
     console.log('🎨 [COLOR UPDATE] Trigger...')
     console.log('🎨 GeoJSON layer exists:', !!geoJsonLayerRef.current)
     console.log('🎨 Backend data count:', Object.keys(regionData).length)
-    
+
     if (!geoJsonLayerRef.current || Object.keys(regionData).length === 0) {
       console.log('⚠️ [COLOR UPDATE] Skipping: no layer or no data')
       return
@@ -298,7 +307,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
         const geoJsonName = getRegionName(layer.feature.properties)
         const normalizedName = normalizeRegionName(geoJsonName)
         const regionInfo = regionData[normalizedName]
-        
+
         if (regionInfo) {
           matchedCount++
           console.log(`✅ [COLOR UPDATE] ${geoJsonName} → ${normalizedName} → ${regionInfo.riskLevel}`)
@@ -306,7 +315,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
           unmatchedRegions.push(geoJsonName)
           console.log(`❌ [COLOR UPDATE] No data for: ${geoJsonName} (normalized: ${normalizedName})`)
         }
-        
+
         layer.setStyle({
           fillColor: getRiskColor(regionInfo?.riskLevel || 'UNKNOWN'),
           weight: 2,
@@ -367,7 +376,7 @@ export default function SudanMap({ backendAvailable, indicator }: SudanMapProps)
       <div className="absolute bottom-6 right-6 z-[1000] bg-white border-2 border-black p-4 shadow-[4px_4px_0_0_#000] font-mono">
         <h4 className="font-bold text-sm mb-3 uppercase border-b-2 border-black pb-2">RISK LEVELS</h4>
         <div className="space-y-2.5">
-          {['SEVERE', 'HIGH', 'MEDIUM', 'LOW'].map(level => (
+          {['EXTREME', 'VERY HIGH', 'HIGH', 'MODERATE', 'LOW'].map(level => (
             <div key={level} className="flex items-center gap-3">
               <div className="w-6 h-6 border-2 border-black" style={{ backgroundColor: getRiskColor(level) }}></div>
               <span className="text-xs font-bold uppercase">{level} {stats[level] ? `(${stats[level]})` : ''}</span>
