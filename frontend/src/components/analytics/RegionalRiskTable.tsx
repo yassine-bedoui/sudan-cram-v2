@@ -128,10 +128,10 @@ export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-orange-600">
-                      {region.conflict_risk_score?.toFixed(2) || 'N/A'}
+                      {region.conflict_risk_score.toFixed(2)}
                     </span>
-                    <span className={`px-2 py-1 text-xs rounded-full text-white ${getBadgeColor(region.conflict_risk_level || 'LOW')}`}>
-                      {region.conflict_risk_level || 'N/A'}
+                    <span className={`px-2 py-1 text-xs rounded-full text-white ${getBadgeColor(region.conflict_risk_level)}`}>
+                      {region.conflict_risk_level}
                     </span>
                   </div>
                 </td>
@@ -146,11 +146,13 @@ export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
                     </span>
                   </div>
                 </td>
+                {/* ✅ FIXED: Remove fallback to .events (doesn't exist) */}
                 <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
-                  {region.events_6m || region.events || 0}
+                  {region.events_6m || 0}
                 </td>
+                {/* ✅ FIXED: Remove fallback to .fatalities (doesn't exist) */}
                 <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
-                  {region.fatalities_6m || region.fatalities || 0}
+                  {region.fatalities_6m || 0}
                 </td>
               </tr>
             ))}
