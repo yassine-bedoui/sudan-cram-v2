@@ -14,10 +14,10 @@ export default function Header() {
         </div>
 
         <nav className="flex items-center gap-6 text-xs uppercase tracking-wide font-medium">
-          <button className="text-gray-600 hover:text-gray-900">About</button>
-          <button className="text-gray-600 hover:text-gray-900">Home</button>
-          <button className="text-gray-600 hover:text-gray-900">Log In</button>
-          <button className="bg-orange-600 text-white px-4 py-2 hover:bg-orange-700 transition-colors font-medium">
+          <button className="text-gray-600 hover:text-orange-600 transition">About</button>
+          <button className="text-gray-600 hover:text-orange-600 transition">Home</button>
+          <button className="text-gray-600 hover:text-orange-600 transition">Log In</button>
+          <button className="border-2 border-orange-600 text-orange-600 px-4 py-2 hover:bg-orange-50 transition font-medium">
             Subscribe
           </button>
         </nav>
