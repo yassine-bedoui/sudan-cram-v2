@@ -9,7 +9,7 @@ interface RegionalRiskTableProps {
 }
 
 export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
-  const [sortBy, setSortBy] = useState<'climate' | 'conflict' | 'conflict-risk'>('conflict');
+  const [sortBy, setSortBy] = useState<'climate' | 'conflict'>('conflict');
 
   const getBadgeColor = (level: string): string => {
     const colors: Record<string, string> = {
@@ -26,16 +26,11 @@ export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
     return colors[level] || 'bg-gray-400';
   };
 
-  // ✅ FIXED: Added conflict-risk sorting option
   const sortedRegions = [...regions].sort((a, b) => {
     if (sortBy === 'climate') {
       return b.climate_risk_score - a.climate_risk_score;
     }
-    if (sortBy === 'conflict-risk') {
-      return b.conflict_risk_score - a.conflict_risk_score;
-    }
-    // Default: CP (conflict proneness / political_risk_score)
-    return b.political_risk_score - a.political_risk_score;
+    return b.conflict_risk_score - a.conflict_risk_score;
   });
 
   return (
@@ -44,8 +39,7 @@ export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
           Regional Risk Assessment
         </h2>
-        {/* ✅ FIXED: Added Conflict Risk button */}
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2">
           <button
             onClick={() => setSortBy('conflict')}
             className={`px-4 py-2 rounded-lg transition-colors ${
@@ -54,17 +48,7 @@ export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
             }`}
           >
-            Sort by Proneness
-          </button>
-          <button
-            onClick={() => setSortBy('conflict-risk')}
-            className={`px-4 py-2 rounded-lg transition-colors ${
-              sortBy === 'conflict-risk'
-                ? 'bg-orange-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            Sort by Conflict Risk
+            Sort by Conflict
           </button>
           <button
             onClick={() => setSortBy('climate')}
@@ -93,9 +77,6 @@ export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
                 Conflict Risk
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Proneness
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Events (6mo)
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -119,38 +100,26 @@ export default function RegionalRiskTable({ regions }: RegionalRiskTableProps) {
                     <span className="font-semibold text-amber-600">
                       {region.climate_risk_score.toFixed(2)}
                     </span>
-                    <span className={`px-2 py-1 text-xs rounded-full text-white ${getBadgeColor(region.cdi_category)}`}>
-                      {region.cdi_category}
+                    <span className={`px-2 py-1 text-xs rounded-full text-white ${getBadgeColor(region.climate_risk_level)}`}>
+                      {region.climate_risk_level}
                     </span>
                   </div>
                 </td>
-                {/* ✅ NEW: Conflict Risk column */}
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-orange-600">
-                      {region.conflict_risk_score?.toFixed(2) || 'N/A'}
-                    </span>
-                    <span className={`px-2 py-1 text-xs rounded-full text-white ${getBadgeColor(region.conflict_risk_level || 'LOW')}`}>
-                      {region.conflict_risk_level || 'N/A'}
-                    </span>
-                  </div>
-                </td>
-                {/* ✅ RENAMED: Conflict Proneness column */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-red-600">
-                      {region.political_risk_score.toFixed(2)}
+                      {region.conflict_risk_score.toFixed(2)}
                     </span>
-                    <span className={`px-2 py-1 text-xs rounded-full text-white ${getBadgeColor(region.risk_category)}`}>
-                      {region.risk_category}
+                    <span className={`px-2 py-1 text-xs rounded-full text-white ${getBadgeColor(region.conflict_risk_level)}`}>
+                      {region.conflict_risk_level}
                     </span>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
-                  {region.events_6m || region.events || 0}
+                  {region.events}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
-                  {region.fatalities_6m || region.fatalities || 0}
+                  {region.fatalities}
                 </td>
               </tr>
             ))}
