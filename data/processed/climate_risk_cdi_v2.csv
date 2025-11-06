@@ -1,0 +1,6 @@
+ADM1_NAME,spi,dsi,cdi_category,alert_level,climate_risk_score,explanation,action,indicator,method,updated_at,thresholds
+Khartoum,1.48,-0.35,NORMAL,0,2.0,No drought - regular monitoring,Regular monitoring,climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)"
+Darfur North,-0.99,-0.6,MILD,1,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)"
+Red Sea,-0.74,-0.89,MILD,1,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)"
+Gezira,-0.05,-0.67,MILD,1,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)"
+Kassala,-0.75,-0.6,MILD,1,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)"

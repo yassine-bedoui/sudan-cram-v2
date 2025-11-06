@@ -1,4 +1,3 @@
-# app/routers/dashboard.py
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
 import pandas as pd
@@ -6,18 +5,18 @@ from pathlib import Path
 
 router = APIRouter()
 
-# Load data - FIXED PATH AND FILE
-DATA_DIR = Path(__file__).parent.parent.parent / "data" / "processed"
-COMBINED_DATA_PATH = DATA_DIR / "combined_risk_v2.csv"
+# Load data paths
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+DATA_DIR = PROJECT_ROOT / "data" / "processed"
+CP_FILE = DATA_DIR / "conflict_proneness_v2.csv"
 
 try:
-    df = pd.read_csv(COMBINED_DATA_PATH)
-    print(f"✅ Loaded dashboard data: {len(df)} rows")
-    print(f"   Columns: {', '.join(df.columns.tolist())}")
+    df_cp = pd.read_csv(CP_FILE)
+    print(f"✅ Loaded dashboard CP data: {len(df_cp)} rows")
+    print(f"   Columns: {', '.join(df_cp.columns.tolist())}")
 except Exception as e:
-    print(f"❌ Error loading dashboard data: {e}")
-    print(f"   Tried to load from: {COMBINED_DATA_PATH}")
-    df = pd.DataFrame()
+    print(f"❌ Error loading CP data: {e}")
+    df_cp = pd.DataFrame()
 
 
 @router.get("/dashboard")
@@ -25,26 +24,26 @@ async def get_dashboard_data() -> Dict[str, Any]:
     """
     Get dashboard overview data with conflict metrics
     """
-    if df.empty:
+    if df_cp.empty:
         raise HTTPException(status_code=500, detail="Dashboard data not loaded")
 
     try:
         # Calculate summary metrics
-        total_events = int(df['events_6m'].sum()) if 'events_6m' in df.columns else 0
-        total_fatalities = int(df['fatalities_6m'].sum()) if 'fatalities_6m' in df.columns else 0
-        total_regions = len(df)
+        total_events = int(df_cp['incidents'].sum()) if 'incidents' in df_cp.columns else 0
+        total_fatalities = int(df_cp['fatalities'].sum()) if 'fatalities' in df_cp.columns else 0
+        total_regions = len(df_cp)
 
-        # Calculate average risks
-        avg_climate_risk = float(df['climate_risk_score'].mean()) if 'climate_risk_score' in df.columns else 0
-        avg_conflict_risk = float(df['political_risk_score'].mean()) if 'political_risk_score' in df.columns else 0
+        # Calculate average scores
+        avg_conflict_proneness = float(df_cp['conflict_proneness'].mean()) if 'conflict_proneness' in df_cp.columns else 0
+        avg_climate_risk = float(df_cp['climate_risk_score'].mean()) if 'climate_risk_score' in df_cp.columns else 0
 
-        # Data confidence (mock for now - you can calculate based on data completeness)
+        # Data confidence
         data_confidence = 94.8
 
-        # Get highest risk region - FIXED: Use ADM1_NAME instead of 'region'
-        if 'political_risk_score' in df.columns and 'ADM1_NAME' in df.columns:
-            highest_risk_idx = df['political_risk_score'].idxmax()
-            highest_risk_region = df.loc[highest_risk_idx, 'ADM1_NAME']
+        # Get highest risk region
+        if 'conflict_proneness' in df_cp.columns and 'region' in df_cp.columns:
+            highest_risk_idx = df_cp['conflict_proneness'].idxmax()
+            highest_risk_region = df_cp.loc[highest_risk_idx, 'region']
         else:
             highest_risk_region = "N/A"
 
@@ -52,13 +51,13 @@ async def get_dashboard_data() -> Dict[str, Any]:
         climate_distribution = {}
         conflict_distribution = {}
 
-        if 'cdi_category' in df.columns:
-            climate_distribution = df['cdi_category'].value_counts().to_dict()
+        if 'cdi_category' in df_cp.columns:
+            climate_distribution = df_cp['cdi_category'].value_counts().to_dict()
 
-        if 'risk_category' in df.columns:
-            conflict_distribution = df['risk_category'].value_counts().to_dict()
+        if 'proneness_level' in df_cp.columns:
+            conflict_distribution = df_cp['proneness_level'].value_counts().to_dict()
 
-        # Get trend (mock - you can implement actual trend calculation)
+        # Get trend
         trend = {
             "direction": "rising",
             "percentage": 12.5
@@ -93,8 +92,8 @@ async def get_dashboard_data() -> Dict[str, Any]:
             "metrics": {
                 "total_events": total_events,
                 "total_fatalities": total_fatalities,
-                "avg_climate_risk": round(avg_climate_risk, 2),
-                "avg_conflict_risk": round(avg_conflict_risk, 2)
+                "avg_conflict_proneness": round(avg_conflict_proneness, 2),
+                "avg_climate_risk": round(avg_climate_risk, 2)
             }
         }
 

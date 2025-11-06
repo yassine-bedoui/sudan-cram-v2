@@ -1,0 +1,24 @@
+ADM1_NAME,spi,dsi,cdi_category,alert_level,climate_risk_score,explanation,action,indicator,method,updated_at,thresholds,events_6m,fatalities_6m,political_risk_score,risk_category,combined_risk_score,compound_crisis
+Abyei,,,N/A,,0.0,,,,,,,21.0,55.0,5.272848254574738,HIGH,5.272848254574738,False
+Al Jazirah,,,N/A,,0.0,,,,,,,16.0,16.0,4.09108048609852,HIGH,4.09108048609852,False
+Bahr el Ghazal,,,N/A,,0.0,,,,,,,0.0,0.0,0.0,LOW,0.0,False
+Blue Nile,,,N/A,,0.0,,,,,,,15.0,50.0,5.007883557109051,HIGH,5.007883557109051,False
+Central Darfur,,,N/A,,0.0,,,,,,,39.0,44.0,5.428683551071992,HIGH,5.428683551071992,False
+Darfur North,-0.99,-0.6,MILD,1.0,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)",0.0,0.0,0.0,,4.0,False
+East Darfur,,,N/A,,0.0,,,,,,,41.0,19.0,4.754287929408066,HIGH,4.754287929408066,False
+Equatoria,,,N/A,,0.0,,,,,,,0.0,0.0,0.0,LOW,0.0,False
+Gedaref,,,N/A,,0.0,,,,,,,7.0,5.0,2.7534122772045984,MODERATE,2.7534122772045984,False
+Gezira,-0.05,-0.67,MILD,1.0,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)",0.0,0.0,0.0,,4.0,False
+Kassala,-0.75,-0.6,MILD,1.0,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)",13.0,11.0,3.677171103914392,MODERATE,4.0,False
+Khartoum,1.48,-0.35,NORMAL,0.0,2.0,No drought - regular monitoring,Regular monitoring,climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)",138.0,402.0,8.047474235635441,EXTREME,8.047474235635441,False
+North Darfur,,,N/A,,0.0,,,,,,,443.0,3172.0,10.0,EXTREME,10.0,False
+North Kordofan,,,N/A,,0.0,,,,,,,325.0,1634.0,9.753160701191558,EXTREME,9.753160701191558,False
+Northern,,,N/A,,0.0,,,,,,,43.0,52.0,5.625499415083999,HIGH,5.625499415083999,False
+Red Sea,-0.74,-0.89,MILD,1.0,4.0,Mild drought - early warning,"Issue early warning, increase observation",climate,CDI (SPI-3 + DSI),2025-10-26 12:37:26.256002,"SPI≤-1.0, DSI≤-1.0 (moderate); SPI≤-1.5, DSI≤-1.5 (severe)",24.0,3.0,3.060248580702927,MODERATE,4.0,False
+River Nile,,,N/A,,0.0,,,,,,,13.0,17.0,4.028459240063074,HIGH,4.028459240063074,False
+Sennar,,,N/A,,0.0,,,,,,,3.0,73.0,4.529677505103193,HIGH,4.529677505103193,False
+South Darfur,,,N/A,,0.0,,,,,,,159.0,560.0,8.415326887071053,EXTREME,8.415326887071053,False
+South Kordofan,,,N/A,,0.0,,,,,,,136.0,679.0,8.492356983493758,EXTREME,8.492356983493758,False
+West Darfur,,,N/A,,0.0,,,,,,,15.0,7.0,3.403009199829215,MODERATE,3.403009199829215,False
+West Kordofan,,,N/A,,0.0,,,,,,,240.0,1394.0,9.44113394797782,EXTREME,9.44113394797782,False
+White Nile,,,N/A,,0.0,,,,,,,49.0,123.0,6.435751243389864,VERY HIGH,6.435751243389864,False

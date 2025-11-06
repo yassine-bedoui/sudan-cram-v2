@@ -1,287 +1,117 @@
 # app/routers/analytics.py
 """
-Sudan CRAM Analytics Router - Bivariate Risk Data
-Implements Climate Risk + Conflict Risk as separate dimensions
+✅ Enhanced Analytics Router - Conflict Proneness v2 with all 4 indicators
 """
 from fastapi import APIRouter, HTTPException
 import pandas as pd
 from pathlib import Path
-import numpy as np
 
 router = APIRouter()
 
-# Paths to processed data files
-PROJECT_ROOT = Path(__file__).parent.parent.parent  # backend/
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data" / "processed"
-CLIMATE_DATA = DATA_DIR / "climate_risk_cdi_v2_real.csv"
-CONFLICT_DATA = DATA_DIR / "political_risk_v2.csv"
-ACLED_DATA = DATA_DIR / "acled_with_causes.csv"
+
+CP_FILE = DATA_DIR / "conflict_proneness_v2.csv"
 
 
-def load_bivariate_data():
-    """Load and merge climate + conflict risk data"""
+def load_conflict_proneness():
+    """Load CP v2 with all 4 indicators"""
     try:
-        climate_df = pd.read_csv(CLIMATE_DATA)
-        conflict_df = pd.read_csv(CONFLICT_DATA)
-
-        # Merge on region name
-        combined = climate_df.merge(
-            conflict_df[['ADM1_NAME', 'political_risk_score', 'events_6m', 'fatalities_6m', 'risk_category']],
-            on='ADM1_NAME',
-            how='left'
-        )
-
-        # Fill NaN values with safe defaults
-        combined['political_risk_score'] = combined['political_risk_score'].fillna(0)
-        combined['events_6m'] = combined['events_6m'].fillna(0)
-        combined['fatalities_6m'] = combined['fatalities_6m'].fillna(0)
-        combined['risk_category'] = combined['risk_category'].fillna('LOW')
-
-        return combined
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=404, detail=f"Data file not found: {e}")
+        df_cp = pd.read_csv(CP_FILE)
+        return df_cp
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"File not found: {CP_FILE}")
 
 
-def create_bivariate_category(climate_score, conflict_score):
-    """Create bivariate category from two scores"""
-    climate_score = climate_score if pd.notna(climate_score) else 0
-    conflict_score = conflict_score if pd.notna(conflict_score) else 0
-
-    if climate_score >= 7:
-        climate_level = "severe"
-    elif climate_score >= 5:
-        climate_level = "high"
-    elif climate_score >= 3:
-        climate_level = "medium"
-    else:
-        climate_level = "low"
-
-    if conflict_score >= 8:
-        conflict_level = "extreme"
-    elif conflict_score >= 6:
-        conflict_level = "very_high"
-    elif conflict_score >= 4:
-        conflict_level = "high"
-    elif conflict_score >= 2:
-        conflict_level = "moderate"
-    else:
-        conflict_level = "low"
-
-    return f"{climate_level}_climate_{conflict_level}_conflict"
-
-
-def get_color_for_risk(risk_category):
-    """Map risk category to color for map visualization"""
+def get_color_for_risk(level):
+    """Map risk level to color"""
     color_map = {
         "EXTREME": "#8B0000",
         "VERY HIGH": "#DC143C",
         "HIGH": "#FF6347",
-        "SEVERE": "#FF4500",
-        "ALERT": "#FFA500",
         "MODERATE": "#FFD700",
-        "WARNING": "#FFFF00",
-        "WATCH": "#90EE90",
         "LOW": "#00A86B",
-        "NORMAL": "#90EE90",
     }
-    return color_map.get(str(risk_category).upper(), "#6b7280")
-
-
-@router.get("/analytics")
-async def get_analytics():
-    """Get comprehensive bivariate analytics"""
-    df = load_bivariate_data()
-
-    df['bivariate_category'] = df.apply(
-        lambda row: create_bivariate_category(
-            row['climate_risk_score'],
-            row['political_risk_score']
-        ),
-        axis=1
-    )
-
-    total_regions = len(df)
-    avg_climate_risk = round(df['climate_risk_score'].mean(), 2)
-    avg_conflict_risk = round(df['political_risk_score'].mean(), 2)
-    total_events = int(df['events_6m'].sum())
-    total_fatalities = int(df['fatalities_6m'].sum())
-
-    df['combined_risk'] = (df['climate_risk_score'] + df['political_risk_score']) / 2
-    highest_risk_region = df.nlargest(1, 'combined_risk').iloc[0]['ADM1_NAME']
-
-    climate_categories = df['cdi_category'].value_counts().to_dict()
-    conflict_categories = df['risk_category'].value_counts().to_dict()
-
-    top_regions = df.nlargest(10, 'combined_risk')[[
-        'ADM1_NAME', 'climate_risk_score', 'political_risk_score',
-        'cdi_category', 'risk_category', 'events_6m', 'fatalities_6m'
-    ]].rename(columns={'ADM1_NAME': 'region'}).to_dict('records')
-
-    regional_data = df[[
-        'ADM1_NAME', 'climate_risk_score', 'political_risk_score',
-        'cdi_category', 'risk_category', 'bivariate_category',
-        'events_6m', 'fatalities_6m'
-    ]].rename(columns={'ADM1_NAME': 'region'}).to_dict('records')
-
-    return {
-        "summary": {
-            "total_regions": total_regions,
-            "avg_climate_risk": avg_climate_risk,
-            "avg_conflict_risk": avg_conflict_risk,
-            "total_events": total_events,
-            "total_fatalities": total_fatalities,
-            "highest_risk_region": highest_risk_region
-        },
-        "risk_distribution": {
-            "climate": climate_categories,
-            "conflict": conflict_categories
-        },
-        "top_regions": top_regions,
-        "regional_data": regional_data
-    }
+    return color_map.get(str(level).upper(), "#6b7280")
 
 
 @router.get("/conflict-proneness")
 async def get_conflict_proneness():
     """
-    ✅ Get bivariate climate + conflict risk data for map coloring
-    Returns dict keyed by region name with all risk data for frontend matching
+    ✅ Returns Conflict Proneness v2 with all 4 indicators breakdown
+    
+    Indicators:
+    - incidents: Event frequency (0-10 normalized)
+    - causes_pct: % of high-risk political/communal/resource events
+    - num_actors: Number of distinct organizations involved
+    - trend_delta: Recent trend (positive = increasing)
     """
-    df = load_bivariate_data()
-
-    df['bivariate_category'] = df.apply(
-        lambda row: create_bivariate_category(
-            row['climate_risk_score'],
-            row['political_risk_score']
-        ),
-        axis=1
-    )
-
+    df = load_conflict_proneness()
+    
     regions = {}
     for _, row in df.iterrows():
-        region_name = str(row['ADM1_NAME']).strip()
-        risk_category = str(row['risk_category']).strip().upper() if pd.notna(row['risk_category']) else "UNKNOWN"
-
-        # Fallback: categorize based on conflict score
-        if not risk_category or risk_category == 'NAN' or risk_category == 'NONE':
-            conflict_score = float(row['political_risk_score']) if pd.notna(row['political_risk_score']) else 0
-            if conflict_score >= 8:
-                risk_category = "EXTREME"
-            elif conflict_score >= 6:
-                risk_category = "VERY HIGH"
-            elif conflict_score >= 4:
-                risk_category = "HIGH"
-            elif conflict_score >= 2:
-                risk_category = "MODERATE"
-            else:
-                risk_category = "LOW"
-
-        color = get_color_for_risk(risk_category)
-
+        region_name = str(row['region']).strip()
+        
         regions[region_name] = {
             'region': region_name,
-            'level': risk_category,  # ✅ Frontend expects 'level'
-            'risk_level': risk_category,  # Fallback field name
-            'risk_score': round(float(row['political_risk_score']) if pd.notna(row['political_risk_score']) else 0, 2),
-            'color': color,
-            'events': int(row['events_6m']) if pd.notna(row['events_6m']) else 0,
-            'fatalities': int(row['fatalities_6m']) if pd.notna(row['fatalities_6m']) else 0,
-            'climate_risk_score': round(float(row['climate_risk_score']) if pd.notna(row['climate_risk_score']) else 0, 2),
-            'climate_risk_level': str(row['cdi_category']).strip() if pd.notna(row['cdi_category']) else 'UNKNOWN',
+            # Main Conflict Proneness score
+            'proneness_score': float(row['conflict_proneness']),
+            'proneness_level': str(row['proneness_level']).strip(),
+            'proneness_color': get_color_for_risk(row['proneness_level']),
+            # All 4 Indicators (breakdown)
+            'indicators': {
+                'incidents': {
+                    'value': int(row['incidents']),
+                    'label': 'Event Frequency'
+                },
+                'causes_pct': {
+                    'value': round(float(row['causes_pct']), 1),
+                    'label': 'High-Risk % (Political/Communal/Resource)'
+                },
+                'num_actors': {
+                    'value': int(row['num_actors']),
+                    'label': 'Distinct Organizations'
+                },
+                'trend_delta': {
+                    'value': int(row['trend_delta']),
+                    'label': 'Recent Trend (+ = Increasing)'
+                }
+            },
+            # Support metrics
+            'high_risk_events': int(row['high_risk_events']),
+            'fatalities': int(row['fatalities']),
+            'fatality_rate': round(float(row['fatality_rate']), 3),
+            'climate_risk_score': round(float(row['climate_risk_score']), 2),
+            'climate_risk_level': str(row['cdi_category']).strip()
         }
-
+    
     return regions
 
 
-@router.get("/regions")
-async def get_regions():
-    """Get all regions with detailed bivariate stats"""
-    df = load_bivariate_data()
-
-    df['bivariate_category'] = df.apply(
-        lambda row: create_bivariate_category(
-            row['climate_risk_score'],
-            row['political_risk_score']
-        ),
-        axis=1
-    )
-
-    df['combined_risk'] = (df['climate_risk_score'] + df['political_risk_score']) / 2
-    df = df.sort_values('combined_risk', ascending=False)
-
-    regions = []
-    for _, row in df.iterrows():
-        regions.append({
-            'region': row['ADM1_NAME'],
-            'climate_risk_score': round(float(row['climate_risk_score']), 2),
-            'climate_risk_level': row['cdi_category'],
-            'conflict_risk_score': round(float(row['political_risk_score']), 2),
-            'conflict_risk_level': row['risk_category'],
-            'bivariate_category': row['bivariate_category'],
-            'events': int(row['events_6m']),
-            'fatalities': int(row['fatalities_6m']),
-            'trend': 'stable'
-        })
-
+@router.get("/analytics")
+async def get_analytics():
+    """Get summary analytics with 4-indicator breakdowns"""
+    df = load_conflict_proneness()
+    
     return {
-        "regions": regions,
-        "total_count": len(regions),
-        "risk_summary": {
-            "climate": {
-                "ALERT": len(df[df['cdi_category'] == 'ALERT']),
-                "WARNING": len(df[df['cdi_category'] == 'WARNING']),
-                "WATCH": len(df[df['cdi_category'] == 'WATCH']),
-                "NORMAL": len(df[df['cdi_category'] == 'NORMAL'])
-            },
-            "conflict": {
-                "EXTREME": len(df[df['risk_category'] == 'EXTREME']),
-                "VERY HIGH": len(df[df['risk_category'] == 'VERY HIGH']),
-                "HIGH": len(df[df['risk_category'] == 'HIGH']),
-                "MODERATE": len(df[df['risk_category'] == 'MODERATE']),
-                "LOW": len(df[df['risk_category'] == 'LOW'])
-            }
+        "summary": {
+            "total_regions": len(df),
+            "avg_conflict_proneness": round(df['conflict_proneness'].mean(), 2),
+            "total_events": int(df['incidents'].sum()),
+            "total_fatalities": int(df['fatalities'].sum()),
+            "high_proneness_count": (df['proneness_level'].isin(['EXTREME', 'VERY HIGH'])).sum(),
+        },
+        "indicator_averages": {
+            "avg_incidents": round(df['incidents'].mean(), 1),
+            "avg_causes_pct": round(df['causes_pct'].mean(), 1),
+            "avg_actors": round(df['num_actors'].mean(), 1),
+            "avg_trend": round(df['trend_delta'].mean(), 1)
+        },
+        "distribution": {
+            'EXTREME': (df['proneness_level'] == 'EXTREME').sum(),
+            'VERY_HIGH': (df['proneness_level'] == 'VERY HIGH').sum(),
+            'HIGH': (df['proneness_level'] == 'HIGH').sum(),
+            'MODERATE': (df['proneness_level'] == 'MODERATE').sum(),
+            'LOW': (df['proneness_level'] == 'LOW').sum(),
         }
     }
-
-
-@router.get("/monthly-trend")
-async def get_monthly_trend():
-    """Get real monthly conflict trend data from ACLED"""
-    try:
-        df = pd.read_csv(ACLED_DATA)
-        df['event_date'] = pd.to_datetime(df['WEEK'], errors='coerce')
-        df['year_month'] = df['event_date'].dt.to_period('M')
-
-        monthly = df.groupby('year_month').agg({
-            'EVENTS': 'sum',
-            'FATALITIES': 'sum'
-        }).reset_index()
-
-        monthly.columns = ['month', 'events', 'fatalities']
-        monthly['month'] = monthly['month'].astype(str)
-        monthly['fatalities'] = monthly['fatalities'].fillna(0).astype(int)
-
-        summary = {
-            "total_months": len(monthly),
-            "avg_monthly_events": float(monthly['events'].mean()),
-            "avg_monthly_fatalities": float(monthly['fatalities'].mean()),
-            "trend": "increasing" if len(monthly) > 1 and monthly['events'].iloc[-1] > monthly['events'].iloc[0] else "decreasing"
-        }
-
-        return {
-            "data": monthly.to_dict('records'),
-            "summary": summary
-        }
-
-    except FileNotFoundError:
-        return {"data": [], "summary": {"error": "ACLED data not found"}}
-    except Exception as e:
-        return {"data": [], "summary": {"error": str(e)}}
-
-
-def load_data():
-    """Legacy function for backward compatibility"""
-    try:
-        return pd.read_csv(ACLED_DATA)
-    except FileNotFoundError:
-        return pd.DataFrame()

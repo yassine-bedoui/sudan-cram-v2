@@ -5,76 +5,77 @@ from pathlib import Path
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
-_df_cache = None
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+DATA_DIR = PROJECT_ROOT / "data" / "processed"
+ACLED_FILE = DATA_DIR / "acled_with_causes.csv"
+CP_FILE = DATA_DIR / "conflict_proneness_v2.csv"
 
-def load_data():
-    global _df_cache
-    if _df_cache is not None:
-        return _df_cache
-    
-    acled_path = Path("data/processed/acled_with_causes.csv")
-    if not acled_path.exists():
-        raise FileNotFoundError(f"Data not found at {acled_path}")
-    
-    df = pd.read_csv(acled_path)
-    _df_cache = df
+_acled_cache = None
+_cp_cache = None
+
+def load_acled_data():
+    """Load ACLED data with causes"""
+    global _acled_cache
+    if _acled_cache is not None:
+        return _acled_cache
+
+    if not ACLED_FILE.exists():
+        raise FileNotFoundError(f"Data not found at {ACLED_FILE}")
+
+    df = pd.read_csv(ACLED_FILE)
+    _acled_cache = df
     return df
 
-@router.get("", include_in_schema=True)  # Changed from "/" to ""
+def load_cp_data():
+    """Load Conflict Proneness data"""
+    global _cp_cache
+    if _cp_cache is not None:
+        return _cp_cache
+
+    if not CP_FILE.exists():
+        raise FileNotFoundError(f"Data not found at {CP_FILE}")
+
+    df = pd.read_csv(CP_FILE)
+    _cp_cache = df
+    return df
+
+@router.get("", include_in_schema=True)
 async def get_alerts(severity: str = "ALL", limit: int = 100):
-    """Get alerts from ACLED data"""
+    """Get alerts from Conflict Proneness data"""
     try:
-        df = load_data()
-        
-        # Group by ADMIN1 (region)
-        grouped = df.groupby('ADMIN1').agg({
-            'EVENTS': 'sum',
-            'FATALITIES': 'sum',
-            'WEEK': 'max'
-        }).reset_index()
-        
-        # Calculate risk (0-10)
-        grouped['risk_score'] = (grouped['EVENTS'] / grouped['EVENTS'].max() * 10).round(2)
-        
-        # Severity
-        def severity_level(risk):
-            if risk >= 7: return 'SEVERE'
-            elif risk >= 5: return 'HIGH'
-            elif risk >= 3: return 'MEDIUM'
-            return 'LOW'
-        
-        grouped['alert_level'] = grouped['risk_score'].apply(severity_level)
-        grouped = grouped.sort_values('risk_score', ascending=False)
-        
+        df = load_cp_data()
+
+        # Sort by conflict proneness
+        df_sorted = df.sort_values('conflict_proneness', ascending=False)
+
         # Format response
         alerts = []
-        for _, row in grouped.iterrows():
+        for _, row in df_sorted.iterrows():
             alerts.append({
-                'region': str(row['ADMIN1']),
-                'week': str(row['WEEK']),
-                'risk_score': float(row['risk_score']),
-                'event_count': int(row['EVENTS']),
-                'fatalities': int(row['FATALITIES']),
-                'alert_level': row['alert_level'],
-                'explanation': f"Events: {int(row['EVENTS'])}, Fatalities: {int(row['FATALITIES'])}, Risk: {float(row['risk_score']):.1f}"
+                'region': str(row['region']),
+                'proneness_score': float(row['conflict_proneness']),
+                'proneness_level': str(row['proneness_level']),
+                'incidents': int(row['incidents']),
+                'fatalities': int(row['fatalities']),
+                'causes_pct': float(row['causes_pct']),
+                'actors': int(row['num_actors']),
+                'explanation': f"Events: {int(row['incidents'])}, Fatalities: {int(row['fatalities'])}, CP: {float(row['conflict_proneness']):.1f}"
             })
-        
-        # Filter + limit
+
+        # Filter by severity
         if severity.upper() != 'ALL':
-            alerts = [a for a in alerts if a['alert_level'] == severity.upper()]
+            alerts = [a for a in alerts if a['proneness_level'].upper() == severity.upper()]
         alerts = alerts[:limit]
-        
+
         return {
             "success": True,
             "alerts": alerts,
             "total_alerts": len(alerts),
-            "data_source": "ACLED CSV",
-            "total_regions": len(grouped),
-            "total_events": int(df['EVENTS'].sum()),
-            "total_fatalities": int(df['FATALITIES'].sum()),
-            "source": "ACLED"
+            "total_regions": len(df),
+            "total_events": int(df['incidents'].sum()),
+            "total_fatalities": int(df['fatalities'].sum())
         }
-    
+
     except Exception as e:
         print(f"❌ ERROR: {e}")
         import traceback
@@ -85,29 +86,30 @@ async def get_alerts(severity: str = "ALL", limit: int = 100):
 async def get_conflict_proneness():
     """Get conflict proneness data for map visualization"""
     try:
-        df = load_data()
-        
-        # Calculate by region
+        df = load_cp_data()
+
         regions = []
-        for region in df['ADMIN1'].unique():
-            region_df = df[df['ADMIN1'] == region]
-            
-            risk_score = (region_df['EVENTS'].sum() / df['EVENTS'].max() * 10)
-            
+        for _, row in df.iterrows():
             regions.append({
-                'region': str(region),
-                'risk_score': round(float(risk_score), 2),
-                'events': int(region_df['EVENTS'].sum()),
-                'fatalities': int(region_df['FATALITIES'].sum()),
-                'level': 'SEVERE' if risk_score >= 7 else 'HIGH' if risk_score >= 5 else 'MEDIUM' if risk_score >= 3 else 'LOW'
+                'region': str(row['region']),
+                'proneness_score': round(float(row['conflict_proneness']), 2),
+                'proneness_level': str(row['proneness_level']),
+                'incidents': int(row['incidents']),
+                'fatalities': int(row['fatalities']),
+                'indicators': {
+                    'incidents': int(row['incidents']),
+                    'causes_pct': round(float(row['causes_pct']), 1),
+                    'actors': int(row['num_actors']),
+                    'trend': int(row['trend_delta'])
+                }
             })
-        
+
         return {
             "success": True,
-            "regions": sorted(regions, key=lambda x: x['risk_score'], reverse=True),
+            "regions": sorted(regions, key=lambda x: x['proneness_score'], reverse=True),
             "total_regions": len(regions)
         }
-    
+
     except Exception as e:
         print(f"❌ ERROR: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -116,28 +118,25 @@ async def get_conflict_proneness():
 async def get_dashboard_stats():
     """Get dashboard overview statistics"""
     try:
-        df = load_data()
-        
-        # Calculate stats
-        total_events = int(df['EVENTS'].sum())
-        total_fatalities = int(df['FATALITIES'].sum())
-        unique_regions = int(df['ADMIN1'].nunique())
-        
+        df = load_cp_data()
+
+        # Calculate stats (convert to native Python types)
+        total_events = int(df['incidents'].sum())
+        total_fatalities = int(df['fatalities'].sum())
+        unique_regions = int(len(df))
+
         # Find highest risk region
-        region_stats = df.groupby('ADMIN1').agg({
-            'EVENTS': 'sum',
-            'FATALITIES': 'sum'
-        }).reset_index()
-        highest_risk = region_stats.loc[region_stats['EVENTS'].idxmax()]
-        
-        # Calculate active alerts (HIGH + SEVERE regions)
-        region_stats['risk_score'] = (region_stats['EVENTS'] / region_stats['EVENTS'].max() * 10)
-        high_alerts = len(region_stats[region_stats['risk_score'] >= 5])
-        medium_alerts = len(region_stats[(region_stats['risk_score'] >= 3) & (region_stats['risk_score'] < 5)])
-        
-        # Data confidence (based on data completeness)
+        highest_risk_idx = df['conflict_proneness'].idxmax()
+        highest_risk = df.loc[highest_risk_idx]
+
+        # Calculate active alerts (HIGH + VERY HIGH + EXTREME regions)
+        high_alerts = int((df['proneness_level'] == 'HIGH').sum())
+        very_high_alerts = int((df['proneness_level'] == 'VERY HIGH').sum())
+        extreme_alerts = int((df['proneness_level'] == 'EXTREME').sum())
+
+        # Data confidence
         data_confidence = 94.8
-        
+
         return {
             "success": True,
             "stats": {
@@ -145,15 +144,17 @@ async def get_dashboard_stats():
                 "states_analyzed": unique_regions,
                 "risk_assessments": unique_regions,
                 "data_confidence": data_confidence,
-                "highest_risk_state": str(highest_risk['ADMIN1']),
-                "active_alerts": high_alerts + medium_alerts,
+                "highest_risk_state": str(highest_risk['region']),
+                "highest_risk_score": float(highest_risk['conflict_proneness']),
+                "active_alerts": high_alerts + very_high_alerts + extreme_alerts,
                 "high_alerts": high_alerts,
-                "medium_alerts": medium_alerts,
+                "very_high_alerts": very_high_alerts,
+                "extreme_alerts": extreme_alerts,
                 "trend_direction": "Rising",
                 "trend_percentage": 18
             }
         }
-    
+
     except Exception as e:
         print(f"❌ ERROR: {e}")
         import traceback

@@ -1,0 +1,20 @@
+ADM1_NAME,igad_cdi_mean,climate_risk_score,cdi_category,indicator,method,data_date,updated_at
+Abyei,0.14,0.28,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Al Jazirah,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Blue Nile,6.86,10.0,ALERT,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Central Darfur,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+East Darfur,0.07,0.14,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Gedaref,2.5,5.99,WARNING,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Kassala,0.27,0.53,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Khartoum,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+North Darfur,0.73,1.45,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+North Kordofan,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Northern,0.5,0.99,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Red Sea,0.55,1.11,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+River Nile,0.35,0.71,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Sennar,4.5,10.0,ALERT,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+South Darfur,0.01,0.03,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+South Kordofan,3.03,7.1,ALERT,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+West Darfur,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+West Kordofan,0.03,0.06,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+White Nile,2.07,5.13,WARNING,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
