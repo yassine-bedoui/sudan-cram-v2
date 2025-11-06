@@ -45,13 +45,13 @@ export default function RiskSummaryCards({ analytics }: RiskSummaryCardsProps) {
         </div>
       </div>
 
-      {/* Average Conflict Risk */}
+      {/* ✅ FIXED: Average Conflict Proneness (not avg_conflict_risk) */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Avg Conflict Risk</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Avg Conflict Proneness</p>
             <p className="text-3xl font-bold text-red-600">
-              {summary.avg_conflict_risk.toFixed(2)}
+              {summary.avg_conflict_proneness.toFixed(2)}
             </p>
           </div>
           <div className="text-red-500">
