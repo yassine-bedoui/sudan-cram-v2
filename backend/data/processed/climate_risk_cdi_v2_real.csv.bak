@@ -1,6 +1,6 @@
 ADM1_NAME,igad_cdi_mean,climate_risk_score,cdi_category,indicator,method,data_date,updated_at
-Abyei,0.14,0.28,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
-Al Jazirah,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Abyei PCA,0.14,0.28,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
+Aj Jazirah,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
 Blue Nile,6.86,10.0,ALERT,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
 Central Darfur,0.0,0.0,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31
 East Darfur,0.07,0.14,NORMAL,climate,IGAD East Africa Drought Watch CDI,2025-07-01,2025-10-31

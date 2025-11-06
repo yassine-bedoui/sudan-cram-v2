@@ -1,10 +1,11 @@
+# app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import alerts, conflict_proneness, analytics, reports
+from app.routers import alerts, analytics, reports, dashboard  
 
 app = FastAPI(
     title="Sudan CRAM API",
-    description="Conflict Risk Analysis & Monitoring System",
+    description="Conflict Risk Analysis & Monitoring System - Bivariate Climate + Conflict",
     version="2.0"
 )
 
@@ -20,23 +21,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register routers
-app.include_router(alerts.router)
-app.include_router(conflict_proneness.router)
+# Register routers - ORDER MATTERS!
+# Analytics first to ensure bivariate endpoints take priority
 app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(reports.router, prefix="/api", tags=["reports"])
+app.include_router(alerts.router)  # Keep for backwards compatibility
+app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
 
 @app.get("/")
 async def root():
     return {
-        "message": "Sudan CRAM API v2.0",
+        "message": "Sudan CRAM API v2.0 - Bivariate Risk Analysis",
         "status": "online",
         "endpoints": [
-            "/api/alerts",
-            "/api/conflict-proneness",
+            "/api/dashboard",
             "/api/analytics",
+            "/api/conflict-proneness",
             "/api/regions",
+            "/api/monthly-trend",
             "/api/generate-brief",
+            "/api/alerts",
             "/docs"
         ]
     }

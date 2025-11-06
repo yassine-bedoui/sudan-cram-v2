@@ -1,22 +1,15 @@
+// src/app/dashboard/page.tsx
 'use client'
 
 import React, { useEffect, useState } from 'react'
 import { Layout } from '@/components/layout/Layout'
-
-interface DashboardStats {
-  conflict_events: number
-  states_analyzed: number
-  risk_assessments: number
-  data_confidence: number
-  highest_risk_state: string
-  active_alerts: number
-  high_alerts: number
-  medium_alerts: number
-  trend_direction: string
-  trend_percentage: number
-}
+import { cramAPI } from '@/lib/api'
+import type { DashboardStats, AnalyticsResponse, RegionsResponse } from '@/lib/api'
+import BivariateCards from '@/components/analytics/BivariateCards'
+import BivariateTable from '@/components/analytics/BivariateTable'
 
 export default function DashboardPage() {
+  // ========= EXISTING STATE =========
   const [stats, setStats] = useState<DashboardStats>({
     conflict_events: 0,
     states_analyzed: 0,
@@ -31,20 +24,46 @@ export default function DashboardPage() {
   })
   const [loading, setLoading] = useState(true)
 
+  // ========= NEW BIVARIATE STATE =========
+  const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null)
+  const [regions, setRegions] = useState<RegionsResponse | null>(null)
+  const [bivariateLoading, setBivariateLoading] = useState(true)
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch dashboard stats from new endpoint
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000"}/api/alerts/dashboard-stats`)
-        const data = await response.json()
-
-        if (data && data.stats) {
-          setStats(data.stats)
+        // ========= FIXED DASHBOARD CALL =========
+        const dashboardData = await cramAPI.getDashboardStats()
+        console.log('Dashboard API response:', dashboardData)
+        
+        if (dashboardData) {
+          // Map the API response to your state structure
+          setStats({
+            conflict_events: dashboardData.summary.conflict_events,
+            states_analyzed: dashboardData.summary.states_analyzed,
+            risk_assessments: dashboardData.summary.risk_assessments,
+            data_confidence: dashboardData.summary.data_confidence,
+            highest_risk_state: dashboardData.quick_insights.highest_risk_state,
+            active_alerts: dashboardData.quick_insights.active_alerts,
+            high_alerts: dashboardData.quick_insights.alert_breakdown.high,
+            medium_alerts: dashboardData.quick_insights.alert_breakdown.medium,
+            trend_direction: dashboardData.quick_insights.trend.direction,
+            trend_percentage: dashboardData.quick_insights.trend.percentage
+          })
         }
+
+        // ========= NEW BIVARIATE CALLS =========
+        const [analyticsData, regionsData] = await Promise.all([
+          cramAPI.getAnalytics(),
+          cramAPI.getRegions()
+        ])
+        setAnalytics(analyticsData)
+        setRegions(regionsData)
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error)
       } finally {
         setLoading(false)
+        setBivariateLoading(false)
       }
     }
 
@@ -54,15 +73,15 @@ export default function DashboardPage() {
   return (
     <Layout>
       <div className="space-y-8">
-        {/* Page Header */}
+        {/* ========= EXISTING HEADER ========= */}
         <div>
           <h1 className="text-4xl font-bold text-white mb-2">Dashboard Overview</h1>
           <p className="text-lg text-slate-400">Real-time Sudan conflict risk assessment</p>
         </div>
 
-        {/* Key Metrics Grid */}
+        {/* ========= EXISTING KEY METRICS ========= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Conflict Events Card */}
+          {/* Existing cards - KEEP AS IS */}
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 shadow-xl hover:shadow-2xl transition-all">
             <div className="flex items-center justify-between mb-4">
               <span className="text-slate-400 text-sm font-medium">Conflict Events</span>
@@ -81,7 +100,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* States Analyzed Card */}
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 shadow-xl hover:shadow-2xl transition-all">
             <div className="flex items-center justify-between mb-4">
               <span className="text-slate-400 text-sm font-medium">States Analyzed</span>
@@ -100,7 +118,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Risk Assessments Card */}
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 shadow-xl hover:shadow-2xl transition-all">
             <div className="flex items-center justify-between mb-4">
               <span className="text-slate-400 text-sm font-medium">Risk Assessments</span>
@@ -119,7 +136,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Data Confidence Card */}
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700 shadow-xl hover:shadow-2xl transition-all">
             <div className="flex items-center justify-between mb-4">
               <span className="text-slate-400 text-sm font-medium">Data Confidence</span>
@@ -139,7 +155,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick Insights Card */}
+        {/* ========= EXISTING QUICK INSIGHTS ========= */}
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 shadow-xl">
           <h2 className="text-2xl font-bold text-white mb-6">Quick Insights</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -175,7 +191,31 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* ========= NEW BIVARIATE SECTION ========= */}
+        <div className="border-t-2 border-slate-700 pt-8">
+          <div className="mb-6">
+            <h2 className="text-3xl font-bold text-white mb-2">Bivariate Risk Analysis</h2>
+            <p className="text-slate-400">Climate + Conflict dual-dimension assessment</p>
+          </div>
+
+          {bivariateLoading ? (
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-12 border border-slate-700 text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-500 mx-auto mb-4"></div>
+              <p className="text-slate-400">Loading bivariate analytics...</p>
+            </div>
+          ) : analytics && regions ? (
+            <>
+              <BivariateCards analytics={analytics} />
+              <BivariateTable regions={regions.regions} />
+            </>
+          ) : (
+            <div className="bg-red-900/20 border border-red-800 rounded-lg p-6">
+              <p className="text-red-400">Failed to load bivariate data</p>
+            </div>
+          )}
+        </div>
+
+        {/* ========= EXISTING RECENT ACTIVITY ========= */}
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700 shadow-xl">
           <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
           <div className="space-y-4">
