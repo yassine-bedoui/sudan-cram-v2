@@ -1,3 +1,4 @@
+// src/app/analytics/page.tsx
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -9,7 +10,7 @@ interface AnalyticsData {
     total_events: number
     total_fatalities: number
     avg_climate_risk: number
-    avg_conflict_risk: number
+    avg_conflict_proneness: number  // ✅ FIXED: Changed from avg_conflict_risk
     highest_risk_region: string
     total_regions: number
   }
@@ -66,7 +67,7 @@ export default function AnalyticsPage() {
     const fetchAllData = async () => {
       try {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000"
-        
+
         // ✅ Fetch analytics data
         const analyticsResponse = await fetch(`${backendUrl}/api/analytics`)
         if (!analyticsResponse.ok) throw new Error('Failed to fetch analytics')
@@ -79,7 +80,7 @@ export default function AnalyticsPage() {
         const trendData = await trendResponse.json()
         console.log('✅ Monthly trend data:', trendData)
         setMonthlyTrend(trendData.data)
-        
+
       } catch (err) {
         console.error('❌ Fetch error:', err)
         setError(err instanceof Error ? err.message : 'Unknown error')
@@ -145,12 +146,12 @@ export default function AnalyticsPage() {
 
           <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
             <div className="text-slate-400 text-sm mb-2">Avg Climate Risk</div>
-            <div className="text-3xl font-bold text-amber-400">{data.summary.avg_climate_risk.toFixed(1)}</div>
+            <div className="text-3xl font-bold text-amber-400">{(data.summary.avg_climate_risk ?? 0).toFixed(1)}</div>
           </div>
 
           <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
             <div className="text-slate-400 text-sm mb-2">Avg Conflict Risk</div>
-            <div className="text-3xl font-bold text-orange-400">{data.summary.avg_conflict_risk.toFixed(1)}</div>
+            <div className="text-3xl font-bold text-orange-400">{(data.summary.avg_conflict_proneness ?? 0).toFixed(1)}</div>
           </div>
 
           <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
