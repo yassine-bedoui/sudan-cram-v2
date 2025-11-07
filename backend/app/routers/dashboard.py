@@ -99,3 +99,71 @@ async def get_dashboard_data() -> Dict[str, Any]:
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating dashboard data: {str(e)}")
+
+
+@router.get("/map-data")
+async def get_map_data(indicator: str = "conflict-risk") -> Dict[str, float]:
+    """
+    Get risk scores by region for map visualization
+    
+    Parameters:
+    - indicator: "conflict-risk", "climate-risk", or "combined-risk"
+    """
+    if df_cp.empty:
+        raise HTTPException(status_code=500, detail="Dashboard data not loaded")
+
+    try:
+        # Check if region column exists
+        if 'region' not in df_cp.columns:
+            raise HTTPException(status_code=500, detail="Region column not found in data")
+
+        # Select the appropriate risk metric
+        if indicator == "climate-risk":
+            if 'climate_risk_score' not in df_cp.columns:
+                raise HTTPException(status_code=500, detail="Climate risk data not available")
+            risk_col = 'climate_risk_score'
+        elif indicator == "combined-risk":
+            # Calculate combined risk (average of conflict + climate)
+            if 'conflict_proneness' in df_cp.columns and 'climate_risk_score' in df_cp.columns:
+                df_temp = df_cp.copy()
+                df_temp['combined'] = (df_temp['conflict_proneness'] + df_temp['climate_risk_score']) / 2
+                risk_col = 'combined'
+            else:
+                raise HTTPException(status_code=500, detail="Required data for combined risk not available")
+        else:
+            # Default: conflict risk
+            if 'conflict_proneness' not in df_cp.columns:
+                raise HTTPException(status_code=500, detail="Conflict proneness data not available")
+            risk_col = 'conflict_proneness'
+
+        # Group by region and calculate average
+        if indicator == "combined-risk":
+            result = df_temp.groupby('region')[risk_col].mean().round(1).to_dict()
+        else:
+            result = df_cp.groupby('region')[risk_col].mean().round(1).to_dict()
+
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating map data: {str(e)}")
+
+
+@router.get("/regions")
+async def get_regions() -> Dict[str, list]:
+    """
+    Get list of all regions
+    """
+    if df_cp.empty:
+        raise HTTPException(status_code=500, detail="Dashboard data not loaded")
+
+    try:
+        if 'region' not in df_cp.columns:
+            raise HTTPException(status_code=500, detail="Region column not found")
+
+        regions = sorted(df_cp['region'].dropna().unique().tolist())
+        return {"regions": regions}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting regions: {str(e)}")

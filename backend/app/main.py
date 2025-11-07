@@ -1,7 +1,7 @@
 # app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import alerts, analytics, reports, dashboard  
+from app.routers import alerts, analytics, reports, dashboard
 
 app = FastAPI(
     title="Sudan CRAM API",
@@ -40,6 +40,7 @@ async def root():
             "/api/conflict-proneness",
             "/api/regions",
             "/api/monthly-trend",
+            "/api/map-data",  # ADDED THIS LINE
             "/api/generate-brief",
             "/api/alerts",
             "/docs"

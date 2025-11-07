@@ -1,21 +1,20 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next'
+import './globals.css'
+import 'leaflet/dist/leaflet.css'  // ADD THIS LINE
 
 export const metadata: Metadata = {
-  title: "Sudan CRAM v2.0",
-  description: "Conflict Risk Assessment & Monitoring System for Sudan",
-};
+  title: 'Sudan CRAM - Climate & Conflict Risk',
+  description: 'Sudan Climate & Conflict Risk Assessment Monitor',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
-  );
+  )
 }
