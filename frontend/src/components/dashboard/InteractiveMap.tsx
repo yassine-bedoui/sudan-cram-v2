@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { normalizeRegionName } from '@/utils/regionNameMapping'
 
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
@@ -22,15 +23,13 @@ export default function InteractiveMap({ indicator }: { indicator: string }) {
   const [geoData, setGeoData] = useState(null)
   const [riskData, setRiskData] = useState<any>(null)
 
-  // Sudan center coordinates
   const center = [15.5007, 32.5599]
   const zoom = 6
 
   useEffect(() => {
-    // Fetch Sudan GeoJSON boundaries
     const fetchGeoData = async () => {
       try {
-        const res = await fetch('/data/sudan-states.geojson') // FIXED: Changed filename
+        const res = await fetch('/data/sudan-states.geojson')
         const data = await res.json()
         setGeoData(data)
       } catch (err) {
@@ -42,7 +41,6 @@ export default function InteractiveMap({ indicator }: { indicator: string }) {
   }, [])
 
   useEffect(() => {
-    // Fetch risk data based on selected indicator
     const fetchRiskData = async () => {
       try {
         const res = await fetch(
@@ -59,17 +57,17 @@ export default function InteractiveMap({ indicator }: { indicator: string }) {
   }, [indicator])
 
   const getColor = (value: number) => {
-    if (!value) return '#cccccc'
-    if (value > 7) return '#dc2626' // Severe - Red
-    if (value > 5) return '#f97316' // High - Orange
-    if (value > 3) return '#fbbf24' // Medium - Yellow
-    return '#6b7280' // Low - Gray
-  }
+	if (value <= 2) return '#22c55e'      // Bold green - very low
+	if (value <= 4) return '#86efac'      // Light green - low-medium
+	if (value <= 6) return '#fbbf24'      // Yellow - medium
+	if (value <= 8) return '#f97316'      // Orange - high
+	return '#dc2626'                      // Red - severe
+}
 
   const style = (feature: any) => {
-    // Try multiple property names (GeoJSON files vary)
-    const regionName = feature.properties.shapeName || feature.properties.name || feature.properties.NAME_1
-    const riskValue = riskData?.[regionName] || 0
+    const geoName = feature.properties.shapeName
+    const normalizedName = normalizeRegionName(geoName)
+    const riskValue = riskData?.[normalizedName] || 0
 
     return {
       fillColor: getColor(riskValue),
@@ -81,15 +79,25 @@ export default function InteractiveMap({ indicator }: { indicator: string }) {
   }
 
   const onEachFeature = (feature: any, layer: any) => {
-    const regionName = feature.properties.shapeName || feature.properties.name || feature.properties.NAME_1
-    const riskValue = riskData?.[regionName] || 'N/A'
+    const geoName = feature.properties.shapeName
+    const normalizedName = normalizeRegionName(geoName)
+    const riskValue = riskData?.[normalizedName]?.toFixed(1) || 'N/A'
 
     layer.bindPopup(`
-      <div style="font-family: monospace;">
-        <strong>${regionName}</strong><br/>
-        Risk Score: <strong>${riskValue}</strong>
+      <div style="font-family: monospace; padding: 5px;">
+        <strong style="font-size: 11px;">${normalizedName}</strong><br/>
+        Risk Score: <strong style="color: #EA580C; font-size: 14px;">${riskValue}</strong> / 10
       </div>
     `)
+
+    layer.on({
+      mouseover: (e: any) => {
+        e.target.setStyle({ weight: 3, color: '#EA580C' })
+      },
+      mouseout: (e: any) => {
+        e.target.setStyle({ weight: 2, color: '#ffffff' })
+      },
+    })
   }
 
   return (
