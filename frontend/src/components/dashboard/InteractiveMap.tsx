@@ -56,15 +56,14 @@ export default function InteractiveMap({ indicator }: { indicator: string }) {
     fetchRiskData()
   }, [indicator])
 
-  // UPDATED: New color palette
   const getColor = (value: number) => {
-    if (value === undefined || value === null || value === 0) return '#f3f4f6' // No data - light gray
-    if (value >= 8) return '#ED4447'  // Critical (8-10)
-    if (value >= 6) return '#F37420'  // Very High (6-8)
-    if (value >= 4) return '#E7B412'  // High (4-6)
-    if (value >= 2) return '#11182A'  // Medium (2-4)
-    if (value >= 1) return '#394153'  // Low (1-2)
-    return '#4A5464'                   // Very Low (0-1)
+    if (value === undefined || value === null || value === 0) return '#f3f4f6'
+    if (value >= 8) return '#ED4447'
+    if (value >= 6) return '#F37420'
+    if (value >= 4) return '#E7B412'
+    if (value >= 2) return '#11182A'
+    if (value >= 1) return '#394153'
+    return '#4A5464'
   }
 
   const style = (feature: any) => {
@@ -86,21 +85,38 @@ export default function InteractiveMap({ indicator }: { indicator: string }) {
     const normalizedName = normalizeRegionName(geoName)
     const riskValue = riskData?.[normalizedName]?.toFixed(1) || 'N/A'
 
-    layer.bindPopup(`
-      <div style="font-family: Inter, sans-serif; padding: 8px;">
-        <strong style="font-size: 12px; text-transform: uppercase;">${normalizedName}</strong><br/>
-        <span style="color: #6b7280; font-size: 11px;">Risk Score:</span> 
-        <strong style="color: #F37420; font-size: 14px;">${riskValue}</strong> 
-        <span style="color: #9ca3af; font-size: 11px;">/ 10</span>
-      </div>
-    `)
+    // ONLY Tooltip (shows on hover)
+    layer.bindTooltip(
+      `<div style="font-family: Inter, sans-serif; padding: 4px; text-align: center;">
+        <strong style="font-size: 11px; text-transform: uppercase; display: block; margin-bottom: 4px;">${normalizedName}</strong>
+        <span style="font-size: 16px; font-weight: 700; color: #F37420;">${riskValue}</span>
+        <span style="font-size: 10px; color: #9ca3af;"> / 10</span>
+      </div>`,
+      {
+        permanent: false,
+        direction: 'top',
+        className: 'custom-tooltip',
+        opacity: 0.95
+      }
+    )
 
+    // REMOVED: bindPopup() - No click popup anymore
+
+    // Hover effects
     layer.on({
       mouseover: (e: any) => {
-        e.target.setStyle({ weight: 3, color: '#F37420' })
+        e.target.setStyle({ 
+          weight: 3, 
+          color: '#F37420',
+          fillOpacity: 1
+        })
       },
       mouseout: (e: any) => {
-        e.target.setStyle({ weight: 2, color: '#ffffff' })
+        e.target.setStyle({ 
+          weight: 2, 
+          color: '#ffffff',
+          fillOpacity: 0.8
+        })
       },
     })
   }
