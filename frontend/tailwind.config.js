@@ -12,15 +12,21 @@ module.exports = {
         foreground: 'var(--foreground)',
         surface: 'var(--surface)',
         border: 'var(--border)',
-        
+
         // Risk colors (functional)
         'risk-low': 'var(--color-low)',
         'risk-medium': 'var(--color-medium)',
         'risk-high': 'var(--color-high)',
         'risk-severe': 'var(--color-severe)',
       },
-      
-      // BRUTALIST: Override all border radius to 0
+
+      // Use Inter font instead of monospace
+      fontFamily: {
+        sans: ['var(--font-inter)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['"Courier New"', 'monospace'], // Keep monospace for special cases (like risk scores)
+      },
+
+      // Keep sharp borders
       borderRadius: {
         'none': '0',
         'DEFAULT': '0',
@@ -30,52 +36,40 @@ module.exports = {
         'xl': '0',
         '2xl': '0',
         '3xl': '0',
-        'full': '0', // Even 'full' becomes 0
+        'full': '0',
       },
-      
-      // BRUTALIST: Add hard shadows (no blur)
+
+      // Clean shadows
       boxShadow: {
         'none': 'none',
-        'sm': '2px 2px 0 var(--border)',
-        'DEFAULT': '4px 4px 0 var(--border)',
-        'md': '4px 4px 0 var(--border)',
-        'lg': '6px 6px 0 var(--border)',
-        'xl': '8px 8px 0 var(--border)',
-        '2xl': '10px 10px 0 var(--border)',
-        'inner': 'inset 2px 2px 0 var(--border)',
+        'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'DEFAULT': '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+        'md': '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+        'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+        'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1)',
+        '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+        'inner': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
       },
-      
-      // BRUTALIST: Monospace fonts
-      fontFamily: {
-        sans: ['"Courier New"', '"IBM Plex Mono"', 'monospace'],
-        mono: ['"Courier New"', '"IBM Plex Mono"', 'monospace'],
-      },
-      
-      // BRUTALIST: Thick borders
+
+      // Standard borders
       borderWidth: {
-        'DEFAULT': '2px',
+        'DEFAULT': '1px',
         '0': '0',
         '2': '2px',
         '3': '3px',
         '4': '4px',
       },
-      
-      // BRUTALIST: No transitions (instant state changes)
-      transitionDuration: {
-        'DEFAULT': '0ms',
-        '0': '0ms',
-      },
-      
-      transitionTimingFunction: {
-        'DEFAULT': 'linear',
+
+      // Add letter spacing for uppercase text
+      letterSpacing: {
+        tighter: '-0.05em',
+        tight: '-0.025em',
+        normal: '0',
+        wide: '0.025em',
+        wider: '0.05em',
+        widest: '0.1em',
       },
     },
   },
   plugins: [],
-  
-  // BRUTALIST: Global overrides
-  corePlugins: {
-    // Keep border radius at 0
-    borderRadius: true,
-  },
 }
