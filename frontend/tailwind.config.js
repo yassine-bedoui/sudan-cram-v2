@@ -13,20 +13,26 @@ module.exports = {
         surface: 'var(--surface)',
         border: 'var(--border)',
 
-        // Risk colors (functional)
-        'risk-low': 'var(--color-low)',
-        'risk-medium': 'var(--color-medium)',
-        'risk-high': 'var(--color-high)',
-        'risk-severe': 'var(--color-severe)',
+        // Brand colors - UPDATED
+        'brand-orange': '#F37420',  // Conflict Risk / Primary brand
+        'brand-teal': '#049787',    // Climate Risk / Secondary brand
+
+        // Risk colors - UPDATED to use brand colors
+        'conflict': '#F37420',
+        'climate': '#049787',
+        'risk-low': '#22c55e',
+        'risk-medium': '#fbbf24',
+        'risk-high': '#F37420',
+        'risk-severe': '#dc2626',
       },
 
-      // Use Inter font instead of monospace
+      // Use Inter font - UPDATED
       fontFamily: {
         sans: ['var(--font-inter)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['"Courier New"', 'monospace'], // Keep monospace for special cases (like risk scores)
+        mono: ['"Courier New"', 'monospace'],
       },
 
-      // Keep sharp borders
+      // Keep sharp borders (no changes)
       borderRadius: {
         'none': '0',
         'DEFAULT': '0',
@@ -39,19 +45,7 @@ module.exports = {
         'full': '0',
       },
 
-      // Clean shadows
-      boxShadow: {
-        'none': 'none',
-        'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        'DEFAULT': '0 1px 3px 0 rgb(0 0 0 / 0.1)',
-        'md': '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-        'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-        'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1)',
-        '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-        'inner': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
-      },
-
-      // Standard borders
+      // Standard borders (no changes)
       borderWidth: {
         'DEFAULT': '1px',
         '0': '0',
@@ -60,7 +54,7 @@ module.exports = {
         '4': '4px',
       },
 
-      // Add letter spacing for uppercase text
+      // Letter spacing for uppercase text (no changes)
       letterSpacing: {
         tighter: '-0.05em',
         tight: '-0.025em',

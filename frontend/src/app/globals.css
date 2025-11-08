@@ -3,30 +3,33 @@
 @tailwind utilities;
 
 /* ========================================
-   CLEAN DESIGN SYSTEM (matching Kristian's mockup)
-   - Inter font
-   - Sharp edges
-   - High contrast
-   - Uppercase buttons with tracking
+   SUDAN CRAM DESIGN SYSTEM
+   Brand: #F37420 (Orange/Conflict) & #049787 (Teal/Climate)
 ======================================== */
 
 :root {
-  /* Light theme (default) - matching mockup */
+  /* Light theme (default) */
   --background: #ffffff;
   --foreground: #111827;
   --surface: #f9fafb;
   --border: #d1d5db;
   --border-thickness: 1px;
 
-  /* Risk colors (functional only) */
+  /* Brand colors - UPDATED */
+  --brand-orange: #F37420;
+  --brand-teal: #049787;
+
+  /* Risk colors - UPDATED */
+  --color-conflict: #F37420;
+  --color-climate: #049787;
   --color-low: #22c55e;
   --color-medium: #fbbf24;
-  --color-high: #f97316;
+  --color-high: #F37420;
   --color-severe: #dc2626;
 }
 
 /* ========================================
-   TYPOGRAPHY (Clean, Inter-based)
+   TYPOGRAPHY
 ======================================== */
 
 body {
@@ -47,17 +50,17 @@ p {
 }
 
 a {
-  color: #ea580c;
+  color: var(--brand-orange); /* UPDATED */
   text-decoration: none;
   font-weight: 500;
 }
 
 a:hover {
-  color: #dc2626;
+  opacity: 0.8;
 }
 
 /* ========================================
-   FORMS (Clean)
+   FORMS
 ======================================== */
 
 input,
@@ -75,8 +78,8 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #ea580c;
-  ring: 2px solid rgba(234, 88, 12, 0.2);
+  border-color: var(--brand-orange); /* UPDATED */
+  box-shadow: 0 0 0 2px rgba(243, 116, 32, 0.2);
 }
 
 input::placeholder,
@@ -86,7 +89,7 @@ textarea::placeholder {
 }
 
 /* ========================================
-   TABLES (Clean)
+   TABLES
 ======================================== */
 
 table {
@@ -116,7 +119,7 @@ tr:nth-child(even) {
 }
 
 /* ========================================
-   UTILITY CLASSES
+   UTILITY CLASSES - ADDED
 ======================================== */
 
 .text-uppercase {
@@ -128,7 +131,22 @@ tr:nth-child(even) {
   font-family: 'Courier New', monospace;
 }
 
-/* Remove any global button styling that was causing issues */
+.text-conflict {
+  color: var(--brand-orange);
+}
+
+.text-climate {
+  color: var(--brand-teal);
+}
+
+.bg-conflict {
+  background-color: var(--brand-orange);
+}
+
+.bg-climate {
+  background-color: var(--brand-teal);
+}
+
 button {
   font-family: inherit;
 }

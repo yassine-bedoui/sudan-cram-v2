@@ -33,8 +33,22 @@ export default function RiskChart() {
               <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="#9CA3AF" />
               <YAxis hide={true} />
               <Tooltip />
-              <Line type="monotone" dataKey="events" stroke="#E63E11" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="fatalities" stroke="#F97316" strokeWidth={2} dot={false} />
+              {/* UPDATED: Conflict Risk - Brand Orange #F37420 */}
+              <Line 
+                type="monotone" 
+                dataKey="events" 
+                stroke="#F37420" 
+                strokeWidth={2} 
+                dot={false} 
+              />
+              {/* UPDATED: Climate Risk - Brand Teal #049787 */}
+              <Line 
+                type="monotone" 
+                dataKey="fatalities" 
+                stroke="#049787" 
+                strokeWidth={2} 
+                dot={false} 
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -43,11 +57,13 @@ export default function RiskChart() {
       )}
       <div className="flex gap-4 mt-3 text-xs">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-orange-600 rounded-sm"></div>
+          {/* UPDATED: Legend color for Conflict Risk */}
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#F37420' }}></div>
           <span className="text-gray-600">Conflict Risk</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-orange-500 rounded-sm"></div>
+          {/* UPDATED: Legend color for Climate Risk */}
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#049787' }}></div>
           <span className="text-gray-600">Climate Risk</span>
         </div>
       </div>
