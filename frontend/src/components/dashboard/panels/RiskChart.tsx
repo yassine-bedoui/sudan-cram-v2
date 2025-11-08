@@ -26,45 +26,65 @@ export default function RiskChart() {
         <button className="text-orange-600 hover:text-orange-700 transition">−</button>
       </h3>
       {data.length > 0 ? (
-        <div className="bg-gray-50 p-2 rounded">
-          <ResponsiveContainer width="100%" height={150}>
-            <LineChart data={data}>
-              <CartesianGrid stroke="#E5E7EB" />
-              <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="#9CA3AF" />
-              <YAxis hide={true} />
-              <Tooltip />
-              {/* UPDATED: Conflict Risk - Brand Orange #F37420 */}
-              <Line 
-                type="monotone" 
-                dataKey="events" 
-                stroke="#F37420" 
-                strokeWidth={2} 
-                dot={false} 
+        <div className="bg-gray-50 p-3">
+          {/* UPDATED: Increased height from 150 to 220 for better visibility */}
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={data} margin={{ top: 10, right: 10, left: -15, bottom: 5 }}>
+              <CartesianGrid stroke="#E5E7EB" strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="month" 
+                tick={{ fontSize: 10 }} 
+                stroke="#9CA3AF"
               />
-              {/* UPDATED: Climate Risk - Brand Teal #049787 */}
-              <Line 
-                type="monotone" 
-                dataKey="fatalities" 
-                stroke="#049787" 
-                strokeWidth={2} 
-                dot={false} 
+              {/* UPDATED: Show Y-axis for better context */}
+              <YAxis 
+                tick={{ fontSize: 10 }} 
+                stroke="#9CA3AF"
+                width={30}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0',
+                  fontSize: '11px',
+                  padding: '8px'
+                }}
+              />
+              {/* Conflict Risk - Brand Orange #F37420 */}
+              <Line
+                type="monotone"
+                dataKey="events"
+                stroke="#F37420"
+                strokeWidth={2.5}
+                dot={{ fill: '#F37420', r: 3 }}
+                activeDot={{ r: 5 }}
+                name="Conflict Risk"
+              />
+              {/* Climate Risk - Brand Teal #049787 */}
+              <Line
+                type="monotone"
+                dataKey="fatalities"
+                stroke="#049787"
+                strokeWidth={2.5}
+                dot={{ fill: '#049787', r: 3 }}
+                activeDot={{ r: 5 }}
+                name="Climate Risk"
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       ) : (
-        <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded">Loading chart...</p>
+        <p className="text-xs text-gray-500 bg-gray-50 p-3">Loading chart...</p>
       )}
-      <div className="flex gap-4 mt-3 text-xs">
+      <div className="flex gap-6 mt-4 text-xs">
         <div className="flex items-center gap-2">
-          {/* UPDATED: Legend color for Conflict Risk */}
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#F37420' }}></div>
-          <span className="text-gray-600">Conflict Risk</span>
+          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: '#F37420' }}></div>
+          <span className="text-gray-700 font-medium">Conflict Risk</span>
         </div>
         <div className="flex items-center gap-2">
-          {/* UPDATED: Legend color for Climate Risk */}
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#049787' }}></div>
-          <span className="text-gray-600">Climate Risk</span>
+          <div className="w-4 h-4 rounded-sm" style={{ backgroundColor: '#049787' }}></div>
+          <span className="text-gray-700 font-medium">Climate Risk</span>
         </div>
       </div>
     </div>
