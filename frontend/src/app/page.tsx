@@ -13,7 +13,7 @@ export default function DashboardPage() {
   const [selectedIndicator, setSelectedIndicator] = useState('conflict-risk')
 
   return (
-    <div className="flex h-screen bg-white text-gray-900" style={{ fontFamily: "'Roboto', 'Open Sans', sans-serif" }}>
+    <div className="flex h-screen bg-white text-gray-900" style={{ fontFamily: "'Inter', 'Roboto', sans-serif" }}>
       {/* Sidebar */}
       <Sidebar 
         selectedIndicator={selectedIndicator}
@@ -34,7 +34,7 @@ export default function DashboardPage() {
             <select 
               value={selectedRegion}
               onChange={(e) => setSelectedRegion(e.target.value)}
-              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900"
+              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900 rounded"
             >
               <option>All Regions</option>
               <option>Khartoum</option>
@@ -54,7 +54,7 @@ export default function DashboardPage() {
             <select 
               value={selectedDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
-              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900"
+              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900 rounded"
             >
               <option>All Districts</option>
               <option>Khartoum District</option>
@@ -66,7 +66,7 @@ export default function DashboardPage() {
               type="date" 
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900"
+              className="bg-white border border-gray-300 px-3 py-2 text-xs text-gray-900 rounded"
             />
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function DashboardPage() {
           {/* Map Section */}
           <MainMap indicator={selectedIndicator} />
 
-          {/* Right Panel */}
+          {/* Right Panel - Now includes Goldstein */}
           <RightPanel />
         </div>
       </div>

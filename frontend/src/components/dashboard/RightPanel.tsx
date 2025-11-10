@@ -8,6 +8,7 @@ import CountryHeader from './panels/CountryHeader'
 import Description from './panels/Description'
 import DownloadOptions from './panels/DownloadOptions'
 import DataSources from './panels/DataSources'
+import GoldsteinEscalationPanel from './panels/GoldsteinEscalationPanel'  // Updated path
 
 export default function RightPanel() {
   const [analytics, setAnalytics] = useState<any>(null)
@@ -38,6 +39,7 @@ export default function RightPanel() {
       <CountryHeader />
       {analytics && <RiskIndicators summary={analytics.summary} />}
       <RiskTrendChart />
+      <GoldsteinEscalationPanel />
       <AIAlertFeed />
       <Description />
       <DownloadOptions />
