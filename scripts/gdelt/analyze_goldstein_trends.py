@@ -12,17 +12,17 @@ import glob
 def load_latest_gdelt_data():
     """Load the most recent GDELT Sudan events CSV"""
     gdelt_files = glob.glob('data/gdelt/sudan_events_*.csv')
-    
+
     if not gdelt_files:
         raise FileNotFoundError("No GDELT data found. Run fetch_sudan_events.py first!")
-    
+
     # Get most recent file
     latest_file = max(gdelt_files, key=os.path.getctime)
     print(f"📂 Loading: {latest_file}")
-    
+
     df = pd.read_csv(latest_file)
     df['date'] = pd.to_datetime(df['date'])
-    
+
     return df
 
 def calculate_escalation_risk(df):
@@ -31,34 +31,34 @@ def calculate_escalation_risk(df):
     Based on Goldstein trends, event frequency, and media attention
     """
     print("\n🔍 Analyzing escalation patterns...\n")
-    
+
     # Clean location names (some have duplicates due to spelling)
     df['location_clean'] = df['location'].str.strip()
-    
+
     # Group by location
     location_stats = []
-    
+
     for location in df['location_clean'].unique():
         loc_data = df[df['location_clean'] == location].sort_values('date')
-        
+
         if len(loc_data) < 2:
             continue
-        
+
         # Calculate metrics
         avg_goldstein = loc_data['goldstein'].mean()
         min_goldstein = loc_data['goldstein'].min()
         event_count = len(loc_data)
         media_mentions = loc_data['num_mentions'].sum()
-        
+
         # Goldstein trend (negative = escalating)
         goldstein_trend = loc_data['goldstein'].diff().mean()
-        
+
         # Recent vs older (split data in half)
         split_point = len(loc_data) // 2
         recent_avg = loc_data.iloc[split_point:]['goldstein'].mean()
         older_avg = loc_data.iloc[:split_point]['goldstein'].mean()
         change = recent_avg - older_avg
-        
+
         # Escalation Risk Score (0-10)
         # Higher = more dangerous
         risk_score = (
@@ -67,7 +67,7 @@ def calculate_escalation_risk(df):
             min(10, event_count / 5) * 0.2 +      # More events = more attention
             max(0, -change) * 0.1                 # Getting worse over time
         )
-        
+
         # Classify risk level
         if risk_score >= 7:
             risk_level = "CRITICAL"
@@ -77,7 +77,7 @@ def calculate_escalation_risk(df):
             risk_level = "MODERATE"
         else:
             risk_level = "LOW"
-        
+
         location_stats.append({
             'location': location,
             'escalation_risk': min(10, risk_score),
@@ -90,48 +90,65 @@ def calculate_escalation_risk(df):
             'first_seen': loc_data['date'].min(),
             'last_seen': loc_data['date'].max()
         })
-    
+
     risk_df = pd.DataFrame(location_stats).sort_values('escalation_risk', ascending=False)
-    
+
     return risk_df
 
 def generate_hourly_timeline(df):
-    """Generate hourly Goldstein timeline for charts"""
+    """Generate hourly Goldstein timeline for charts (FIXED)"""
+    # Floor timestamps to nearest hour
     df['hour'] = df['date'].dt.floor('H')
     
-    hourly = df.groupby('hour').agg({
+    # Create complete 24-hour range
+    end_time = pd.Timestamp.now().floor('H')
+    start_time = end_time - pd.Timedelta(hours=24)
+    all_hours = pd.date_range(start=start_time, end=end_time, freq='H')
+    
+    # Group by hour and aggregate
+    hourly = df[df['hour'] >= start_time].groupby('hour').agg({
         'goldstein': 'mean',
         'event_code': 'count',
         'num_mentions': 'sum'
     }).reset_index()
     
-    hourly.columns = ['timestamp', 'avg_goldstein', 'event_count', 'mentions']
+    # Merge with complete hour range to fill gaps
+    hourly_complete = pd.DataFrame({'hour': all_hours})
+    hourly_complete = hourly_complete.merge(hourly, on='hour', how='left')
     
-    return hourly
+    # Fill missing hours with 0
+    hourly_complete['goldstein'] = hourly_complete['goldstein'].fillna(0)
+    hourly_complete['event_code'] = hourly_complete['event_code'].fillna(0).astype(int)
+    hourly_complete['num_mentions'] = hourly_complete['num_mentions'].fillna(0).astype(int)
+    
+    # Rename columns
+    hourly_complete.columns = ['timestamp', 'avg_goldstein', 'event_count', 'mentions']
+    
+    return hourly_complete
 
 def main():
     print("=" * 70)
     print("GOLDSTEIN SCALE TREND ANALYSIS")
     print("=" * 70)
-    
+
     # Load data
     df = load_latest_gdelt_data()
     print(f"✅ Loaded {len(df)} events")
     print(f"   Date range: {df['date'].min()} → {df['date'].max()}\n")
-    
+
     # Calculate escalation risks
     risk_df = calculate_escalation_risk(df)
-    
+
     # Save results
     os.makedirs('data/processed', exist_ok=True)
     risk_file = f'data/processed/goldstein_escalation_risk_{datetime.now().strftime("%Y%m%d")}.csv'
     risk_df.to_csv(risk_file, index=False)
-    
+
     # Display results
     print("=" * 70)
     print("🚨 ESCALATION RISK RANKING (Top 10)")
     print("=" * 70)
-    
+
     for i, row in risk_df.head(10).iterrows():
         print(f"\n{i+1}. {row['location']}")
         print(f"   Risk Score:      {row['escalation_risk']:.1f}/10 [{row['risk_level']}]")
@@ -140,31 +157,32 @@ def main():
         print(f"   Events:          {row['event_count']} events")
         print(f"   Media mentions:  {row['media_mentions']}")
         print(f"   Recent change:   {row['recent_change']:.2f}")
-    
+
     # Generate hourly timeline
     timeline = generate_hourly_timeline(df)
     timeline_file = f'data/processed/goldstein_hourly_timeline_{datetime.now().strftime("%Y%m%d")}.csv'
     timeline.to_csv(timeline_file, index=False)
-    
+
     print("\n" + "=" * 70)
     print("📊 KEY INSIGHTS")
     print("=" * 70)
-    
+
     critical = risk_df[risk_df['risk_level'] == 'CRITICAL']
     high = risk_df[risk_df['risk_level'] == 'HIGH']
-    
+
     print(f"Critical risk locations:  {len(critical)}")
     print(f"High risk locations:      {len(high)}")
     print(f"Total locations tracked:  {len(risk_df)}")
-    
+    print(f"\nHourly timeline points:   {len(timeline)} hours")  # NEW: Show hour count
+
     print(f"\n💾 Files saved:")
     print(f"   • {risk_file}")
     print(f"   • {timeline_file}")
-    
+
     print("\n" + "=" * 70)
     print("✅ ANALYSIS COMPLETE")
     print("=" * 70)
-    
+
     return risk_df, timeline
 
 if __name__ == '__main__':
