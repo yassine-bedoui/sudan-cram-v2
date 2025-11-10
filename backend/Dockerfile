@@ -1,3 +1,4 @@
+# backend/Dockerfile
 FROM python:3.11-slim
 
 # Install system dependencies for PostgreSQL and PostGIS
@@ -17,6 +18,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
+
+# CRITICAL FIX: Copy GDELT data from parent directory
+# This allows the API to find goldstein_*.csv files
+COPY ../data /app/data
 
 # Expose port
 EXPOSE 8000
