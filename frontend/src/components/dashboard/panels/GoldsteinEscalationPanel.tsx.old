@@ -3,14 +3,13 @@
 
 import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
-import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface EscalationData {
   location: string
-  escalation_risk: number
+  escalation_risk: number  // CHANGED: was risk_score
   risk_level: string
   avg_goldstein: number
-  goldstein_trend: number
+  goldstein_trend: number  // CHANGED: added this
   event_count: number
 }
 
@@ -19,7 +18,6 @@ export default function GoldsteinEscalationPanel() {
   const [timeline, setTimeline] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isExpanded, setIsExpanded] = useState(true) // Collapsible state
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,63 +119,45 @@ export default function GoldsteinEscalationPanel() {
 
   return (
     <div className="space-y-4">
-      {/* Top Risks Section with Collapse Button */}
-      <div className="border border-gray-300 bg-white">
-        {/* Header with Collapse Button */}
-        <div 
-          className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <h3 className="text-xs uppercase tracking-widest text-gray-600 font-bold">
-            Top Escalation Risks (GDELT)
-          </h3>
-          {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-gray-600" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-gray-600" />
-          )}
+      <div className="border border-gray-300 p-4 bg-white">
+        <h3 className="text-xs uppercase tracking-widest text-gray-600 mb-4 font-bold">
+          Top Escalation Risks (GDELT)
+        </h3>
+
+        <div className="space-y-3">
+          {topRisks.map((risk, i) => (
+            <div
+              key={i}
+              className={`border-l-4 ${getRiskColor(risk.risk_level)} ${getRiskBgColor(risk.risk_level)} pl-3 py-2`}
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-gray-900">
+                    {risk.location}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Goldstein: {risk.avg_goldstein?.toFixed(1) ?? 'N/A'} | {risk.event_count ?? 0} events
+                    {risk.goldstein_trend && (
+                      <span> | {risk.goldstein_trend < 0 ? '⬇️ Escalating' : '⬆️ Stable'}</span>
+                    )}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-mono font-bold text-orange-600">
+                    {risk.escalation_risk?.toFixed(1) ?? 'N/A'}
+                  </p>
+                  <p className="text-xs text-gray-500">{risk.risk_level ?? 'UNKNOWN'}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Collapsible Content */}
-        {isExpanded && (
-          <div className="px-4 pb-4">
-            <div className="space-y-3">
-              {topRisks.map((risk, i) => (
-                <div
-                  key={i}
-                  className={`border-l-4 ${getRiskColor(risk.risk_level)} ${getRiskBgColor(risk.risk_level)} pl-3 py-2`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <p className="text-xs font-bold text-gray-900">
-                        {risk.location}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-1">
-                        Goldstein: {risk.avg_goldstein?.toFixed(1) ?? 'N/A'} | {risk.event_count ?? 0} events
-                        {risk.goldstein_trend && (
-                          <span> | {risk.goldstein_trend < 0 ? '⬇️ Escalating' : '⬆️ Stable'}</span>
-                        )}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-mono font-bold text-orange-600">
-                        {risk.escalation_risk?.toFixed(1) ?? 'N/A'}
-                      </p>
-                      <p className="text-xs text-gray-500">{risk.risk_level ?? 'UNKNOWN'}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-xs text-gray-500 mt-3">
-              Real-time data from GDELT
-            </p>
-          </div>
-        )}
+        <p className="text-xs text-gray-500 mt-3">
+          Real-time data from GDELT
+        </p>
       </div>
 
-      {/* Timeline Chart (Always Visible) */}
       {timeline && timeline.length > 0 && (
         <div className="border border-gray-300 p-4 bg-white">
           <h3 className="text-xs uppercase tracking-widest text-gray-600 mb-4 font-bold">
