@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import 'leaflet/dist/leaflet.css'
 import Script from 'next/script'
@@ -21,16 +22,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <head>
-        {/* Font Awesome CDN */}
-        <Script
-          src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
-          strategy="beforeInteractive"
-          crossOrigin="anonymous"
-        />
-      </head>
-      <body className={inter.className}>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={inter.variable}>
+        <head>
+          {/* Font Awesome CDN */}
+          <Script
+            src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+            strategy="beforeInteractive"
+            crossOrigin="anonymous"
+          />
+        </head>
+        <body className={inter.className}>{children}</body>
+      </html>
+    </ClerkProvider>
   )
 }
