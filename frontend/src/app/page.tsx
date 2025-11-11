@@ -28,7 +28,7 @@ export default function LandingPage() {
 		    Real-Time Conflict Monitoring for Sudan
 		  </h1>
 		  <p className="text-xl text-gray-600 mb-8">
-		    Early warning system that detected Wad Madani escalation 72 hours before major news outlets
+			Get early warnings on conflict risks and climate threats to protect your people and make data-driven decisions faster.
 		  </p>
 		  <div className="flex gap-4 justify-center flex-wrap">
 		    <Link 
