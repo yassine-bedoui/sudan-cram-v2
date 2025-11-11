@@ -22,37 +22,24 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Real-Time Conflict Monitoring for Sudan
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Early warning system that detected Wad Madani escalation 72 hours before major news outlets
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link 
-              href="/sign-up"
-              className="bg-orange-600 text-white px-8 py-3 rounded-lg text-lg hover:bg-orange-700"
-            >
-              Start Free Trial
-            </Link>
-            <Link 
-              href="/dashboard"
-              className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg text-lg hover:bg-gray-50"
-            >
-              View Demo
-            </Link>
-          </div>
-        </div>
-
-        {/* Dashboard Preview */}
-        <div className="mt-16 max-w-6xl mx-auto">
-          <div className="border rounded-lg shadow-2xl overflow-hidden bg-gray-100 aspect-video flex items-center justify-center">
-            <p className="text-gray-500 text-lg">Dashboard Screenshot</p>
-          </div>
-        </div>
-      </section>
+	  <section className="container mx-auto px-4 py-20">
+	    <div className="max-w-4xl mx-auto text-center">
+		  <h1 className="text-5xl font-bold text-gray-900 mb-6">
+		    Real-Time Conflict Monitoring for Sudan
+		  </h1>
+		  <p className="text-xl text-gray-600 mb-8">
+		    Early warning system that detected Wad Madani escalation 72 hours before major news outlets
+		  </p>
+		  <div className="flex gap-4 justify-center flex-wrap">
+		    <Link 
+			  href="/sign-up"
+			  className="bg-orange-600 text-white px-8 py-3 rounded-lg text-lg hover:bg-orange-700"
+		    >
+			  Start Free Trial
+		    </Link>
+		  </div>
+	    </div>
+	  </section>
 
       {/* Features Section */}
       <section className="bg-gray-50 py-20">
