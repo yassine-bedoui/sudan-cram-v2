@@ -1,11 +1,18 @@
-from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct
-from sentence_transformers import SentenceTransformer
-from dotenv import load_dotenv
-from typing import List, Dict
-import os
-import uuid
+# backend/app/services/vector_store.py
 
+import os
+from typing import List, Dict
+from uuid import uuid4
+
+from dotenv import load_dotenv
+from qdrant_client import QdrantClient
+from qdrant_client.models import (
+    Distance,
+    VectorParams,
+    PointStruct,
+    PayloadSchemaType,
+)
+from sentence_transformers import SentenceTransformer
 
 load_dotenv()
 
@@ -25,6 +32,7 @@ class VectorStore:
 
         # Load multilingual embedding model
         print("📦 Loading embedding model...")
+        # ⬇️ trust_remote_code=True is required for Alibaba-NLP/gte-multilingual-base
         self.encoder = SentenceTransformer(
             "Alibaba-NLP/gte-multilingual-base",
             trust_remote_code=True,
@@ -32,9 +40,10 @@ class VectorStore:
         print("✅ Embedding model loaded")
 
         self._init_collection()
+        self._ensure_region_index()
 
     def _init_collection(self):
-        """Initialize Qdrant collection if it doesn't exist."""
+        """Initialize Qdrant collection"""
         try:
             collections = self.client.get_collections().collections
             exists = any(c.name == self.collection_name for c in collections)
@@ -55,28 +64,50 @@ class VectorStore:
             print(f"❌ Error initializing collection: {e}")
             raise
 
+    def _ensure_region_index(self):
+        """Make sure 'region' is indexed for filtering"""
+        try:
+            self.client.create_payload_index(
+                collection_name=self.collection_name,
+                field_name="region",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
+            print("✅ Created payload index for 'region'")
+        except Exception as e:
+            # Qdrant will complain if index already exists – that's fine
+            msg = str(e)
+            if "already exists" in msg or "index with name" in msg:
+                print("ℹ️ Payload index for 'region' already exists")
+            else:
+                print(f"❌ Error creating 'region' index: {e}")
+
     def add_event(self, event_id: str, text: str, metadata: Dict) -> bool:
         """
-        Add an event to the vector store.
+        Add event to vector store.
 
-        - event_id: your logical ID, e.g. 'gdelt-123', 'acled-456'
-        - We convert it to a UUID for Qdrant's point ID requirement,
-          and keep the original event_id in the payload.
+        Qdrant requires point IDs to be:
+        - an unsigned integer, or
+        - a valid UUID
+
+        We generate a UUID for the internal point ID, and store the logical
+        ID (e.g. 'gdelt-138') inside the payload as `event_id`.
         """
         try:
             embedding = self.encoder.encode(text).tolist()
+            qdrant_id = str(uuid4())  # ✅ valid UUID for Qdrant
 
-            # Qdrant IDs must be uint or UUID. Use a deterministic UUID5
-            # so the same event_id always maps to the same point ID.
-            point_id = uuid.uuid5(uuid.NAMESPACE_DNS, str(event_id))
+            payload = {
+                "event_id": event_id,  # your logical ID
+                **metadata,
+            }
 
             self.client.upsert(
                 collection_name=self.collection_name,
                 points=[
                     PointStruct(
-                        id=str(point_id),
+                        id=qdrant_id,
                         vector=embedding,
-                        payload={**metadata, "event_id": event_id},
+                        payload=payload,
                     )
                 ],
             )
@@ -91,7 +122,7 @@ class VectorStore:
         filters: Dict | None = None,
         top_k: int = 10,
     ) -> List[Dict]:
-        """Search for relevant events using semantic similarity."""
+        """Search for relevant events"""
         try:
             query_embedding = self.encoder.encode(query).tolist()
 
@@ -124,10 +155,9 @@ class VectorStore:
             return []
 
     def get_event_count(self) -> int:
-        """Get total number of points stored in the collection."""
+        """Get total events in collection"""
         try:
             info = self.client.get_collection(self.collection_name)
             return info.points_count
-        except Exception as e:
-            print(f"❌ Error getting event count: {e}")
+        except Exception:
             return 0
