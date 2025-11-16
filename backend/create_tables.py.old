@@ -1,10 +1,9 @@
-# backend/create_tables.py
-from sqlalchemy import inspect
-
+# create_tables.py
 from database import engine, Base
 from app.models.gdelt import GDELTEvent
 from app.models.acled import ACLEDEvent
-from app.models.analysis_run import AnalysisRun
+from app.models.analysis import AnalysisRun  
+from sqlalchemy import inspect
 
 
 def main():

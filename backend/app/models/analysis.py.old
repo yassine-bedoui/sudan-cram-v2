@@ -1,0 +1,51 @@
+# app/models/analysis.py
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Float,
+    DateTime,
+    Boolean,
+    Text,
+    JSON,
+)
+from sqlalchemy.sql import func
+
+from database import Base  
+
+
+class AnalysisRun(Base):
+    """
+    Stores a lightweight log of each LangGraph analysis run.
+    """
+
+    __tablename__ = "analysis_runs"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Core context
+    region = Column(String(100), index=True, nullable=False)
+    has_raw_data = Column(Boolean, default=False)
+    interventions = Column(Text, nullable=True)  # JSON-encoded list of strings
+
+    # Trend summary
+    trend_classification = Column(String(50), nullable=True)
+    trend_confidence_label = Column(String(20), nullable=True)
+    forecast_armed_clash = Column(Integer, nullable=True)
+    forecast_civilian_targeting = Column(Integer, nullable=True)
+
+    # Scenarios summary
+    recommendation_summary = Column(String(100), nullable=True)
+    max_success_probability = Column(Integer, nullable=True)
+    max_risk_probability = Column(Integer, nullable=True)
+
+    # Validation / confidence
+    validation_status = Column(String(20), nullable=True)
+    issue_count = Column(Integer, nullable=True)
+    overall_confidence = Column(Float, nullable=True)
+
+    # Full explainability payload
+    explainability = Column(JSON, nullable=True)
+
+    # Timestamps
+    created_at = Column(DateTime, server_default=func.now(), index=True)
