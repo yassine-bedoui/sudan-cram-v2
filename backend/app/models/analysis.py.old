@@ -1,51 +1,72 @@
-# app/models/analysis.py
+# app/models/analysis_run.py
 from sqlalchemy import (
     Column,
     Integer,
     String,
-    Float,
-    DateTime,
     Boolean,
+    Float,
     Text,
-    JSON,
+    DateTime,
+    ForeignKey,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
 
-from database import Base  
+from database import Base
 
 
 class AnalysisRun(Base):
-    """
-    Stores a lightweight log of each LangGraph analysis run.
-    """
-
     __tablename__ = "analysis_runs"
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # Core context
-    region = Column(String(100), index=True, nullable=False)
+    # Basic input context
+    region = Column(String(100), index=True)
     has_raw_data = Column(Boolean, default=False)
-    interventions = Column(Text, nullable=True)  # JSON-encoded list of strings
+    interventions = Column(Text)  # stored as JSON string for now
 
     # Trend summary
-    trend_classification = Column(String(50), nullable=True)
-    trend_confidence_label = Column(String(20), nullable=True)
-    forecast_armed_clash = Column(Integer, nullable=True)
-    forecast_civilian_targeting = Column(Integer, nullable=True)
+    trend_classification = Column(String(50))
+    trend_confidence_label = Column(String(20))
+    forecast_armed_clash = Column(Integer)
+    forecast_civilian_targeting = Column(Integer)
 
-    # Scenarios summary
-    recommendation_summary = Column(String(100), nullable=True)
-    max_success_probability = Column(Integer, nullable=True)
-    max_risk_probability = Column(Integer, nullable=True)
+    # Scenario summary
+    recommendation_summary = Column(String(50))  # e.g. "PROCEED"
+    max_success_probability = Column(Integer)
+    max_risk_probability = Column(Integer)
 
-    # Validation / confidence
-    validation_status = Column(String(20), nullable=True)
-    issue_count = Column(Integer, nullable=True)
-    overall_confidence = Column(Float, nullable=True)
+    # Validation summary
+    validation_status = Column(String(20))
+    issue_count = Column(Integer)
+    overall_confidence = Column(Float)
 
-    # Full explainability payload
-    explainability = Column(JSON, nullable=True)
+    # Full explainability payload (JSONB in Postgres)
+    explainability = Column(JSONB)
 
-    # Timestamps
-    created_at = Column(DateTime, server_default=func.now(), index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class AnalysisFeedback(Base):
+    """
+    Simple feedback / approval per run.
+    One run can have multiple feedback entries over time.
+    """
+
+    __tablename__ = "analysis_feedback"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Link back to the run
+    run_id = Column(Integer, ForeignKey("analysis_runs.id"), index=True, nullable=False)
+
+    # "approved" | "rejected"
+    status = Column(String(20), nullable=False)
+
+    # Optional analyst comment
+    comment = Column(Text, nullable=True)
+
+    # Optional "who" left the feedback (email, name, etc.)
+    user = Column(String(100), nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

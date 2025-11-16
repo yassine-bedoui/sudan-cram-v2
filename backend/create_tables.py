@@ -1,21 +1,16 @@
-# backend/create_tables.py
-from sqlalchemy import inspect
+from datetime import datetime
 
-from database import engine, Base
+from database import Base, engine
 from app.models.gdelt import GDELTEvent
 from app.models.acled import ACLEDEvent
-from app.models.analysis_run import AnalysisRun
+from app.models.analysis import AnalysisRun, AnalysisFeedback
 
 
-def main():
-    print("Creating tables...")
+def create_all_tables():
+    print(f"[{datetime.utcnow().isoformat()}] Creating tables...")
     Base.metadata.create_all(bind=engine)
-    print("✅ Tables created successfully!")
-
-    inspector = inspect(engine)
-    tables = inspector.get_table_names()
-    print(f"\n📋 Tables in database: {tables}")
+    print("✅ Tables created (or already existed).")
 
 
 if __name__ == "__main__":
-    main()
+    create_all_tables()

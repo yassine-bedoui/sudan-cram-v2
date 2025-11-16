@@ -1,20 +1,17 @@
-# backend/app/models/analysis_run.py
 from sqlalchemy import (
     Column,
     Integer,
     String,
     Boolean,
+    Float,
     Text,
     DateTime,
-    Float,
+    ForeignKey,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import JSON
 
-try:
-    from database import Base
-except ModuleNotFoundError:
-    from backend.database import Base  # type: ignore
+from database import Base
 
 
 class AnalysisRun(Base):
@@ -22,28 +19,54 @@ class AnalysisRun(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # Input
+    # Basic input context
     region = Column(String(100), index=True)
     has_raw_data = Column(Boolean, default=False)
-    interventions = Column(Text, nullable=True)  # JSON-encoded list
+    # Stored as JSON string (e.g. '["UN mediation"]')
+    interventions = Column(Text)
 
-    # Trend
-    trend_classification = Column(String(50), nullable=True)
-    trend_confidence_label = Column(String(50), nullable=True)
-    forecast_armed_clash = Column(Integer, nullable=True)
-    forecast_civilian_targeting = Column(Integer, nullable=True)
+    # Trend summary
+    trend_classification = Column(String(50))
+    trend_confidence_label = Column(String(20))
+    forecast_armed_clash = Column(Integer)
+    forecast_civilian_targeting = Column(Integer)
 
     # Scenario summary
-    recommendation_summary = Column(String(50), nullable=True)
-    max_success_probability = Column(Integer, nullable=True)
-    max_risk_probability = Column(Integer, nullable=True)
+    recommendation_summary = Column(String(50))  # e.g. "PROCEED"
+    max_success_probability = Column(Integer)
+    max_risk_probability = Column(Integer)
 
-    # Validation
-    validation_status = Column(String(50), nullable=True)
-    issue_count = Column(Integer, default=0)
-    overall_confidence = Column(Float, nullable=True)
+    # Validation summary
+    validation_status = Column(String(20))
+    issue_count = Column(Integer)
+    overall_confidence = Column(Float)
 
-    # Full explainability JSON
-    explainability = Column(JSON, nullable=True)
+    # Full explainability payload (JSONB in Postgres)
+    explainability = Column(JSONB)
 
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class AnalysisFeedback(Base):
+    """
+    Simple feedback / approval per run.
+    One run can have multiple feedback entries over time.
+    """
+
+    __tablename__ = "analysis_feedback"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Link back to the run
+    run_id = Column(Integer, ForeignKey("analysis_runs.id"), index=True, nullable=False)
+
+    # "approved" | "rejected"
+    status = Column(String(20), nullable=False)
+
+    # Optional analyst comment
+    comment = Column(Text, nullable=True)
+
+    # Optional "who" left the feedback (email, name, etc.)
+    user = Column(String(100), nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
