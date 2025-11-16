@@ -2,8 +2,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import alerts, analytics, reports, dashboard
-from app.routers import goldstein  # Import goldstein router
-from app.routers import intelligence  # ✅ NEW: multi-agent intelligence router
+from app.routers import goldstein  
+from app.routers import intelligence  
 
 app = FastAPI(
     title="Sudan CRAM API",
@@ -30,8 +30,8 @@ app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(reports.router, prefix="/api", tags=["reports"])
 app.include_router(alerts.router, prefix="/api", tags=["alerts"])
 app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
-app.include_router(goldstein.router)       # Goldstein router (has prefix="/api/goldstein" inside)
-app.include_router(intelligence.router)    # ✅ Intelligence router (has prefix="/api/intelligence" inside)
+app.include_router(goldstein.router)       
+app.include_router(intelligence.router)    
 
 @app.get("/")
 async def root():
@@ -58,4 +58,3 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy"}
