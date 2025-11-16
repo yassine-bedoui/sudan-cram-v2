@@ -1,10 +1,8 @@
-# app/routers/intelligence.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
-
-# from app.agents.workflow import run_analysis
+from app.agents.workflow import run_analysis
 
 router = APIRouter(prefix="/api/intelligence", tags=["intelligence"])
 
@@ -17,16 +15,8 @@ class AnalysisRequest(BaseModel):
 
 @router.post("/analyze")
 async def analyze(request: AnalysisRequest):
-    """
-    Run multi-agent analysis for a given region.
-
-    NOTE: We import run_analysis lazily so the app can start quickly
-    on Render and only load heavy LangGraph + embeddings when needed.
-    """
+    """Run multi-agent analysis."""
     try:
-        
-        from app.agents.workflow import run_analysis
-
         result = run_analysis(
             region=request.region,
             raw_data=request.raw_data,
@@ -43,10 +33,11 @@ async def analyze(request: AnalysisRequest):
             "approval_status": result.get("approval_status"),
             "confidence": result.get("confidence_score"),
             "messages": result.get("messages", []),
+            # NEW: explainability snapshot
+            "explainability": result.get("explainability"),
         }
 
     except Exception as e:
-        # You can log e here if you like
         raise HTTPException(status_code=500, detail=str(e))
 
 
