@@ -8,7 +8,8 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 
 from app.agents.state import SudanCRAMState
-from app.services.vector_store import VectorStore
+# IMPORTANT: do NOT import VectorStore here anymore
+# from app.services.vector_store import VectorStore
 
 
 # ---- 1. LLM setup ----
@@ -22,20 +23,24 @@ llm = ChatOllama(
 
 # ---- 1.b Lazy Vector Store setup (important for Render startup) ----
 
-_vector_store: Optional[VectorStore] = None
+_vector_store = None  # type: ignore[assignment]
 
 
-def _get_vector_store() -> VectorStore:
+def _get_vector_store():
     """
-    Lazily initialize the VectorStore.
+    Lazily initialize the VectorStore AND lazily import its module.
 
-    This avoids heavy model loading at import time, which can cause
-    cloud platforms like Render to think the service isn't listening
-    on a port yet and fail the deployment.
+    This avoids heavy TensorFlow / embedding imports at app startup,
+    which can prevent cloud platforms like Render from ever seeing
+    an open port during deployment.
     """
     global _vector_store
     if _vector_store is None:
-        print("🔧 Initializing Vector Store (lazy)...")
+        print("🔧 Initializing Vector Store (lazy import)...")
+        # Local import so heavy deps (tensorflow, HF models, etc.)
+        # are only loaded on first actual use, not at server startup.
+        from app.services.vector_store import VectorStore  # type: ignore
+
         _vector_store = VectorStore()
     return _vector_store
 
