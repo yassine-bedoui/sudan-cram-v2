@@ -1,207 +1,150 @@
+# app/routers/intelligence.py
+
 from datetime import datetime
 import json
-from typing import List, Optional, Literal
+from typing import List, Optional, Dict, Any
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
-from app.agents.workflow import run_analysis
-from app.models.analysis_run import AnalysisRun, AnalysisFeedback
 from database import get_db
+from app.agents.workflow import run_analysis
+from app.models.analysis import AnalysisRun
 
 router = APIRouter(prefix="/api/intelligence", tags=["intelligence"])
 
 
-# ---------- Pydantic models ----------
+# ---------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------
 
 
-class AnalysisRequest(BaseModel):
+def _dedupe_messages(messages: List[str]) -> List[str]:
+    """
+    Remove duplicate log lines while preserving order.
+    If the same message appears many times, we keep only the first.
+    """
+    seen = set()
+    cleaned: List[str] = []
+    for m in messages:
+        if m not in seen:
+            cleaned.append(m)
+            seen.add(m)
+    return cleaned
+
+
+def _derive_approval_status_from_confidence(conf: float) -> str:
+    """
+    Lightweight heuristic to mirror the LangGraph human_approval_node logic
+    for history records that don't store approval status explicitly.
+    """
+    if conf < 0.7:
+        return "pending"
+    return "auto-approved"
+
+
+# ---------------------------------------------------------------------
+# Pydantic models
+# ---------------------------------------------------------------------
+
+
+class IntelligenceRequest(BaseModel):
     region: str
     raw_data: Optional[str] = None
     interventions: Optional[List[str]] = None
 
 
-class FeedbackRequest(BaseModel):
-    status: Literal["approved", "rejected"]
-    comment: Optional[str] = None
-    user: Optional[str] = None
+class FeedbackPayload(BaseModel):
+    approved: Optional[bool] = None
+    feedback: Optional[str] = None
 
 
-# ---------- Helper: build narrative summary from explainability ----------
+class AnalysisRunSummary(BaseModel):
+    id: int
+    region: str
+    has_raw_data: bool
+    interventions: List[str]
+    trend_classification: Optional[str] = None
+    trend_confidence_label: Optional[str] = None
+    forecast_armed_clash: Optional[int] = None
+    forecast_civilian_targeting: Optional[int] = None
+    recommendation_summary: Optional[str] = None
+    max_success_probability: Optional[int] = None
+    max_risk_probability: Optional[int] = None
+    validation_status: Optional[str] = None
+    issue_count: int
+    overall_confidence: float
+    approval_status: Optional[str] = None
+    human_feedback: Optional[str] = None
+    explainability: Optional[Dict[str, Any]] = None
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
 
 
-def build_narrative_from_explainability(expl: dict | None) -> Optional[str]:
-    if not expl:
-        return None
-
-    try:
-        input_block = expl.get("input", {}) or {}
-        retrieval = expl.get("retrieval", {}) or {}
-        trend = expl.get("trend", {}) or {}
-        scenarios = expl.get("scenarios", {}) or {}
-        validation = expl.get("validation", {}) or {}
-
-        region = input_block.get("region")
-        total_events = retrieval.get("total_events_considered")
-        time_span_days = retrieval.get("time_span_days")
-        sources_dict = retrieval.get("sources") or {}
-
-        # e.g. "GDELT (20)"
-        sources_list = []
-        for name, count in sources_dict.items():
-            if isinstance(count, (int, float)):
-                sources_list.append(f"{name} ({int(count)})")
-            else:
-                sources_list.append(str(name))
-        sources_str = ", ".join(sources_list)
-
-        trend_cls = trend.get("trend_classification")
-        conf_label = trend.get("confidence_label")
-        forecast = trend.get("forecast_7_days") or {}
-        armed = forecast.get("armed_clash_likelihood")
-        civilian = forecast.get("civilian_targeting_likelihood")
-
-        scen_recs = scenarios.get("recommendations") or []
-        rec = scen_recs[0] if scen_recs else None
-        max_success = scenarios.get("max_success_probability")
-        max_risk = scenarios.get("max_risk_probability")
-
-        val_status = validation.get("status")
-        overall_conf = validation.get("overall_confidence")
-        issue_count = validation.get("issue_count") or len(validation.get("issues") or [])
-
-        parts: list[str] = []
-
-        # 1) Region + data window
-        if region:
-            parts.append(f"Region {region}:")
-
-        if total_events is not None and time_span_days is not None:
-            segment = f" over the last {time_span_days} days the model considered {total_events} recent events"
-            if sources_str:
-                segment += f" from {sources_str}"
-            segment += "."
-            parts.append(segment)
-        elif total_events is not None:
-            parts.append(f" The model considered {total_events} recent events.")
-
-        # 2) Trend classification
-        if trend_cls:
-            segment = f" Current trend is classified as {trend_cls}"
-            if conf_label:
-                segment += f" (confidence {conf_label})"
-            segment += "."
-            parts.append(segment)
-
-        # 3) 7-day risk outlook
-        if armed is not None or civilian is not None:
-            sub = []
-            if armed is not None:
-                sub.append(f"~{armed}% chance of armed clashes")
-            if civilian is not None:
-                sub.append(f"~{civilian}% risk of civilian targeting")
-            risk_segment = " 7-day outlook: " + " and ".join(sub) + "."
-            parts.append(risk_segment)
-
-        # 4) Intervention recommendation
-        if rec or max_success is not None or max_risk is not None:
-            seg = " Intervention signal: "
-            if rec:
-                seg += f"{rec} is recommended"
-            if max_success is not None:
-                seg += f" with success probability around {max_success}%"
-            if max_risk is not None:
-                seg += f" and downside risk around {max_risk}%"
-            seg += "."
-            parts.append(seg)
-
-        # 5) Validation + confidence
-        if val_status:
-            seg = f" Validation status: {val_status}"
-            if isinstance(overall_conf, (int, float, float)):
-                seg += f" (overall confidence {overall_conf:.2f})"
-            if issue_count:
-                seg += f", with {issue_count} flagged issue(s)."
-            else:
-                seg += "."
-            parts.append(seg)
-
-        narrative = " ".join(p.strip() for p in parts if p)
-        return narrative or None
-
-    except Exception:
-        # Fail soft: never break the API because of narrative generation
-        return None
-
-
-# ---------- Health ----------
+# ---------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------
 
 
 @router.get("/health")
-async def health():
+def health() -> Dict[str, str]:
     return {"status": "healthy", "service": "intelligence"}
 
 
-# ---------- Main analysis endpoint ----------
-
-
 @router.post("/analyze")
-async def analyze_intelligence(
-    req: AnalysisRequest,
-    db: Session = Depends(get_db),
-):
-    # 1) Run the multi-agent workflow
+def analyze(payload: IntelligenceRequest, db: Session = Depends(get_db)):
+    """
+    Run the LangGraph pipeline, log a compact summary to analysis_runs,
+    and return the full structured result to the caller.
+    """
+    # 1) Run workflow
     result = run_analysis(
-        region=req.region,
-        raw_data=req.raw_data,
-        interventions=req.interventions,
+        region=payload.region,
+        raw_data=payload.raw_data,
+        interventions=payload.interventions,
     )
 
-    trends = result.get("trend_analysis") or {}
-    scenarios = result.get("scenarios") or {}
-    validation = result.get("validation") or {}
-    explainability = result.get("explainability")
+    # 2) Clean up repeated log messages
+    raw_messages = result.get("messages") or []
+    messages = _dedupe_messages(raw_messages)
+    result["messages"] = messages  # keep in sync
 
-    # NEW: short narrative summary derived from explainability
-    narrative_summary = build_narrative_from_explainability(explainability)
+    # 3) Extract parts we care about
+    trends: Dict[str, Any] = result.get("trend_analysis") or {}
+    scenarios: Dict[str, Any] = result.get("scenarios") or {}
+    validation: Dict[str, Any] = result.get("validation") or {}
+    explainability: Dict[str, Any] = result.get("explainability") or {}
+    confidence = float(result.get("confidence_score", 0.0))
 
-    # 2) Build a compact summary for the DB row
     forecast = trends.get("forecast_7_days") or {}
-
-    scenarios_list = scenarios.get("scenarios") or []
-    recommendation_summary = None
-    max_success_probability = None
-    max_risk_probability = None
-
-    if scenarios_list:
-        # First non-null recommendation as summary
-        recs = [s.get("recommendation") for s in scenarios_list if s.get("recommendation")]
-        recommendation_summary = recs[0] if recs else None
-
-        success_probs = [
-            s.get("optimistic", {}).get("success_probability")
-            for s in scenarios_list
-            if isinstance(s.get("optimistic", {}).get("success_probability"), (int, float))
-        ]
-        risk_probs = [
-            s.get("pessimistic", {}).get("risk_probability")
-            for s in scenarios_list
-            if isinstance(s.get("pessimistic", {}).get("risk_probability"), (int, float))
-        ]
-        max_success_probability = max(success_probs) if success_probs else None
-        max_risk_probability = max(risk_probs) if risk_probs else None
-
+    validation_status = validation.get("validation_status")
     issues = validation.get("issues") or []
     issue_count = len(issues)
 
-    # Store interventions as JSON string for now (keeps schema simple)
-    interventions_json_str = json.dumps(req.interventions) if req.interventions is not None else None
+    # Scenario roll-up
+    recommendation_summary = None
+    max_success_probability = None
+    max_risk_probability = None
+    scenario_list = scenarios.get("scenarios") or []
+    if scenario_list:
+        recommendation_summary = scenario_list[0].get("recommendation")
+        max_success_probability = max(
+            (s.get("optimistic", {}).get("success_probability") or 0)
+            for s in scenario_list
+        )
+        max_risk_probability = max(
+            (s.get("pessimistic", {}).get("risk_probability") or 0)
+            for s in scenario_list
+        )
 
-    run_row = AnalysisRun(
-        region=result.get("region", req.region),
-        has_raw_data=bool(req.raw_data),
-        interventions=interventions_json_str,
+    # 4) Persist a lightweight log row
+    run = AnalysisRun(
+        region=result["region"],
+        has_raw_data=bool(result.get("raw_data")),
+        interventions=json.dumps(result.get("interventions") or []),
         trend_classification=trends.get("trend_classification"),
         trend_confidence_label=trends.get("confidence"),
         forecast_armed_clash=forecast.get("armed_clash_likelihood"),
@@ -209,101 +152,173 @@ async def analyze_intelligence(
         recommendation_summary=recommendation_summary,
         max_success_probability=max_success_probability,
         max_risk_probability=max_risk_probability,
-        validation_status=validation.get("validation_status"),
+        validation_status=validation_status,
         issue_count=issue_count,
-        overall_confidence=validation.get("overall_confidence", result.get("confidence_score")),
+        overall_confidence=float(validation.get("overall_confidence", confidence)),
         explainability=explainability,
     )
-
-    db.add(run_row)
+    db.add(run)
     db.commit()
-    db.refresh(run_row)
+    db.refresh(run)
 
-    # 3) Shape API response (same as run_analysis + run_id)
-    response = {
-        "run_id": run_row.id,
-        "region": result.get("region", req.region),
-        "timestamp": result.get("timestamp", datetime.utcnow().isoformat()),
+    # 5) Return full analysis payload (plus run_id) to caller
+    return {
+        "run_id": run.id,
+        "region": result["region"],
+        "timestamp": result["timestamp"],
         "events": result.get("extracted_events"),
         "trends": trends,
         "scenarios": scenarios,
         "validation": validation,
         "approval_status": result.get("approval_status"),
-        "confidence": result.get("confidence_score"),
-        "messages": result.get("messages", []),
+        "confidence": confidence,
+        "messages": messages,
+        "explainability": explainability,
     }
 
-    if explainability is not None:
-        response["explainability"] = explainability
-    if narrative_summary:
-        response["narrative_summary"] = narrative_summary
 
-    return response
-
-
-# ---------- Thin history endpoint ----------
-
-
-@router.get("/runs")
-async def list_runs(limit: int = 20, db: Session = Depends(get_db)):
-    rows = (
+@router.get("/runs", response_model=List[AnalysisRunSummary])
+def list_runs(
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    """
+    Lightweight history endpoint so the frontend can show recent analyses.
+    """
+    runs = (
         db.query(AnalysisRun)
         .order_by(AnalysisRun.created_at.desc())
         .limit(limit)
         .all()
     )
 
-    return [
-        {
-            "id": r.id,
-            "region": r.region,
-            "has_raw_data": r.has_raw_data,
-            "interventions": json.loads(r.interventions) if r.interventions else None,
-            "trend_classification": r.trend_classification,
-            "trend_confidence_label": r.trend_confidence_label,
-            "forecast_armed_clash": r.forecast_armed_clash,
-            "forecast_civilian_targeting": r.forecast_civilian_targeting,
-            "recommendation_summary": r.recommendation_summary,
-            "max_success_probability": r.max_success_probability,
-            "max_risk_probability": r.max_risk_probability,
-            "validation_status": r.validation_status,
-            "issue_count": r.issue_count,
-            "overall_confidence": r.overall_confidence,
-            "created_at": r.created_at.isoformat() if r.created_at else None,
-        }
-        for r in rows
-    ]
+    summaries: List[AnalysisRunSummary] = []
+    for r in runs:
+        try:
+            interventions = json.loads(r.interventions) if r.interventions else []
+        except Exception:
+            interventions = []
+
+        # Derive approval-ish label from confidence if nothing else is stored
+        approval_status = _derive_approval_status_from_confidence(
+            float(r.overall_confidence or 0.0)
+        )
+
+        # Optional human feedback/note stored inside explainability.meta (if any)
+        expl = r.explainability or {}
+        meta = expl.get("meta") or {}
+        human_feedback = meta.get("human_feedback")
+
+        summaries.append(
+            AnalysisRunSummary(
+                id=r.id,
+                region=r.region,
+                has_raw_data=r.has_raw_data,
+                interventions=interventions,
+                trend_classification=r.trend_classification,
+                trend_confidence_label=r.trend_confidence_label,
+                forecast_armed_clash=r.forecast_armed_clash,
+                forecast_civilian_targeting=r.forecast_civilian_targeting,
+                recommendation_summary=r.recommendation_summary,
+                max_success_probability=r.max_success_probability,
+                max_risk_probability=r.max_risk_probability,
+                validation_status=r.validation_status,
+                issue_count=r.issue_count,
+                overall_confidence=r.overall_confidence,
+                approval_status=approval_status,
+                human_feedback=human_feedback,
+                explainability=expl,
+                created_at=r.created_at,
+            )
+        )
+
+    return summaries
 
 
-# ---------- Feedback / approval endpoint ----------
+@router.get("/runs/{run_id}", response_model=AnalysisRunSummary)
+def get_run(run_id: int, db: Session = Depends(get_db)):
+    run = db.query(AnalysisRun).get(run_id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found")
+
+    try:
+        interventions = json.loads(run.interventions) if run.interventions else []
+    except Exception:
+        interventions = []
+
+    expl = run.explainability or {}
+    meta = expl.get("meta") or {}
+    human_feedback = meta.get("human_feedback")
+
+    approval_status = _derive_approval_status_from_confidence(
+        float(run.overall_confidence or 0.0)
+    )
+
+    return AnalysisRunSummary(
+        id=run.id,
+        region=run.region,
+        has_raw_data=run.has_raw_data,
+        interventions=interventions,
+        trend_classification=run.trend_classification,
+        trend_confidence_label=run.trend_confidence_label,
+        forecast_armed_clash=run.forecast_armed_clash,
+        forecast_civilian_targeting=run.forecast_civilian_targeting,
+        recommendation_summary=run.recommendation_summary,
+        max_success_probability=run.max_success_probability,
+        max_risk_probability=run.max_risk_probability,
+        validation_status=run.validation_status,
+        issue_count=run.issue_count,
+        overall_confidence=run.overall_confidence,
+        approval_status=approval_status,
+        human_feedback=human_feedback,
+        explainability=expl,
+        created_at=run.created_at,
+    )
 
 
 @router.post("/runs/{run_id}/feedback")
-async def submit_feedback(
+def submit_feedback(
     run_id: int,
-    payload: FeedbackRequest,
+    payload: FeedbackPayload,
     db: Session = Depends(get_db),
 ):
-    run = db.query(AnalysisRun).filter(AnalysisRun.id == run_id).first()
+    """
+    Simple feedback / approval endpoint.
+
+    To avoid changing the DB schema, we tuck human feedback and approval
+    into the explainability.meta section of the analysis_runs row.
+    """
+    run = db.query(AnalysisRun).get(run_id)
     if not run:
-        raise HTTPException(status_code=404, detail="analysis_run not found")
+        raise HTTPException(status_code=404, detail="Run not found")
 
-    feedback = AnalysisFeedback(
-        run_id=run_id,
-        status=payload.status,
-        comment=payload.comment,
-        user=payload.user,
-    )
+    expl = run.explainability or {}
+    meta = expl.get("meta") or {}
 
-    db.add(feedback)
+    if payload.approved is not None:
+        meta["human_approved"] = bool(payload.approved)
+
+    if payload.feedback:
+        meta["human_feedback"] = payload.feedback
+
+    expl["meta"] = meta
+    run.explainability = expl
+
+    db.add(run)
     db.commit()
-    db.refresh(feedback)
+    db.refresh(run)
+
+    # Mirror the label we might show in the UI
+    approval_status = None
+    if payload.approved is True:
+        approval_status = "approved"
+    elif payload.approved is False:
+        approval_status = "rejected"
 
     return {
-        "id": feedback.id,
-        "run_id": feedback.run_id,
-        "status": feedback.status,
-        "comment": feedback.comment,
-        "user": feedback.user,
-        "created_at": feedback.created_at.isoformat() if feedback.created_at else None,
+        "run_id": run.id,
+        "region": run.region,
+        "approval_status": approval_status,
+        "feedback": payload.feedback,
+        "explainability_meta": meta,
     }
