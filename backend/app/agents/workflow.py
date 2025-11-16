@@ -11,7 +11,7 @@ from app.agents.state import SudanCRAMState
 from app.services.vector_store import VectorStore
 
 
-# ---- 1. LLM + Vector Store setup ----
+# ---- 1. LLM setup ----
 
 llm = ChatOllama(
     model=os.getenv("OLLAMA_MODEL", "qwen2.5:14b"),
@@ -19,14 +19,23 @@ llm = ChatOllama(
     temperature=0.7,
 )
 
-# ⚠️ IMPORTANT: lazy VectorStore so Render can start fast.
+
+# ---- 1.b Lazy Vector Store setup (important for Render startup) ----
+
 _vector_store: Optional[VectorStore] = None
 
 
 def _get_vector_store() -> VectorStore:
-    """Lazily initialize the VectorStore on first use (not at import)."""
+    """
+    Lazily initialize the VectorStore.
+
+    This avoids heavy model loading at import time, which can cause
+    cloud platforms like Render to think the service isn't listening
+    on a port yet and fail the deployment.
+    """
     global _vector_store
     if _vector_store is None:
+        print("🔧 Initializing Vector Store (lazy)...")
         _vector_store = VectorStore()
     return _vector_store
 
@@ -62,12 +71,12 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
     """Retrieve relevant events from Qdrant for the given region."""
     print("\n🔍 RAG Retrieval...")
 
+    vs = _get_vector_store()
     region = state["region"]
-    vector_store = _get_vector_store()
 
     # First: try region-focused search
     region_query = f"conflict events in {region}"
-    region_results = vector_store.semantic_search(
+    region_results = vs.semantic_search(
         query=region_query,
         filters={"region": region},
         top_k=20,
@@ -80,7 +89,7 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
         )
     else:
         # Fallback: national context if nothing region-specific is found
-        results = vector_store.semantic_search(
+        results = vs.semantic_search(
             query=region_query,
             filters=None,
             top_k=20,
