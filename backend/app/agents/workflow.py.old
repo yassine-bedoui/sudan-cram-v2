@@ -8,10 +8,11 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 
 from app.agents.state import SudanCRAMState
-from app.services.vector_store import VectorStore
+# IMPORTANT: do NOT import VectorStore here anymore
+# from app.services.vector_store import VectorStore
 
 
-# ---- 1. LLM + Vector Store setup ----
+# ---- 1. LLM setup ----
 
 llm = ChatOllama(
     model=os.getenv("OLLAMA_MODEL", "qwen2.5:14b"),
@@ -19,7 +20,29 @@ llm = ChatOllama(
     temperature=0.7,
 )
 
-vector_store = VectorStore()
+
+# ---- 1.b Lazy Vector Store setup (important for Render startup) ----
+
+_vector_store = None  # type: ignore[assignment]
+
+
+def _get_vector_store():
+    """
+    Lazily initialize the VectorStore AND lazily import its module.
+
+    This avoids heavy TensorFlow / embedding imports at app startup,
+    which can prevent cloud platforms like Render from ever seeing
+    an open port during deployment.
+    """
+    global _vector_store
+    if _vector_store is None:
+        print("🔧 Initializing Vector Store (lazy import)...")
+        # Local import so heavy deps (tensorflow, HF models, etc.)
+        # are only loaded on first actual use, not at server startup.
+        from app.services.vector_store import VectorStore  # type: ignore
+
+        _vector_store = VectorStore()
+    return _vector_store
 
 
 # ---- Small helper: build canonical events timeline ----
@@ -53,11 +76,12 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
     """Retrieve relevant events from Qdrant for the given region."""
     print("\n🔍 RAG Retrieval...")
 
+    vs = _get_vector_store()
     region = state["region"]
 
     # First: try region-focused search
     region_query = f"conflict events in {region}"
-    region_results = vector_store.semantic_search(
+    region_results = vs.semantic_search(
         query=region_query,
         filters={"region": region},
         top_k=20,
@@ -70,7 +94,7 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
         )
     else:
         # Fallback: national context if nothing region-specific is found
-        results = vector_store.semantic_search(
+        results = vs.semantic_search(
             query=region_query,
             filters=None,
             top_k=20,
