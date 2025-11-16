@@ -290,19 +290,12 @@ def consistency_checker_node(state: SudanCRAMState) -> SudanCRAMState:
     }
 
     prompt = f"""
-You are checking internal consistency of a conflict risk analysis.
+You are checking internal consistency of an analysis.
 
-DATA (JSON):
+DATA:
 {json.dumps(payload, ensure_ascii=False, indent=2)}
 
-Guidelines (important):
-- If "events" is null or an empty list, you may treat this as a DATA_GAP.
-- If "events" contains items, DO NOT say it is null or missing.
-- Base your reasoning strictly on the DATA above (do not invent fields).
-- Focus on mismatches between:
-  • events (if present),
-  • trend classification and probabilities,
-  • scenario success / risk probabilities.
+Identify contradictions or weak assumptions.
 
 Return JSON ONLY:
 
@@ -352,7 +345,7 @@ def human_approval_node(state: SudanCRAMState) -> SudanCRAMState:
         state["human_approval_required"] = True
         state["approval_status"] = "pending"
         state["messages"].append(
-            f"⚠️ Human approval required (confidence={conf:.2f})"
+            f"⚠️ Human  approval requireed (confidence={conf:.2f})"
         )
     else:
         state["human_approval_required"] = False
