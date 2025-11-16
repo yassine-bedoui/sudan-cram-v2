@@ -19,7 +19,16 @@ llm = ChatOllama(
     temperature=0.7,
 )
 
-vector_store = VectorStore()
+# ⚠️ IMPORTANT: lazy VectorStore so Render can start fast.
+_vector_store: Optional[VectorStore] = None
+
+
+def _get_vector_store() -> VectorStore:
+    """Lazily initialize the VectorStore on first use (not at import)."""
+    global _vector_store
+    if _vector_store is None:
+        _vector_store = VectorStore()
+    return _vector_store
 
 
 # ---- Small helper: build canonical events timeline ----
@@ -54,6 +63,7 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
     print("\n🔍 RAG Retrieval...")
 
     region = state["region"]
+    vector_store = _get_vector_store()
 
     # First: try region-focused search
     region_query = f"conflict events in {region}"
