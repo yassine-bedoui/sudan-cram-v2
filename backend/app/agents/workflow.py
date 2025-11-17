@@ -11,27 +11,38 @@ from app.agents.state import SudanCRAMState
 from app.services.vector_store import VectorStore
 
 
-# ---- 1. LLM setup ----
+# ---- 1. LLM + Vector Store setup (LAZY, for fast startup) ----
 
-llm = ChatOllama(
-    model=os.getenv("OLLAMA_MODEL", "qwen2.5:14b"),
-    base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
-    temperature=0.7,
-)
+# We keep *only* lightweight globals at import time. Heavy objects are created on-demand.
 
-
-# ---- 1.b Lazy Vector Store setup (important for Render startup) ----
-
+_llm: Optional[ChatOllama] = None
 _vector_store: Optional[VectorStore] = None
+
+
+def _get_llm() -> ChatOllama:
+    """
+    Lazily initialize the LLM client.
+
+    This avoids hitting the Ollama server at import time, which can slow down or
+    break startup on platforms like Render if the model server is slow/unavailable.
+    """
+    global _llm
+    if _llm is None:
+        print("🧠 Initializing LLM client (lazy)...")
+        _llm = ChatOllama(
+            model=os.getenv("OLLAMA_MODEL", "qwen2.5:14b"),
+            base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
+            temperature=0.7,
+        )
+    return _llm
 
 
 def _get_vector_store() -> VectorStore:
     """
     Lazily initialize the VectorStore.
 
-    This avoids heavy model loading at import time, which can cause
-    cloud platforms like Render to think the service isn't listening
-    on a port yet and fail the deployment.
+    This avoids heavy embedding/model loading at import time, which can cause
+    cloud platforms like Render to think the service isn't listening on a port yet.
     """
     global _vector_store
     if _vector_store is None:
@@ -119,6 +130,8 @@ def event_extractor_node(state: SudanCRAMState) -> SudanCRAMState:
         state["messages"].append("No raw_data provided; skipping event extraction")
         return state
 
+    llm = _get_llm()
+
     # Use a few retrieved events as context for the LLM
     context_lines = []
     for e in state.get("retrieved_events", [])[:5]:
@@ -176,6 +189,8 @@ Extract events as JSON. Use this exact schema:
 def trend_analyst_node(state: SudanCRAMState) -> SudanCRAMState:
     """Analyze trends using the retrieved events timeline."""
     print("\n📊 Trend Analyst...")
+
+    llm = _get_llm()
 
     # Build a simple timeline summary directly from retrieved_events
     timeline_lines: List[str] = []
@@ -248,6 +263,7 @@ def scenario_generator_node(state: SudanCRAMState) -> SudanCRAMState:
         )
         return state
 
+    llm = _get_llm()
     trend = state.get("trend_analysis")
 
     prompt = f"""
@@ -302,53 +318,12 @@ def consistency_checker_node(state: SudanCRAMState) -> SudanCRAMState:
     """Check for contradictions and produce an overall confidence score."""
     print("\n✅ Consistency Checker...")
 
-    events = state.get("events") or []
-    trends = state.get("trend_analysis") or {}
-    scenarios = state.get("scenarios") or {}
-
-    # ---- Heuristic: detect "STABLE trend + high escalation risk" ----
-    max_escalation_prob: Optional[float] = None
-
-    # 1) From trend forecast (armed clashes / civilian targeting)
-    forecast = (trends or {}).get("forecast_7_days") or {}
-    for key in ("armed_clash_likelihood", "civilian_targeting_likelihood"):
-        v = forecast.get(key)
-        if isinstance(v, (int, float)):
-            max_escalation_prob = v if max_escalation_prob is None else max(
-                max_escalation_prob, v
-            )
-
-    # 2) From pessimistic scenario risk probabilities
-    for s in (scenarios.get("scenarios") or []):
-        pess = (s or {}).get("pessimistic") or {}
-        rp = pess.get("risk_probability")
-        if isinstance(rp, (int, float)):
-            max_escalation_prob = rp if max_escalation_prob is None else max(
-                max_escalation_prob, rp
-            )
-
-    trend_label = trends.get("trend_classification")
-    escalation_flag_threshold = 60  # can be tuned later
-
-    stable_with_high_escalation = (
-        trend_label == "STABLE"
-        and max_escalation_prob is not None
-        and max_escalation_prob >= escalation_flag_threshold
-    )
-
-    consistency_hints: Dict[str, Any] = {
-        "trend_classification": trend_label,
-        "max_escalation_probability": max_escalation_prob,
-        "stable_with_high_escalation": stable_with_high_escalation,
-        "escalation_flag_threshold": escalation_flag_threshold,
-        "num_events": len(events),
-    }
+    llm = _get_llm()
 
     payload = {
-        "events": events,
-        "trends": trends,
-        "scenarios": scenarios,
-        "consistency_hints": consistency_hints,
+        "events": state.get("events"),
+        "trends": state.get("trend_analysis"),
+        "scenarios": state.get("scenarios"),
     }
 
     prompt = f"""
@@ -358,29 +333,18 @@ DATA (JSON):
 {json.dumps(payload, ensure_ascii=False, indent=2)}
 
 Guidelines (important):
-
-1) About the events list:
 - If "events" is null or an empty list, you may treat this as a DATA_GAP.
-- If "events" contains items, DO NOT say it is null or missing. Instead, treat it as observed data.
-
-2) About escalation vs trend:
-- The field "consistency_hints.stable_with_high_escalation" indicates whether the system detected:
-  • trend_classification == "STABLE"
-  • AND a high max escalation probability (>= consistency_hints.escalation_flag_threshold)
-- If this flag is true, you MUST treat this as a likely inconsistency between:
-  • the trend label ("STABLE"), and
-  • the escalation probabilities (forecast and/or scenario risk probabilities).
-- In that case, explicitly state in "issues" whether:
-  • the trend label is probably too mild and should be closer to "VOLATILE" or "ESCALATING", OR
-  • the escalation probabilities (forecast and/or scenarios) are probably too high for a truly "STABLE" trend.
-
-3) General rules:
+- If "events" contains items, DO NOT say it is null or missing.
 - Base your reasoning strictly on the DATA above (do not invent fields).
 - Focus on mismatches between:
   • events (if present),
   • trend classification and probabilities,
   • scenario success / risk probabilities.
-- If everything is internally coherent, you may return "PASSED" with no issues.
+
+Additionally:
+- If trend_classification is "STABLE" but any escalation-related probability
+  (armed_clash_likelihood, civilian_targeting_likelihood, or pessimistic risk_probability)
+  is high (e.g. >= 60), flag this as an INCONSISTENCY and explain why.
 
 Return JSON ONLY:
 
