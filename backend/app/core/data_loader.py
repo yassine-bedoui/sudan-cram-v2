@@ -13,7 +13,7 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Tuple, Optional, List
 import streamlit as st
-from utils.state_name_normalizer import normalize_dataframe_states  
+from .state_name_normalizer import normalize_dataframe_states
 
 
 # ============================================================================

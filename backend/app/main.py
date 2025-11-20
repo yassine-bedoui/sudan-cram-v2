@@ -2,7 +2,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import alerts, analytics, reports, dashboard, goldstein, intelligence
+from app.routers import (
+    alerts,
+    analytics,
+    reports,
+    dashboard,
+    goldstein,
+    intelligence,
+    analysis,   # 👈 NEW: analysis router
+)
+from app.api.routes import trend_routes
+
 
 app = FastAPI(
     title="Sudan CRAM API",
@@ -29,8 +39,10 @@ app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(reports.router, prefix="/api", tags=["reports"])
 app.include_router(alerts.router, prefix="/api", tags=["alerts"])
 app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
-app.include_router(goldstein.router)  # has its own prefix="/api/goldstein"
-app.include_router(intelligence.router)  # prefix="/api/intelligence" inside
+app.include_router(goldstein.router)      # has its own prefix="/api/goldstein"
+app.include_router(intelligence.router)   # prefix="/api/intelligence" inside
+app.include_router(trend_routes.router, prefix="/api", tags=["trend-analysis"])
+app.include_router(analysis.router, prefix="/api", tags=["analysis"])  # 👈 NEW
 
 
 @app.get("/")
@@ -52,6 +64,8 @@ async def root():
             "/api/goldstein/top-risks",
             "/api/intelligence/health",
             "/api/intelligence/analyze",
+            "/api/trend/risk",          # trend API endpoint
+            "/api/analysis/run",        # 👈 NEW: LangGraph analysis endpoint
             "/docs",
         ],
     }

@@ -21,11 +21,9 @@ class VectorStore:
     def __init__(self):
         print("🔧 Initializing Vector Store...")
 
-        # ✅ Default to local Qdrant if env not set
-        qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
-
+        # Connect to Qdrant Cloud or local
         self.client = QdrantClient(
-            url=qdrant_url,
+            url=os.getenv("QDRANT_URL"),
             api_key=os.getenv("QDRANT_API_KEY"),
             timeout=60,
         )
@@ -41,7 +39,7 @@ class VectorStore:
         print("✅ Embedding model loaded")
 
         self._init_collection()
-        self._ensure_region_index()  # can be extended to more fields
+        self._ensure_region_index()
 
     def _init_collection(self):
         """Initialize Qdrant collection"""
@@ -66,31 +64,20 @@ class VectorStore:
             raise
 
     def _ensure_region_index(self):
-        """
-        Ensure payload indexes for fields we filter on.
-        Currently: 'region'. You can easily extend this
-        to 'event_type', 'source_type', etc. if needed.
-        """
-        def create_index(field_name: str):
-            try:
-                self.client.create_payload_index(
-                    collection_name=self.collection_name,
-                    field_name=field_name,
-                    field_schema=PayloadSchemaType.KEYWORD,
-                )
-                print(f"✅ Created payload index for '{field_name}'")
-            except Exception as e:
-                msg = str(e)
-                if "already exists" in msg or "index with name" in msg:
-                    print(f"ℹ️ Payload index for '{field_name}' already exists")
-                else:
-                    print(f"❌ Error creating '{field_name}' index: {e}")
-
-        # At minimum index region
-        create_index("region")
-        # Optional: uncomment when you start using these filters
-        # create_index("event_type")
-        # create_index("source_type")
+        """Ensure 'region' payload field is indexed for filtering"""
+        try:
+            self.client.create_payload_index(
+                collection_name=self.collection_name,
+                field_name="region",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
+            print("✅ Created payload index for 'region'")
+        except Exception as e:
+            msg = str(e)
+            if "already exists" in msg or "index with name" in msg:
+                print("ℹ️ Payload index for 'region' already exists")
+            else:
+                print(f"❌ Error creating 'region' index: {e}")
 
     def embed_text(self, text: str) -> List[float]:
         """Create embedding vector from text"""
@@ -101,11 +88,9 @@ class VectorStore:
         Create an embedding vector from an event dictionary.
         Typically convert key metadata fields into a summary string.
         """
-        summary = (
-            f"{event.get('date', '')} {event.get('location', '')} {event.get('event_type', '')} "
-            f"{', '.join([actor['name'] for actor in event.get('actors', [])])} "
-            f"Severity: {event.get('severity', '')}"
-        )
+        summary = f"{event.get('date', '')} {event.get('location', '')} {event.get('event_type', '')} " \
+                  f"{', '.join([actor['name'] for actor in event.get('actors', [])])} " \
+                  f"Severity: {event.get('severity', '')}"
         return self.embed_text(summary)
 
     def upsert_event(self, event_id: str, vector: List[float], payload: Dict) -> bool:
@@ -151,7 +136,6 @@ class VectorStore:
 
             qdrant_filter = None
             if filters:
-                # NOTE: these are exact match filters (no ranges).
                 conditions = [
                     {"key": k, "match": {"value": v}} for k, v in filters.items()
                 ]

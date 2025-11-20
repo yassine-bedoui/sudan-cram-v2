@@ -1,6 +1,7 @@
 from typing import TypedDict, List, Dict, Optional, Annotated
 from operator import add
 
+
 class SudanCRAMState(TypedDict):
     # Input
     region: str
@@ -9,6 +10,8 @@ class SudanCRAMState(TypedDict):
 
     # RAG Context
     retrieved_events: List[Dict]
+    # Canonical event timeline built from retrieved_events
+    events: List[Dict]
 
     # Agent Outputs
     extracted_events: Optional[Dict]
@@ -25,5 +28,9 @@ class SudanCRAMState(TypedDict):
     confidence_score: float
     timestamp: str
 
-    # NEW: lightweight explainability snapshot for frontend / analysts
+    # RAG metadata used for explainability
+    retrieval_context: Optional[Dict]
+
+    # Lightweight explainability snapshot for frontend / analysts
     explainability: Optional[Dict]
+    

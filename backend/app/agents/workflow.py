@@ -52,69 +52,188 @@ def _get_vector_store() -> VectorStore:
 
 # ---- Small helper: build canonical events timeline ----
 
+
 def _build_events_timeline_from_retrieved(
     retrieved_events: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
-    """Turn raw vector-store hits into a canonical events timeline."""
+    """
+    Turn raw vector-store hits into a canonical events timeline.
+
+    ✅ Deduplicates events so the same GDELT row (same db_id/event_id) does not appear twice.
+    """
     events_timeline: List[Dict[str, Any]] = []
+    seen_keys = set()
+
+    # Sort by date for temporal coherence
     for e in sorted(
         retrieved_events,
         key=lambda x: x.get("metadata", {}).get("date", ""),
     ):
-        meta = e.get("metadata", {})
+        meta = e.get("metadata", {}) or {}
+
+        source = meta.get("source", "GDELT")
+        db_id = meta.get("db_id")
+        event_id = meta.get("event_id")
+
+        # Prefer a stable numerical / string id for deduplication
+        if db_id is not None:
+            key = (source, "db_id", db_id)
+        elif event_id is not None:
+            key = (source, "event_id", event_id)
+        else:
+            # Fallback to a composite key if ids are missing
+            key = (
+                source,
+                meta.get("date"),
+                meta.get("region"),
+                meta.get("event_type"),
+                tuple(meta.get("actors", []) or []),
+            )
+
+        if key in seen_keys:
+            # Skip duplicates
+            continue
+        seen_keys.add(key)
+
         events_timeline.append(
             {
                 "date": meta.get("date"),
-                "source": meta.get("source", "GDELT"),
+                "source": source,
                 "region": meta.get("region"),
                 "event_type": meta.get("event_type"),
                 "actors": meta.get("actors", []),
                 "fatalities": meta.get("fatalities"),
             }
         )
+
     return events_timeline
 
 
 # ---- 2. Nodes ----
 
+
 def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
-    """Retrieve relevant events from Qdrant for the given region."""
+    """
+    Retrieve relevant events from Qdrant for the given region.
+
+    ✅ Behavior:
+    - Try exact payload filter on region field first: {"region": region}
+    - If that fails, run Sudan-wide semantic search and THEN:
+        • If region provided: prefer hits whose metadata.region contains the region string.
+        • Otherwise: treat as national context.
+    - Store retrieval query + filter mode in `state["retrieval_context"]` for explainability.
+    """
     print("\n🔍 RAG Retrieval...")
 
     vs = _get_vector_store()
-    region = state["region"]
+    region_raw = state.get("region") or ""
+    region = region_raw.strip()
 
-    # First: try region-focused search
-    region_query = f"conflict events in {region}"
-    region_results = vs.semantic_search(
-        query=region_query,
-        filters={"region": region},
-        top_k=20,
-    )
-
-    if region_results:
-        results = region_results
-        state["messages"].append(
-            f"Retrieved {len(results)} region-focused events for {region}"
-        )
+    # Base query text
+    if region:
+        query_text = f"recent conflict events in {region}"
     else:
-        # Fallback: national context if nothing region-specific is found
-        results = vs.semantic_search(
-            query=region_query,
-            filters=None,
-            top_k=20,
-        )
-        state["messages"].append(
-            "No region-specific matches; used Sudan-wide context instead"
-        )
-        state["messages"].append(
-            f"Retrieved {len(results)} events for region {region}"
-        )
+        query_text = "recent conflict events in Sudan"
+
+    results: List[Dict[str, Any]] = []
+    retrieval_filters_for_log: Dict[str, Any] = {}
+
+    # 1) Try region-focused search with exact filter on payload["region"]
+    if region:
+        try:
+            strict_filter = {"region": region}
+            region_results = vs.semantic_search(
+                query=query_text,
+                filters=strict_filter,
+                top_k=20,
+            )
+        except Exception as e:
+            state["messages"].append(f"⚠️ Region-filtered RAG search error: {e}")
+            region_results = []
+
+        if region_results:
+            # We actually got exact region hits
+            results = region_results
+            retrieval_filters_for_log = {
+                "region": region,
+                "mode": "region_exact",
+            }
+            state["messages"].append(
+                f"Retrieved {len(results)} region-focused events for {region} (exact filter)"
+            )
+        else:
+            state["messages"].append(
+                "No region-specific matches from exact filter; using semantic fallback"
+            )
+
+    # 2) Fallback / main search if no region-specific results yet
+    if not results:
+        try:
+            # Ask for a few more results so semantic region-filtering has material
+            fallback_results = vs.semantic_search(
+                query=query_text,
+                filters=None,
+                top_k=50,
+            )
+        except Exception as e:
+            state["messages"].append(f"⚠️ Fallback RAG search error: {e}")
+            fallback_results = []
+
+        if region and fallback_results:
+            # Try to emulate region-specific behavior by checking substring inside metadata.region
+            region_lower = region.lower()
+            region_semantic = [
+                r
+                for r in fallback_results
+                if region_lower
+                in str(r.get("metadata", {}).get("region", "")).lower()
+            ]
+
+            if region_semantic:
+                results = region_semantic[:20]
+                retrieval_filters_for_log = {
+                    "region": region,
+                    "mode": "semantic_region_filter",
+                }
+                state["messages"].append(
+                    f"Retrieved {len(results)} region-focused events for {region} (semantic filter)"
+                )
+            else:
+                # Nothing clearly region-specific → treat as national context
+                results = fallback_results
+                retrieval_filters_for_log = {
+                    "region": "Sudan",
+                    "mode": "national_fallback",
+                }
+                state["messages"].append(
+                    "No region-specific matches; used Sudan-wide context instead"
+                )
+                state["messages"].append(
+                    f"Retrieved {len(results)} events for region {region}"
+                )
+        else:
+            # No region given OR no results at all
+            results = fallback_results
+            retrieval_filters_for_log = {
+                "region": "Sudan" if region else "Sudan (no_region_specified)",
+                "mode": "national" if region else "national_no_region",
+            }
+            state["messages"].append(
+                f"Retrieved {len(results)} Sudan-wide events "
+                f"({'no region specified' if not region else 'fallback'})"
+            )
 
     state["retrieved_events"] = results
 
     # ✅ Build canonical events timeline early so all downstream nodes see it
-    state["events"] = _build_events_timeline_from_retrieved(results)
+    events_timeline = _build_events_timeline_from_retrieved(results)
+    state["events"] = events_timeline
+
+    # ✅ Stash retrieval metadata for explainability
+    state["retrieval_context"] = {
+        "query": query_text,
+        "filters": retrieval_filters_for_log,
+    }
 
     return state
 
@@ -132,9 +251,9 @@ def event_extractor_node(state: SudanCRAMState) -> SudanCRAMState:
     llm = _get_llm()
 
     # Use a few retrieved events as context for the LLM
-    context_lines = []
+    context_lines: List[str] = []
     for e in state.get("retrieved_events", [])[:5]:
-        meta = e.get("metadata", {})
+        meta = e.get("metadata", {}) or {}
         event_type = meta.get("event_type", "unknown")
         actors = meta.get("actors", [])
         context_lines.append(f"- {event_type}: {actors}")
@@ -197,7 +316,7 @@ def trend_analyst_node(state: SudanCRAMState) -> SudanCRAMState:
         state.get("retrieved_events", []),
         key=lambda x: x.get("metadata", {}).get("date", ""),
     )[:15]:
-        meta = e.get("metadata", {})
+        meta = e.get("metadata", {}) or {}
         date = meta.get("date", "unknown_date")
         event_type = meta.get("event_type", "unknown_type")
         fatalities = meta.get("fatalities")
@@ -452,7 +571,9 @@ def human_approval_node(state: SudanCRAMState) -> SudanCRAMState:
     else:
         state["human_approval_required"] = False
         state["approval_status"] = "auto-approved"
-        state["messages"].append(f"✅ Auto-approved (confidence={conf:.2f})")
+        state["messages"].append(
+            f"✅ Auto-approved (confidence={conf:.2f})"
+        )
 
     return state
 
@@ -498,11 +619,13 @@ app = builder.compile()
 
 # ---- 4. Explainability helper ----
 
+
 def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
     events = state.get("events") or []
     trends = state.get("trend_analysis") or {}
     scenarios = state.get("scenarios") or {}
     validation = state.get("validation") or {}
+    retrieval_context = state.get("retrieval_context") or {}
 
     # Time span in days based on events
     if events:
@@ -517,8 +640,8 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
 
     # Scenario stats
     scenario_list = scenarios.get("scenarios") or []
-    max_success = None
-    max_risk = None
+    max_success: Optional[float] = None
+    max_risk: Optional[float] = None
     recs: List[str] = []
     for s in scenario_list:
         optimistic = (s or {}).get("optimistic") or {}
@@ -527,9 +650,7 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
         risk_prob = pessimistic.get("risk_probability")
         if success_prob is not None:
             max_success = (
-                success_prob
-                if max_success is None
-                else max(max_success, success_prob)
+                success_prob if max_success is None else max(max_success, success_prob)
             )
         if risk_prob is not None:
             max_risk = (
@@ -552,6 +673,8 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
                 "GDELT": len(events),
             },
             "time_span_days": time_span_days,
+            "query": retrieval_context.get("query"),
+            "filters": retrieval_context.get("filters") or {},
         },
         "trend": {
             "trend_classification": trends.get("trend_classification"),
@@ -582,6 +705,7 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
 
 # ---- 5. Public API ----
 
+
 def run_analysis(
     region: str,
     raw_data: Optional[str] = None,
@@ -596,16 +720,31 @@ def run_analysis(
         "region": region,
         "raw_data": raw_data,
         "interventions": interventions or [],
+
+        # RAG context
         "retrieved_events": [],
         "events": [],
+
+        # Agent outputs
         "extracted_events": None,
         "trend_analysis": None,
         "scenarios": None,
         "validation": None,
+
+        # Control
         "human_approval_required": False,
         "approval_status": None,
+
+        # Metadata
         "messages": [],
         "confidence_score": 0.0,
+        "timestamp": datetime.utcnow().isoformat(),
+
+        # RAG metadata for explainability (will be overwritten in rag_retrieval_node)
+        "retrieval_context": None,
+
+        # Explainability snapshot (final)
+        "explainability": None,
     }
 
     final_state = app.invoke(initial_state)

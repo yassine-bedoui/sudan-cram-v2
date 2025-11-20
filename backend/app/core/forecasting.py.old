@@ -1,0 +1,89 @@
+import logging
+from typing import Optional, Tuple
+import pandas as pd
+from prophet import Prophet
+from prophet.diagnostics import cross_validation, performance_metrics
+
+
+class ProphetForecaster:
+    """
+    Encapsulates training and forecasting functionality using the Prophet model.
+    """
+
+    def __init__(self):
+        self.model: Optional[Prophet] = None
+        self.is_trained: bool = False
+
+    def train(self, ts_df: pd.DataFrame, yearly_seasonality: bool = True, weekly_seasonality: bool = True, daily_seasonality: bool = False,
+              changepoint_prior_scale: float = 0.05, holidays: Optional[pd.DataFrame] = None) -> None:
+        """
+        Train the Prophet model on historical time series data.
+
+        Args:
+            ts_df (pd.DataFrame): DataFrame with columns ['ds', 'y'] for training.
+            yearly_seasonality (bool): Whether to include yearly seasonality.
+            weekly_seasonality (bool): Whether to include weekly seasonality.
+            daily_seasonality (bool): Whether to include daily seasonality.
+            changepoint_prior_scale (float): Flexibility of automatic changepoint detection.
+            holidays (pd.DataFrame, optional): DataFrame specifying holidays.
+        """
+        if ts_df.empty:
+            raise ValueError("Training dataframe is empty.")
+        
+        logging.info(f"Training Prophet model on {len(ts_df)} records.")
+
+        self.model = Prophet(
+            yearly_seasonality=yearly_seasonality,
+            weekly_seasonality=weekly_seasonality,
+            daily_seasonality=daily_seasonality,
+            changepoint_prior_scale=changepoint_prior_scale,
+            holidays=holidays
+        )
+        self.model.fit(ts_df)
+        self.is_trained = True
+        logging.info("Prophet model trained successfully.")
+
+    def predict(self, periods: int = 30, freq: str = 'D') -> pd.DataFrame:
+        """
+        Generate forecasts for a given number of periods beyond the training data.
+
+        Args:
+            periods (int): Number of periods to forecast into the future.
+            freq (str): Frequency string compatible with pandas offset aliases (e.g., 'D' for days).
+
+        Returns:
+            pd.DataFrame: Forecast results including 'ds', 'yhat', 'yhat_lower', 'yhat_upper'.
+        """
+        if not self.is_trained or self.model is None:
+            raise RuntimeError("Model has not been trained yet.")
+
+        logging.info(f"Generating forecast for next {periods} periods with frequency '{freq}'.")
+
+        future = self.model.make_future_dataframe(periods=periods, freq=freq)
+        forecast = self.model.predict(future)
+
+        # Select relevant columns for output
+        results = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']]
+        return results
+
+    def cross_validate(self, initial: str = '365 days', period: str = '30 days', horizon: str = '90 days') -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Perform cross-validation to assess forecasting performance.
+
+        Args:
+            initial (str): The size of the initial training period.
+            period (str): The spacing between cutoff dates.
+            horizon (str): The forecast horizon.
+
+        Returns:
+            Tuple[pd.DataFrame, pd.DataFrame]: Cross-validation results and performance metrics.
+        """
+        if not self.is_trained or self.model is None:
+            raise RuntimeError("Model has not been trained yet.")
+
+        logging.info(f"Performing cross-validation with initial={initial}, period={period}, horizon={horizon}.")
+        
+        cv_results = cross_validation(self.model, initial=initial, period=period, horizon=horizon)
+        perf_metrics = performance_metrics(cv_results)
+
+        return cv_results, perf_metrics
