@@ -588,6 +588,97 @@ def should_request_human_input(state: SudanCRAMState) -> str:
     return "request_approval" if conf < 0.7 else "finalize"
 
 
+def narrative_generator_node(state: SudanCRAMState) -> SudanCRAMState:
+    """
+    Agent E – Narrative Generator.
+
+    Turns structured outputs (events, trends, scenarios, validation) into
+    a polished human brief (Markdown) for the frontend.
+    """
+    print("\n📰 Narrative Generator...")
+
+    llm = _get_llm()
+
+    region = state.get("region") or "the region"
+    events = state.get("events") or []
+    trends = state.get("trend_analysis") or {}
+    scenarios = state.get("scenarios") or {}
+    validation = state.get("validation") or {}
+    approval_status = state.get("approval_status")
+
+    # For the prompt, we pass a compact JSON snapshot
+    payload = {
+        "region": region,
+        "events": events,
+        "trend_analysis": trends,
+        "scenarios": scenarios,
+        "validation": validation,
+        "approval_status": approval_status,
+        "confidence_score": state.get("confidence_score"),
+    }
+
+    prompt = f"""
+You are Agent E, a narrative generator for a conflict risk dashboard.
+
+Your job is to turn structured analysis (events, trends, scenarios, validation)
+into a concise, policy-friendly brief for analysts and decision-makers.
+
+Region: {region}
+
+Structured DATA (JSON):
+{json.dumps(payload, ensure_ascii=False, indent=2)}
+
+Write a clear, neutral, and non-technical brief in **Markdown** with these sections:
+
+1. **Situation Overview**
+   - 2–4 sentences describing the current situation in {region}.
+
+2. **Recent Conflict Events**
+   - 3–6 bullet points highlighting the most relevant recent events
+     (dates, who was involved, and what happened). Focus on patterns.
+
+3. **Trend & Risk Outlook (Next 7 Days)**
+   - Explain the trend classification (e.g. ESCALATING, STABLE) in plain language.
+   - Summarize armed_clash_likelihood and civilian_targeting_likelihood
+     as qualitative risk levels (e.g. low / moderate / high).
+
+4. **Scenarios & Recommendations**
+   - If scenarios are present, summarize the main intervention options and their
+     optimistic vs pessimistic outcomes.
+   - If no scenarios are available, say that no specific interventions were evaluated.
+
+5. **Confidence & Data Notes**
+   - Reflect the validation_status and overall confidence.
+   - Note any key caveats or data gaps (e.g. limited events, model uncertainty).
+   - If approval_status is "pending", clearly mention that human review is required
+     before using this assessment for high-stakes decisions.
+
+Style requirements:
+- 300–600 words.
+- Use simple language, short paragraphs, and bullet points where helpful.
+- Do NOT include any JSON in the output.
+- Do NOT talk about yourself; just present the assessment.
+"""
+
+    response = llm.invoke(
+        [
+            SystemMessage(
+                content=(
+                    "You are a professional conflict analyst writing briefs for a dashboard. "
+                    "Always answer in Markdown only."
+                )
+            ),
+            HumanMessage(content=prompt),
+        ]
+    )
+
+    narrative_text = response.content if isinstance(response.content, str) else str(response.content)
+    state["narrative"] = narrative_text
+    state["messages"].append("Generated narrative brief for frontend")
+
+    return state
+
+
 # ---- 3. Graph wiring ----
 
 builder = StateGraph(SudanCRAMState)
@@ -598,6 +689,7 @@ builder.add_node("trend_analyst", trend_analyst_node)
 builder.add_node("scenario_generator", scenario_generator_node)
 builder.add_node("consistency_checker", consistency_checker_node)
 builder.add_node("human_approval", human_approval_node)
+builder.add_node("narrative_generator", narrative_generator_node)
 
 builder.set_entry_point("rag_retrieval")
 builder.add_edge("rag_retrieval", "event_extractor")
@@ -605,14 +697,21 @@ builder.add_edge("event_extractor", "trend_analyst")
 builder.add_edge("trend_analyst", "scenario_generator")
 builder.add_edge("scenario_generator", "consistency_checker")
 
+# After consistency check, either go to human_approval or directly to narrative
 builder.add_conditional_edges(
     "consistency_checker",
     should_request_human_input,
     {
         "request_approval": "human_approval",
-        "finalize": END,
+        "finalize": "narrative_generator",
     },
 )
+
+# If human approval is required, narrative comes after that
+builder.add_edge("human_approval", "narrative_generator")
+
+# Narrative is the last step before finishing
+builder.add_edge("narrative_generator", END)
 
 app = builder.compile()
 
@@ -730,6 +829,7 @@ def run_analysis(
         "trend_analysis": None,
         "scenarios": None,
         "validation": None,
+        "narrative": None,
 
         # Control
         "human_approval_required": False,
@@ -774,9 +874,6 @@ def run_analysis(
         "interventions": final_state.get("interventions") or [],
         "retrieved_events": retrieved_events,
         "events": final_state.get("events") or [],
-
-        "extracted_events": final_state.get("extracted_events"),
-
         "trend_analysis": final_state.get("trend_analysis"),
         "scenarios": final_state.get("scenarios"),
         "validation": final_state.get("validation"),
@@ -785,4 +882,6 @@ def run_analysis(
         "messages": dedup_messages,
         "timestamp": timestamp,
         "explainability": explainability,
+        # 🔹 Agent E output for the frontend:
+        "narrative": final_state.get("narrative"),
     }

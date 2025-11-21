@@ -40,7 +40,7 @@ class SudanCRAMState(TypedDict, total=False):
     validation: Optional[Dict[str, Any]]
 
     # Agent E (narrative_generator_node)
-    # Markdown brief for the frontend
+    # Human-readable markdown brief for the frontend (policy / situation brief)
     narrative: Optional[str]
 
     # ---- Human-in-the-loop control ----
@@ -59,23 +59,6 @@ class SudanCRAMState(TypedDict, total=False):
     #   "filters": {"region": "Khartoum", "mode": "semantic_region_filter"}
     # }
     retrieval_context: Optional[Dict[str, Any]]
-
-    # ---- Explainability / interpretability ----
-    # Structured reasoning tree for this run (built at the end)
-    reasoning_tree: Optional[Dict[str, Any]]
-
-    # Decision-friction prompts for human analysts
-    decision_prompts: List[str]
-
-    # Narrative evidence mapping (sections -> supporting events)
-    narrative_evidence: Optional[List[Dict[str, Any]]]
-
-    # ---- Auditing / versioning ----
-    # Unique id for this analysis run
-    run_id: Optional[str]
-
-    # Path to the JSONL audit log file where this run is stored (if any)
-    audit_log_path: Optional[str]
 
     # ---- Final explainability snapshot ----
     # Built by run_analysis via _build_explainability_payload(...)

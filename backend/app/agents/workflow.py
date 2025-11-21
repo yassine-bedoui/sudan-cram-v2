@@ -10,6 +10,17 @@ from langgraph.graph import StateGraph, END
 from app.agents.state import SudanCRAMState
 from app.services.vector_store import VectorStore
 
+# 🔹 NEW: Explainability helpers & audit logger
+from app.explainability.builder import (
+    build_reasoning_tree,
+    build_decision_prompts,
+    build_narrative_evidence,
+)
+from app.explainability.logger import (
+    log_analysis_run,
+    get_model_and_data_metadata,
+)
+
 
 # ---- 1. LLM + Vector Store setup (LAZY, for fast startup) ----
 # We keep *only* lightweight globals at import time. Heavy objects are created on-demand.
@@ -759,6 +770,11 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
         if rec:
             recs.append(rec)
 
+    # 🔹 NEW: reasoning artefacts
+    reasoning_tree = build_reasoning_tree(state)
+    decision_prompts = build_decision_prompts(state)
+    narrative_evidence = build_narrative_evidence(state)
+
     explainability: Dict[str, Any] = {
         "input": {
             "region": state.get("region"),
@@ -793,9 +809,17 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
             "issues": validation.get("issues") or [],
             "overall_confidence": validation.get("overall_confidence"),
         },
+        # 🔹 NEW: structured reasoning & narrative evidence
+        "reasoning": {
+            "tree": reasoning_tree,
+            "decision_prompts": decision_prompts,
+            "narrative_evidence": narrative_evidence,
+        },
         "meta": {
             "pipeline_confidence_score": state.get("confidence_score"),
             "timestamp": datetime.utcnow().isoformat(),
+            # 🔹 NEW: model & data provenance
+            "models": get_model_and_data_metadata(),
         },
     }
 
@@ -865,8 +889,20 @@ def run_analysis(
             seen.add(m)
             dedup_messages.append(m)
 
+    # 🔹 Build explainability bundle (includes reasoning tree, prompts, evidence)
     explainability = _build_explainability_payload(final_state)
     timestamp = explainability["meta"]["timestamp"]
+
+    # 🔹 Audit log: store full reasoning session + explainability
+    payload_to_log = {
+        "state": final_state,
+        "explainability": explainability,
+    }
+    run_id, audit_log_path = log_analysis_run(payload_to_log)
+
+    # Attach audit info back into explainability meta
+    explainability["meta"]["run_id"] = run_id
+    explainability["meta"]["audit_log_path"] = audit_log_path
 
     return {
         "region": final_state["region"],
@@ -884,4 +920,7 @@ def run_analysis(
         "explainability": explainability,
         # 🔹 Agent E output for the frontend:
         "narrative": final_state.get("narrative"),
+        # 🔹 Audit info so the UI can link to logs if needed
+        "run_id": run_id,
+        "audit_log_path": audit_log_path,
     }
