@@ -12,6 +12,10 @@ from app.routers import (
     analysis,   # 👈 NEW: analysis router
 )
 from app.api.routes import trend_routes
+from app.api import collaboration  
+from app.api.feedback import router as feedback_router
+
+
 
 
 app = FastAPI(
@@ -42,7 +46,11 @@ app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
 app.include_router(goldstein.router)      # has its own prefix="/api/goldstein"
 app.include_router(intelligence.router)   # prefix="/api/intelligence" inside
 app.include_router(trend_routes.router, prefix="/api", tags=["trend-analysis"])
-app.include_router(analysis.router, prefix="/api", tags=["analysis"])  # 👈 NEW
+app.include_router(analysis.router, prefix="/api", tags=["analysis"])  
+app.include_router(collaboration.router)
+app.include_router(feedback_router)
+
+
 
 
 @app.get("/")
