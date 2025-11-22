@@ -1,8 +1,10 @@
 FROM python:3.11-slim
 
-# Install system dependencies for PostgreSQL and PostGIS
+# Install system dependencies for PostgreSQL, PostGIS, and build tools (needed by prophet/cmdstanpy)
 RUN apt-get update && apt-get install -y \
-    gcc \
+    build-essential \
+    g++ \
+    make \
     postgresql-client \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -12,14 +14,13 @@ WORKDIR /app
 # Copy requirements from backend subdirectory
 COPY backend/requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies (this includes prophet)
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend application code
 COPY backend/ .
 
-# CRITICAL FIX: Copy GDELT data from project root
-# Now accessible because build context is "." not "backend/"
+# Copy data (GDELT, etc.)
 COPY data/ /app/data
 
 # Expose port
