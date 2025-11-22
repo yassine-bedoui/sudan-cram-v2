@@ -9,11 +9,15 @@ from app.routers import (
     dashboard,
     goldstein,
     intelligence,
-    analysis,   # 👈 NEW: analysis router
+    analysis,   
 )
 from app.api.routes import trend_routes
 from app.api import collaboration  
 from app.api.feedback import router as feedback_router
+from app.api.reports import router as reports_router
+from app.api.belief_state import router as belief_state_router
+
+
 
 
 
@@ -43,12 +47,16 @@ app.include_router(analytics.router, prefix="/api", tags=["analytics"])
 app.include_router(reports.router, prefix="/api", tags=["reports"])
 app.include_router(alerts.router, prefix="/api", tags=["alerts"])
 app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
-app.include_router(goldstein.router)      # has its own prefix="/api/goldstein"
-app.include_router(intelligence.router)   # prefix="/api/intelligence" inside
+app.include_router(goldstein.router)      
+app.include_router(intelligence.router)   
 app.include_router(trend_routes.router, prefix="/api", tags=["trend-analysis"])
 app.include_router(analysis.router, prefix="/api", tags=["analysis"])  
 app.include_router(collaboration.router)
 app.include_router(feedback_router)
+app.include_router(reports_router, prefix="/api")
+app.include_router(belief_state_router, prefix="/api")
+
+
 
 
 
