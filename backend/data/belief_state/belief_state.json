@@ -20,15 +20,33 @@
         "scenario_run_id": "1bab5bd89d0846598209e7945364aa3a",
         "created_at": "2025-11-22T11:03:01.547290",
         "updated_at": "2025-11-22T11:03:01.547290"
+      },
+      {
+        "id": "3acb44da9a1c4d9a8dc8e6366fcd982d",
+        "description": "Deploy additional UN observers in central Khartoum",
+        "status": "PLANNED",
+        "notes": "High priority if escalation continues",
+        "scenario_run_id": "1b37fd2796184ad38eeb99c3763e2e37",
+        "created_at": "2025-11-22T13:32:26.742828",
+        "updated_at": "2025-11-22T13:32:26.742828"
+      },
+      {
+        "id": "9645b73eb9f847a99493369ef8b026ef",
+        "description": "Negotiate local ceasefire around key markets",
+        "status": "PLANNED",
+        "notes": "Coordinate with local committees",
+        "scenario_run_id": "1b37fd2796184ad38eeb99c3763e2e37",
+        "created_at": "2025-11-22T13:32:26.742828",
+        "updated_at": "2025-11-22T13:32:26.742828"
       }
     ],
-    "last_baseline_run_id": "2332a50265c34696a3dca5b27b0743ef",
-    "last_scenario_run_id": "1bab5bd89d0846598209e7945364aa3a",
+    "last_baseline_run_id": "f8cb2db68df9412288582387a84893f0",
+    "last_scenario_run_id": "1b37fd2796184ad38eeb99c3763e2e37",
     "trend_classification": "ESCALATING",
     "armed_clash_likelihood": 80.0,
     "civilian_targeting_likelihood": 55.0,
     "risk_level_override": null,
-    "notes": "Baseline after 22 Nov run",
-    "updated_at": "2025-11-22T11:03:01.547290"
+    "notes": "Baseline after 22 Nov run\nBaseline after latest run",
+    "updated_at": "2025-11-22T13:32:26.742828"
   }
 }

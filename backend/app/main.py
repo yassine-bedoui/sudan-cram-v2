@@ -16,6 +16,7 @@ from app.api import collaboration
 from app.api.feedback import router as feedback_router
 from app.api.reports import router as reports_router
 from app.api.belief_state import router as belief_state_router
+from app.routers import acled_events
 
 
 
@@ -55,6 +56,8 @@ app.include_router(collaboration.router)
 app.include_router(feedback_router)
 app.include_router(reports_router, prefix="/api")
 app.include_router(belief_state_router, prefix="/api")
+app.include_router(acled_events.router)
+
 
 
 
