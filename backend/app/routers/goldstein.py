@@ -8,24 +8,30 @@ import pandas as pd
 from datetime import datetime
 import glob
 import os
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+DATA_DIR = PROJECT_ROOT / "data" / "processed"
 
 router = APIRouter(prefix="/api/goldstein", tags=["Goldstein Escalation"])
 
-# DOCKER FIX: Use absolute path since files are at /app/data in container
+
 def get_latest_file(pattern):
-    """Get most recent file matching pattern"""
-    # Check if running in Docker (files at /app/data/) or local (files at data/)
-    docker_pattern = '/app/' + pattern
-    local_pattern = pattern
-    
+    """Get most recent file matching pattern in data/processed/."""
+    # Docker: files live under /app/data/processed
+    docker_pattern = str(Path("/app/data/processed") / pattern)
+    # Local dev: files live under <project_root>/data/processed
+    local_pattern = str(DATA_DIR / pattern)
+
     # Try Docker path first, fall back to local
     files = glob.glob(docker_pattern)
     if not files:
         files = glob.glob(local_pattern)
-    
+
     if not files:
         return None
     return max(files, key=os.path.getctime)
+
 
 @router.get("/escalation-risk")
 async def get_escalation_risk():
@@ -34,38 +40,44 @@ async def get_escalation_risk():
     Returns: {location: {risk_score, level, goldstein, trend, events}}
     """
     try:
-        risk_file = get_latest_file('data/processed/goldstein_escalation_risk_*.csv')
+        # Now we just pass the filename pattern; get_latest_file knows DATA_DIR
+        risk_file = get_latest_file("goldstein_escalation_risk_*.csv")
 
         if not risk_file:
             raise HTTPException(
                 status_code=404,
-                detail="No Goldstein analysis found. Run: python scripts/gdelt/analyze_goldstein_trends.py"
+                detail="No Goldstein analysis found. Run: python backend/scripts/analyze_goldstein_trends.py",
             )
 
         df = pd.read_csv(risk_file)
 
         # Format for frontend
         result = {
-            'last_updated': datetime.fromtimestamp(os.path.getctime(risk_file)).isoformat(),
-            'locations': {}
+            "last_updated": datetime.fromtimestamp(os.path.getctime(risk_file)).isoformat(),
+            "locations": {},
         }
 
         for _, row in df.iterrows():
-            result['locations'][row['location']] = {
-                'risk_score': round(float(row['escalation_risk']), 1),
-                'risk_level': row['risk_level'],
-                'avg_goldstein': round(float(row['avg_goldstein']), 2),
-                'trend': round(float(row['goldstein_trend']), 2),
-                'trend_direction': 'escalating' if row['goldstein_trend'] < 0 else 'de-escalating',
-                'event_count': int(row['event_count']),
-                'media_mentions': int(row['media_mentions']),
-                'last_seen': row['last_seen']
+            result["locations"][row["location"]] = {
+                "risk_score": round(float(row["escalation_risk"]), 1),
+                "risk_level": row["risk_level"],
+                "avg_goldstein": round(float(row["avg_goldstein"]), 2),
+                "trend": round(float(row["goldstein_trend"]), 2),
+                "trend_direction": "escalating"
+                if row["goldstein_trend"] < 0
+                else "de-escalating",
+                "event_count": int(row["event_count"]),
+                "media_mentions": int(row["media_mentions"]),
+                "last_seen": row["last_seen"],
             }
 
         return result
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/timeline")
 async def get_goldstein_timeline(hours: int = 24):
@@ -73,33 +85,36 @@ async def get_goldstein_timeline(hours: int = 24):
     Get hourly Goldstein timeline
     """
     try:
-        timeline_file = get_latest_file('data/processed/goldstein_hourly_timeline_*.csv')
+        timeline_file = get_latest_file("goldstein_hourly_timeline_*.csv")
 
         if not timeline_file:
             raise HTTPException(status_code=404, detail="No timeline data found")
 
         df = pd.read_csv(timeline_file)
-        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df["timestamp"] = pd.to_datetime(df["timestamp"])
 
         # Filter to requested hours
-        cutoff = df['timestamp'].max() - pd.Timedelta(hours=hours)
-        df = df[df['timestamp'] >= cutoff]
+        cutoff = df["timestamp"].max() - pd.Timedelta(hours=hours)
+        df = df[df["timestamp"] >= cutoff]
 
         return {
-            'timestamps': df['timestamp'].dt.strftime('%Y-%m-%d %H:%M').tolist(),
-            'goldstein_scores': df['avg_goldstein'].tolist(),
-            'event_counts': df['event_count'].tolist(),
-            'mentions': df['mentions'].tolist()
+            "timestamps": df["timestamp"].dt.strftime("%Y-%m-%d %H:%M").tolist(),
+            "goldstein_scores": df["avg_goldstein"].tolist(),
+            "event_counts": df["event_count"].tolist(),
+            "mentions": df["mentions"].tolist(),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/top-risks")
 async def get_top_risks(limit: int = 10):
     """Get top N highest-risk locations"""
     try:
-        risk_file = get_latest_file('data/processed/goldstein_escalation_risk_*.csv')
+        risk_file = get_latest_file("goldstein_escalation_risk_*.csv")
 
         if not risk_file:
             raise HTTPException(status_code=404, detail="No risk data")
@@ -107,8 +122,10 @@ async def get_top_risks(limit: int = 10):
         df = pd.read_csv(risk_file).head(limit)
 
         return {
-            'top_risks': df.to_dict('records')
+            "top_risks": df.to_dict("records"),
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
