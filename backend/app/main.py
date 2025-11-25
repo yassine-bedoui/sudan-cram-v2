@@ -9,7 +9,9 @@ from app.routers import (
     dashboard,
     goldstein,
     intelligence,
-    analysis,   
+    analysis, 
+    humanitarian,
+    climate_drought,  
 )
 from app.api.routes import trend_routes
 from app.api import collaboration  
@@ -57,6 +59,9 @@ app.include_router(feedback_router)
 app.include_router(reports_router, prefix="/api")
 app.include_router(belief_state_router, prefix="/api")
 app.include_router(acled_events.router)
+app.include_router(humanitarian.router)
+app.include_router(climate_drought.router)
+
 
 
 
