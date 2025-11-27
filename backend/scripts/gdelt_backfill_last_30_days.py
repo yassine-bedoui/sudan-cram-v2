@@ -452,5 +452,20 @@ def backfill_gdelt_last_30_days(country_iso3: str) -> None:
 
 
 if __name__ == "__main__":
-    iso3 = os.getenv("GDELT_COUNTRY_ISO3", "SDN").upper()
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(
+        description="Backfill last 30 days of GDELT events into gdelt_events"
+    )
+    parser.add_argument(
+        "--country",
+        "-c",
+        help="ISO3 country code (e.g. SDN, SOM)",
+        default=os.getenv("GDELT_COUNTRY_ISO3", "SDN"),
+    )
+
+    args = parser.parse_args()
+    iso3 = (args.country or "SDN").upper()
+
     backfill_gdelt_last_30_days(country_iso3=iso3)

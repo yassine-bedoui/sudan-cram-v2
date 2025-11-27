@@ -8,7 +8,7 @@ from backend.database import SessionLocal
 from backend.app.config.countries import get_country_config
 
 
-def populate(country_iso3=None):
+def populate(country_iso3: str | None = None) -> None:
     """
     Populate the vector store for a single country.
 
@@ -20,7 +20,7 @@ def populate(country_iso3=None):
     if country_iso3 is None:
         country_iso3 = os.getenv("VECTOR_COUNTRY_ISO3", "SDN")
 
-    country_iso3 = country_iso3.upper()
+    country_iso3 = (country_iso3 or "SDN").upper()
     cfg = get_country_config(country_iso3)
 
     print("=" * 60)
@@ -121,4 +121,17 @@ def populate(country_iso3=None):
 
 
 if __name__ == "__main__":
-    populate()
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Populate the vector store from GDELT + ACLED events."
+    )
+    parser.add_argument(
+        "--country",
+        "-c",
+        help="ISO3 country code (e.g. SDN, SOM). Overrides VECTOR_COUNTRY_ISO3.",
+    )
+    args = parser.parse_args()
+
+    iso3 = (args.country or os.getenv("VECTOR_COUNTRY_ISO3", "SDN")).upper()
+    populate(country_iso3=iso3)

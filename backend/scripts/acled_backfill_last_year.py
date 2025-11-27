@@ -1,6 +1,7 @@
 # backend/scripts/acled_backfill_last_year.py
 
 import os
+import argparse
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -174,15 +175,24 @@ def upsert_acled_events(engine, df: pd.DataFrame) -> int:
 # Backfill last-year data
 # ---------------------------------------------------------------------------
 
-def backfill_last_year(country_iso3: str = "SDN") -> None:
+def backfill_last_year(country_iso3: str | None = None) -> None:
     """
     Fetch ACLED events for the last 365 days for a given country_iso3
     and upsert them into the acled_events table.
 
+    - country_iso3:
+        * if provided, use it (e.g. "SOM")
+        * else fall back to ACLED_COUNTRY_ISO3 or DEFAULT_COUNTRY_ISO3 or "SDN"
     - Uses event_date BETWEEN start|end
     - Skips duplicates via ON CONFLICT (event_id) DO NOTHING
     """
-    cfg = get_country_config(country_iso3)
+    iso3 = (
+        (country_iso3 or "").strip()
+        or os.getenv("ACLED_COUNTRY_ISO3", "")
+        or os.getenv("DEFAULT_COUNTRY_ISO3", "SDN")
+    ).upper()
+
+    cfg = get_country_config(iso3)
     acled_country = cfg.acled_country_name
 
     engine = get_engine()
@@ -242,6 +252,16 @@ def backfill_last_year(country_iso3: str = "SDN") -> None:
 
 
 if __name__ == "__main__":
-    # Allow overriding the country via env var; default remains Sudan (SDN)
-    iso3 = os.getenv("ACLED_COUNTRY_ISO3", "SDN").upper()
-    backfill_last_year(country_iso3=iso3)
+    parser = argparse.ArgumentParser(
+        description="Backfill last 365 days of ACLED data into acled_events."
+    )
+    parser.add_argument(
+        "--country",
+        "--iso3",
+        dest="country_iso3",
+        help="ISO3 country code to backfill (e.g. SDN, SOM). "
+             "If omitted, uses ACLED_COUNTRY_ISO3 or DEFAULT_COUNTRY_ISO3 or 'SDN'.",
+    )
+    args = parser.parse_args()
+
+    backfill_last_year(country_iso3=args.country_iso3)

@@ -333,6 +333,27 @@ def sync_gdelt_for_country(
 
 
 if __name__ == "__main__":
-    iso3 = os.getenv("GDELT_COUNTRY_ISO3", "SDN").upper()
-    days_back = int(os.getenv("GDELT_DAYS_BACK_IF_EMPTY", "7"))
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(
+        description="Sync recent GDELT events into gdelt_events for a given country."
+    )
+    parser.add_argument(
+        "--country",
+        "-c",
+        help="ISO3 country code (e.g. SDN, SOM)",
+        default=os.getenv("GDELT_COUNTRY_ISO3", "SDN"),
+    )
+    parser.add_argument(
+        "--days-back",
+        type=int,
+        default=int(os.getenv("GDELT_SYNC_DAYS_BACK", "7")),
+        help="If the DB is empty for this country, how many days back to start.",
+    )
+
+    args = parser.parse_args()
+    iso3 = (args.country or "SDN").upper()
+    days_back = args.days_back
+
     sync_gdelt_for_country(country_iso3=iso3, days_back_if_empty=days_back)
