@@ -16,6 +16,15 @@ class ACLEDEvent(Base):
     event_date = Column(Date, nullable=False, index=True)
     event_type = Column(String(100))
 
+    # ISO3 country code for multi-country support (e.g. "SDN", "SOM")
+    country_iso3 = Column(
+        String(3),
+        index=True,
+        nullable=False,
+        default="SDN",
+        server_default="SDN",
+    )
+
     region = Column(String(100), index=True)
     latitude = Column(Float)
     longitude = Column(Float)

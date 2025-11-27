@@ -20,6 +20,13 @@ class AnalysisRun(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # Basic input context
+    country_iso3 = Column(
+        String(3),
+        index=True,
+        nullable=False,
+        default="SDN",
+        server_default="SDN",
+    )
     region = Column(String(100), index=True)
     has_raw_data = Column(Boolean, default=False)
     # Stored as JSON string (e.g. '["UN mediation"]')

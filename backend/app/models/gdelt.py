@@ -16,6 +16,15 @@ class GDELTEvent(Base):
     event_id = Column(String(50), unique=True, nullable=False)
     event_date = Column(DateTime, nullable=False, index=True)
 
+    # ISO3 country code for multi-country support (e.g. "SDN", "SOM")
+    country_iso3 = Column(
+        String(3),
+        index=True,
+        nullable=False,
+        default="SDN",
+        server_default="SDN",
+    )
+
     region = Column(String(100), index=True)
     latitude = Column(Float)
     longitude = Column(Float)
