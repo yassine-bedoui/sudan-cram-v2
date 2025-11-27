@@ -9,8 +9,6 @@ from typing import Any, Dict, Iterable, List, Optional
 import requests
 from dotenv import load_dotenv
 
-
-
 load_dotenv()
 
 

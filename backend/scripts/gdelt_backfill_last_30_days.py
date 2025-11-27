@@ -1,19 +1,19 @@
 # backend/scripts/gdelt_backfill_last_30_days.py
 """
-Backfill GDELT 2.0 event data for Sudan for the last 30 days.
+Backfill GDELT 2.0 event data for a single country for the last 30 days.
 
 - Downloads 15-minute GDELT 2.0 "export" snapshots:
     http://data.gdeltproject.org/gdeltv2/YYYYMMDDHHMM00.export.CSV.zip
 
-- Filters to events where ActionGeo_CountryCode == "SU" (Sudan).
+- Filters to events where ActionGeo_CountryCode == cfg.gdelt_country_code.
 - Transforms into your gdelt_events schema:
-    event_id, event_date, region, latitude, longitude,
+    event_id, country_iso3, event_date, region, latitude, longitude,
     event_code, quad_class, goldstein_scale, avg_tone
 
 - Upserts into Postgres with ON CONFLICT (event_id) DO NOTHING.
 
 Usage:
-    python -m backend.scripts.gdelt_backfill_last_30_days
+    GDELT_COUNTRY_ISO3=SOM python -m backend.scripts.gdelt_backfill_last_30_days
 """
 
 from __future__ import annotations
@@ -28,13 +28,18 @@ import requests
 from sqlalchemy import create_engine, text
 from zipfile import ZipFile
 
+# Country configuration (centralised)
+try:
+    from app.config.countries import get_country_config
+except ModuleNotFoundError:
+    from backend.app.config.countries import get_country_config  # type: ignore
+
 
 # ---------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------
 
 GDELT_ARCHIVE_BASE = "http://data.gdeltproject.org/gdeltv2"
-SUDAN_COUNTRY_CODE = "SU"
 
 
 def get_engine():
@@ -78,12 +83,12 @@ def build_export_url(ts: datetime) -> str:
     return f"{GDELT_ARCHIVE_BASE}/{ts:%Y%m%d%H%M00}.export.CSV.zip"
 
 
-def fetch_export_snapshot(ts: datetime) -> Optional[pd.DataFrame]:
+def fetch_export_snapshot(ts: datetime, country_code: str) -> Optional[pd.DataFrame]:
     """
     Download and parse a single GDELT 2.0 export snapshot for a given timestamp.
 
     Returns:
-        pandas.DataFrame with a subset of columns, filtered to Sudan,
+        pandas.DataFrame with a subset of columns, filtered to the given country,
         or None if snapshot is missing / fails to download.
 
     Notes:
@@ -181,8 +186,8 @@ def fetch_export_snapshot(ts: datetime) -> Optional[pd.DataFrame]:
             "ActionGeo_Long",
         ]
 
-        # Filter to Sudan
-        df = df[df["ActionGeo_CountryCode"] == SUDAN_COUNTRY_CODE]
+        # Filter to requested country (ActionGeo_CountryCode)
+        df = df[df["ActionGeo_CountryCode"] == country_code]
 
         if df.empty:
             return None
@@ -194,18 +199,24 @@ def fetch_export_snapshot(ts: datetime) -> Optional[pd.DataFrame]:
         return None
 
 
-def fetch_gdelt_sudan_last_30_days() -> pd.DataFrame:
+def fetch_gdelt_last_30_days(country_iso3: str) -> pd.DataFrame:
     """
-    Collect GDELT events for Sudan over the last 30 days
+    Collect GDELT events for a given country over the last 30 days
     by walking 15-minute snapshots and concatenating.
 
     Returns:
-        DataFrame of raw GDELT rows (subset of columns) for Sudan.
+        DataFrame of raw GDELT rows (subset of columns) for that country.
     """
+    cfg = get_country_config(country_iso3)
+    country_code = cfg.gdelt_country_code  # e.g. "SU" for Sudan, "SO" for Somalia
+
     now_utc = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
     start_utc = now_utc - timedelta(days=30)
 
-    print(f" Time window (UTC): {start_utc.isoformat()}  ->  {now_utc.isoformat()}")
+    print(
+        f" Time window (UTC): {start_utc.isoformat()}  ->  {now_utc.isoformat()}"
+    )
+    print(f" Country ISO3: {cfg.iso3}, GDELT country code: {country_code}")
     print("============================================================\n")
 
     all_chunks: List[pd.DataFrame] = []
@@ -233,16 +244,16 @@ def fetch_gdelt_sudan_last_30_days() -> pd.DataFrame:
         daily_chunks: List[pd.DataFrame] = []
 
         for ts in iter_15min_slots(day_start, day_end):
-            df_slot = fetch_export_snapshot(ts)
+            df_slot = fetch_export_snapshot(ts, country_code=country_code)
             if df_slot is not None and not df_slot.empty:
                 daily_chunks.append(df_slot)
 
         if daily_chunks:
             day_df = pd.concat(daily_chunks, ignore_index=True)
-            print(f"    ✅ {len(day_df):,} Sudan rows for {current_day}")
+            print(f"    ✅ {len(day_df):,} rows for {current_day}")
             all_chunks.append(day_df)
         else:
-            print(f"    … No Sudan events found for {current_day}")
+            print(f"    … No events found for {current_day}")
 
         current_day += timedelta(days=1)
 
@@ -256,18 +267,22 @@ def fetch_gdelt_sudan_last_30_days() -> pd.DataFrame:
 # Transform → gdelt_events schema
 # ---------------------------------------------------------------------
 
-def transform_gdelt_rows_to_events(df: pd.DataFrame) -> pd.DataFrame:
+def transform_gdelt_rows_to_events(
+    df: pd.DataFrame,
+    country_iso3: str,
+) -> pd.DataFrame:
     """
     Transform raw GDELT rows into the schema expected by gdelt_events table.
 
     Output columns:
-        event_id, event_date, region, latitude, longitude,
+        event_id, country_iso3, event_date, region, latitude, longitude,
         event_code, quad_class, goldstein_scale, avg_tone
     """
     if df is None or df.empty:
         return pd.DataFrame(
             columns=[
                 "event_id",
+                "country_iso3",
                 "event_date",
                 "region",
                 "latitude",
@@ -283,6 +298,9 @@ def transform_gdelt_rows_to_events(df: pd.DataFrame) -> pd.DataFrame:
 
     # Event ID: use GlobalEventID, prefixed for clarity
     out["event_id"] = "gdelt-" + df["GlobalEventID"].astype(str)
+
+    # Country ISO3: fixed for the entire run
+    out["country_iso3"] = country_iso3
 
     # Event date: parse SQLDATE (yyyymmdd)
     out["event_date"] = pd.to_datetime(
@@ -319,7 +337,7 @@ def upsert_gdelt_events(engine, df_events: pd.DataFrame) -> int:
     into the real table with ON CONFLICT (event_id) DO NOTHING.
 
     IMPORTANT: This matches the actual gdelt_events schema:
-        event_id, event_date, region, latitude, longitude,
+        event_id, country_iso3, event_date, region, latitude, longitude,
         event_code, quad_class, goldstein_scale, avg_tone
     """
     if df_events.empty:
@@ -337,6 +355,7 @@ def upsert_gdelt_events(engine, df_events: pd.DataFrame) -> int:
                 f"""
                 CREATE TEMP TABLE {tmp_table} (
                     event_id TEXT,
+                    country_iso3 TEXT,
                     event_date DATE,
                     region TEXT,
                     latitude DOUBLE PRECISION,
@@ -359,6 +378,7 @@ def upsert_gdelt_events(engine, df_events: pd.DataFrame) -> int:
                 f"""
                 INSERT INTO gdelt_events (
                     event_id,
+                    country_iso3,
                     event_date,
                     region,
                     latitude,
@@ -370,6 +390,7 @@ def upsert_gdelt_events(engine, df_events: pd.DataFrame) -> int:
                 )
                 SELECT
                     event_id,
+                    country_iso3,
                     event_date,
                     region,
                     latitude,
@@ -397,18 +418,18 @@ def upsert_gdelt_events(engine, df_events: pd.DataFrame) -> int:
 # Main
 # ---------------------------------------------------------------------
 
-def backfill_gdelt_last_30_days():
+def backfill_gdelt_last_30_days(country_iso3: str) -> None:
     print("============================================================")
-    print(" GDELT BACKFILL - SUDAN (LAST 30 DAYS)")
+    print(f" GDELT BACKFILL - {country_iso3} (LAST 30 DAYS)")
     print("============================================================")
 
     engine = get_engine()
 
-    # 1) Fetch raw Sudan rows from archive
-    raw_df = fetch_gdelt_sudan_last_30_days()
+    # 1) Fetch raw rows from archive
+    raw_df = fetch_gdelt_last_30_days(country_iso3)
     total_raw = len(raw_df)
     print("\n------------------------------------------------------------")
-    print(f" Raw Sudan rows collected from GDELT archive : {total_raw:,}")
+    print(f" Raw rows collected from GDELT archive      : {total_raw:,}")
 
     if total_raw == 0:
         print(" No data collected. Nothing to insert.")
@@ -416,8 +437,8 @@ def backfill_gdelt_last_30_days():
         return
 
     # 2) Transform to gdelt_events schema
-    events_df = transform_gdelt_rows_to_events(raw_df)
-    print(f" Events after transformation                 : {len(events_df):,}")
+    events_df = transform_gdelt_rows_to_events(raw_df, country_iso3=country_iso3)
+    print(f" Events after transformation                : {len(events_df):,}")
 
     # 3) Upsert into DB
     inserted = upsert_gdelt_events(engine, events_df)
@@ -431,4 +452,5 @@ def backfill_gdelt_last_30_days():
 
 
 if __name__ == "__main__":
-    backfill_gdelt_last_30_days()
+    iso3 = os.getenv("GDELT_COUNTRY_ISO3", "SDN").upper()
+    backfill_gdelt_last_30_days(country_iso3=iso3)

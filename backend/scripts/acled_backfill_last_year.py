@@ -8,6 +8,12 @@ from sqlalchemy import create_engine, text
 
 from backend.app.services.acled_client import ACLEDClient, ACLEDApiError
 
+# Country configuration (centralised)
+try:
+    from app.config.countries import get_country_config
+except ModuleNotFoundError:  # running as a package: backend.scripts...
+    from backend.app.config.countries import get_country_config  # type: ignore
+
 
 # ---------------------------------------------------------------------------
 # DB connection
@@ -31,33 +37,19 @@ def get_engine():
 # Transform helpers (same shape as ACLEDEvent model)
 # ---------------------------------------------------------------------------
 
-def transform_acled_rows_to_df(rows) -> pd.DataFrame:
+def transform_acled_rows_to_df(rows, country_iso3: str) -> pd.DataFrame:
     """
     Transform raw ACLED rows (dicts) into a DataFrame matching ACLEDEvent schema.
 
     ACLEDEvent expects:
-        event_id, event_date, event_type, region, latitude, longitude,
-        actor1, actor2, fatalities, notes
-
-    This function is intentionally similar to the one in acled_sync_from_api.py,
-    so both scripts stay consistent.
+        event_id, country_iso3, event_date, event_type, region,
+        latitude, longitude, actor1, actor2, fatalities, notes
     """
     rows_list = list(rows)
     if not rows_list:
         return pd.DataFrame()
 
     df = pd.DataFrame(rows_list)
-
-    # ACLED columns (from official schema) include e.g.:
-    # - data_id (unique numeric ID)
-    # - event_id_cnty (legacy ID)
-    # - event_date (YYYY-MM-DD)
-    # - event_type
-    # - actor1, actor2
-    # - admin1 (state), admin2, admin3
-    # - latitude, longitude
-    # - notes
-    # - fatalities
 
     # Build a stable event_id for your DB using ACLED's IDs
     if "data_id" in df.columns:
@@ -92,9 +84,13 @@ def transform_acled_rows_to_df(rows) -> pd.DataFrame:
     df["latitude"] = pd.to_numeric(df["latitude"], errors="coerce")
     df["longitude"] = pd.to_numeric(df["longitude"], errors="coerce")
 
+    # Tag with the ISO3 country code we are syncing
+    df["country_iso3"] = country_iso3
+
     # Select the exact columns needed by acled_events table
     expected_cols = [
         "event_id",
+        "country_iso3",
         "event_date",
         "event_type",
         "region",
@@ -134,6 +130,7 @@ def upsert_acled_events(engine, df: pd.DataFrame) -> int:
                 f"""
                 CREATE TEMP TABLE {tmp_table} (
                     event_id TEXT,
+                    country_iso3 TEXT,
                     event_date DATE,
                     event_type TEXT,
                     region TEXT,
@@ -156,11 +153,11 @@ def upsert_acled_events(engine, df: pd.DataFrame) -> int:
             text(
                 f"""
                 INSERT INTO acled_events (
-                    event_id, event_date, event_type, region,
+                    event_id, country_iso3, event_date, event_type, region,
                     latitude, longitude, actor1, actor2, fatalities, notes
                 )
                 SELECT
-                    event_id, event_date, event_type, region,
+                    event_id, country_iso3, event_date, event_type, region,
                     latitude, longitude, actor1, actor2, fatalities, notes
                 FROM {tmp_table}
                 ON CONFLICT (event_id) DO NOTHING;
@@ -177,14 +174,17 @@ def upsert_acled_events(engine, df: pd.DataFrame) -> int:
 # Backfill last-year data
 # ---------------------------------------------------------------------------
 
-def backfill_last_year(country: str = "Sudan") -> None:
+def backfill_last_year(country_iso3: str = "SDN") -> None:
     """
-    Fetch ACLED events for the last 365 days for `country`
+    Fetch ACLED events for the last 365 days for a given country_iso3
     and upsert them into the acled_events table.
 
     - Uses event_date BETWEEN start|end
     - Skips duplicates via ON CONFLICT (event_id) DO NOTHING
     """
+    cfg = get_country_config(country_iso3)
+    acled_country = cfg.acled_country_name
+
     engine = get_engine()
     client = ACLEDClient()
 
@@ -197,14 +197,15 @@ def backfill_last_year(country: str = "Sudan") -> None:
     print("============================================================")
     print(" ACLED BACKFILL - LAST 365 DAYS")
     print("============================================================")
-    print(f" Country     : {country}")
-    print(f" Date range  : {start_date}  ->  {end_date} (inclusive)")
+    print(f" Country ISO3 : {cfg.iso3}")
+    print(f" ACLED country: {acled_country}")
+    print(f" Date range   : {start_date}  ->  {end_date} (inclusive)")
     print("============================================================")
 
     try:
         rows_iter = client.fetch_events_dicts(
             params={
-                "country": country,
+                "country": acled_country,
                 "event_date": date_range,
                 "event_date_where": "BETWEEN",
                 "terms": "accept",
@@ -213,7 +214,7 @@ def backfill_last_year(country: str = "Sudan") -> None:
             per_page=3000,   # ACLED default max is 5000; 3000 is safe
         )
 
-        df = transform_acled_rows_to_df(rows_iter)
+        df = transform_acled_rows_to_df(rows_iter, country_iso3=cfg.iso3)
     except ACLEDApiError as e:
         print("❌ ACLED API error while fetching backfill data:")
         print(f"   {e}")
@@ -241,4 +242,6 @@ def backfill_last_year(country: str = "Sudan") -> None:
 
 
 if __name__ == "__main__":
-    backfill_last_year()
+    # Allow overriding the country via env var; default remains Sudan (SDN)
+    iso3 = os.getenv("ACLED_COUNTRY_ISO3", "SDN").upper()
+    backfill_last_year(country_iso3=iso3)

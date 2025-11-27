@@ -21,6 +21,12 @@ except ModuleNotFoundError:  # when imported as backend.scripts.*
         GDELTEventRecord,
     )
 
+# Country configuration (centralised)
+try:
+    from app.config.countries import get_country_config
+except ModuleNotFoundError:
+    from backend.app.config.countries import get_country_config  # type: ignore
+
 
 # --------------------------------------------------------------------
 # DB connection helper
@@ -44,29 +50,36 @@ def get_engine():
 # Helpers: find last event, build DataFrame, upsert
 # --------------------------------------------------------------------
 
-def get_last_gdelt_event_timestamp(engine) -> Optional[datetime]:
+def get_last_gdelt_event_timestamp(engine, country_iso3: str) -> Optional[datetime]:
     """
-    Get the most recent event_date present in gdelt_events.
+    Get the most recent event_date present in gdelt_events for a given country_iso3.
 
     Returns:
         A Python datetime (naive or aware depending on DB driver) or None.
     """
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT max(event_date) FROM gdelt_events"))
+        result = conn.execute(
+            text("SELECT max(event_date) FROM gdelt_events WHERE country_iso3 = :iso3"),
+            {"iso3": country_iso3},
+        )
         max_ts = result.scalar()
 
     return max_ts
 
 
-def records_to_dataframe(records: List[GDELTEventRecord]) -> pd.DataFrame:
+def records_to_dataframe(
+    records: List[GDELTEventRecord],
+    country_iso3: str,
+) -> pd.DataFrame:
     """
     Convert a list of GDELTEventRecord objects into a pandas DataFrame
     matching the gdelt_events table schema.
 
-    gdelt_events columns (from app/models/gdelt.py):
+    gdelt_events columns (from app/models/gdelt.py), extended with country_iso3:
 
         id = Column(Integer, primary_key=True, index=True)
         event_id = Column(String(50), unique=True, nullable=False)
+        country_iso3 = Column(String(3), nullable=False, index=True)
         event_date = Column(DateTime, nullable=False, index=True)
 
         region = Column(String(100), index=True)
@@ -97,6 +110,7 @@ def records_to_dataframe(records: List[GDELTEventRecord]) -> pd.DataFrame:
         rows.append(
             {
                 "event_id": rec.event_id,
+                "country_iso3": country_iso3,
                 "event_date": event_dt,
                 "region": rec.region,
                 "latitude": rec.latitude,
@@ -119,7 +133,9 @@ def records_to_dataframe(records: List[GDELTEventRecord]) -> pd.DataFrame:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
         if "quad_class" in df.columns:
-            df["quad_class"] = pd.to_numeric(df["quad_class"], errors="coerce").astype("Int64")
+            df["quad_class"] = (
+                pd.to_numeric(df["quad_class"], errors="coerce").astype("Int64")
+            )
 
     return df
 
@@ -151,6 +167,7 @@ def upsert_gdelt_events(engine, df: pd.DataFrame) -> int:
                 f"""
                 CREATE TEMP TABLE {tmp_table} (
                     event_id TEXT,
+                    country_iso3 TEXT,
                     event_date TIMESTAMP,
                     region TEXT,
                     latitude DOUBLE PRECISION,
@@ -175,6 +192,7 @@ def upsert_gdelt_events(engine, df: pd.DataFrame) -> int:
                 f"""
                 INSERT INTO gdelt_events (
                     event_id,
+                    country_iso3,
                     event_date,
                     region,
                     latitude,
@@ -188,6 +206,7 @@ def upsert_gdelt_events(engine, df: pd.DataFrame) -> int:
                 )
                 SELECT
                     event_id,
+                    country_iso3,
                     event_date,
                     region,
                     latitude,
@@ -217,16 +236,16 @@ def upsert_gdelt_events(engine, df: pd.DataFrame) -> int:
 # Main sync logic
 # --------------------------------------------------------------------
 
-def sync_gdelt_for_sudan(
+def sync_gdelt_for_country(
+    country_iso3: str,
     days_back_if_empty: int = 7,
-    country_code: str = "SU",
 ) -> None:
     """
-    Incrementally sync GDELT events for Sudan into gdelt_events.
+    Incrementally sync GDELT events for a given country into gdelt_events.
 
     Logic:
-      1. Look up the latest event_date in gdelt_events.
-      2. If table is empty:
+      1. Look up the latest event_date in gdelt_events for that country_iso3.
+      2. If table is empty for this country:
             - Start from now - `days_back_if_empty` days.
          Else:
             - Start from that last event_date (we rely on ON CONFLICT to skip duplicates).
@@ -235,21 +254,24 @@ def sync_gdelt_for_sudan(
       5. Upsert into gdelt_events.
 
     Args:
-        days_back_if_empty: How far back to go if the table has no data yet.
-        country_code: ActionGeo_CountryCode to filter on (default "SU" for Sudan).
+        country_iso3: ISO3 code of the country (e.g. "SDN", "SOM").
+        days_back_if_empty: How far back to go if the country has no data yet.
     """
+    cfg = get_country_config(country_iso3)
+    country_code = cfg.gdelt_country_code  # ActionGeo_CountryCode, e.g. "SU" or "SO"
+
     engine = get_engine()
     client = GDELTClient()
 
-    # 1) Determine date window
-    last_ts = get_last_gdelt_event_timestamp(engine)
+    # 1) Determine date window for this specific country
+    last_ts = get_last_gdelt_event_timestamp(engine, cfg.iso3)
 
     now_utc = datetime.now(timezone.utc)
 
     if last_ts is None:
-        # Fresh table: backfill a recent window (default: 7 days)
+        # Fresh table for this country: backfill a recent window (default: 7 days)
         start_utc = now_utc - timedelta(days=days_back_if_empty)
-        print("ℹ️ No existing GDELT events in DB.")
+        print(f"ℹ️ No existing GDELT events in DB for {cfg.iso3}.")
         print(
             f"   Backfilling last {days_back_if_empty} days: "
             f"{start_utc.date()} -> {now_utc.date()} (inclusive)"
@@ -263,13 +285,14 @@ def sync_gdelt_for_sudan(
 
         start_utc = last_ts_utc
         print(
-            f"ℹ️ Latest GDELT event in DB: {last_ts_utc.isoformat()} "
+            f"ℹ️ Latest GDELT event in DB for {cfg.iso3}: {last_ts_utc.isoformat()} "
             f"– requesting events from this timestamp onward."
         )
 
     end_utc = now_utc
     print(
-        f"🔍 Fetching GDELT events for Sudan "
+        f"🔍 Fetching GDELT events for {cfg.iso3} "
+        f"(GDELT country code: {country_code}) "
         f"from {start_utc.isoformat()} to {end_utc.isoformat()}..."
     )
 
@@ -287,11 +310,14 @@ def sync_gdelt_for_sudan(
         return
 
     if not records:
-        print("✅ GDELT sync completed: no events returned for this window.")
+        print(
+            f"✅ GDELT sync completed: no events returned for this window "
+            f"for {cfg.iso3}."
+        )
         return
 
     # 3) Transform to DataFrame
-    df = records_to_dataframe(records)
+    df = records_to_dataframe(records, country_iso3=cfg.iso3)
     print(f"📦 Downloaded {len(df)} GDELT rows after transformation.")
 
     # 4) Upsert into DB
@@ -307,4 +333,6 @@ def sync_gdelt_for_sudan(
 
 
 if __name__ == "__main__":
-    sync_gdelt_for_sudan()
+    iso3 = os.getenv("GDELT_COUNTRY_ISO3", "SDN").upper()
+    days_back = int(os.getenv("GDELT_DAYS_BACK_IF_EMPTY", "7"))
+    sync_gdelt_for_country(country_iso3=iso3, days_back_if_empty=days_back)

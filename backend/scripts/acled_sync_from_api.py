@@ -14,6 +14,12 @@ try:
 except ModuleNotFoundError:  # running as a package: backend.scripts...
     from backend.app.services.acled_client import ACLEDClient, ACLEDApiError  # type: ignore
 
+# Country configuration
+try:
+    from app.config.countries import get_country_config
+except ModuleNotFoundError:
+    from backend.app.config.countries import get_country_config  # type: ignore
+
 
 # ----------------- Config -----------------
 
@@ -43,38 +49,31 @@ def get_engine():
 # ----------------- Helpers -----------------
 
 
-def get_last_acled_event_date(engine) -> datetime:
+def get_last_acled_event_date(engine, country_iso3: str):
     """
-    Get the most recent event_date present in acled_events.
+    Get the most recent event_date present in acled_events for a given country_iso3.
     Returns a datetime.date or None.
     """
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT max(event_date) FROM acled_events"))
+        result = conn.execute(
+            text("SELECT max(event_date) FROM acled_events WHERE country_iso3 = :iso3"),
+            {"iso3": country_iso3},
+        )
         max_date = result.scalar()
     return max_date  # can be None
 
 
-def transform_acled_rows_to_df(rows) -> pd.DataFrame:
+def transform_acled_rows_to_df(rows, country_iso3: str) -> pd.DataFrame:
     """
     Transform raw ACLED rows (dicts) into a DataFrame matching ACLEDEvent schema.
 
     ACLEDEvent expects:
-        event_id, event_date, event_type, region, latitude, longitude,
-        actor1, actor2, fatalities, notes
+        event_id, country_iso3, event_date, event_type, region,
+        latitude, longitude, actor1, actor2, fatalities, notes
     """
     df = pd.DataFrame(list(rows))
     if df.empty:
         return df
-
-    # ACLED columns include (among many others):
-    # - data_id (unique numeric ID)
-    # - event_date (YYYY-MM-DD)
-    # - event_type
-    # - actor1, actor2
-    # - admin1 (state), admin2, admin3
-    # - latitude, longitude
-    # - notes
-    # - fatalities
 
     # Build a stable event_id for your DB
     # Using ACLED's data_id is safest; prefix with "acled-"
@@ -120,9 +119,13 @@ def transform_acled_rows_to_df(rows) -> pd.DataFrame:
     df["latitude"] = pd.to_numeric(df["latitude"], errors="coerce")
     df["longitude"] = pd.to_numeric(df["longitude"], errors="coerce")
 
+    # Tag with the ISO3 country code
+    df["country_iso3"] = country_iso3
+
     # Select the exact columns needed by acled_events table
     expected_cols = [
         "event_id",
+        "country_iso3",
         "event_date",
         "event_type",
         "region",
@@ -158,6 +161,7 @@ def upsert_acled_events(engine, df: pd.DataFrame) -> int:
                 f"""
                 CREATE TEMP TABLE {tmp_table} (
                     event_id TEXT,
+                    country_iso3 TEXT,
                     event_date DATE,
                     event_type TEXT,
                     region TEXT,
@@ -180,11 +184,11 @@ def upsert_acled_events(engine, df: pd.DataFrame) -> int:
             text(
                 f"""
                 INSERT INTO acled_events (
-                    event_id, event_date, event_type, region,
+                    event_id, country_iso3, event_date, event_type, region,
                     latitude, longitude, actor1, actor2, fatalities, notes
                 )
                 SELECT
-                    event_id, event_date, event_type, region,
+                    event_id, country_iso3, event_date, event_type, region,
                     latitude, longitude, actor1, actor2, fatalities, notes
                 FROM {tmp_table}
                 ON CONFLICT (event_id) DO NOTHING;
@@ -205,12 +209,15 @@ def upsert_acled_events(engine, df: pd.DataFrame) -> int:
 # ----------------- Main ETL -----------------
 
 
-def sync_acled_for_sudan(backfill_days: int = DEFAULT_BACKFILL_DAYS) -> None:
+def sync_acled_for_country(
+    country_iso3: str = "SDN",
+    backfill_days: int = DEFAULT_BACKFILL_DAYS,
+) -> None:
     """
-    Incrementally sync ACLED events for Sudan into acled_events.
+    Incrementally sync ACLED events for a given country into acled_events.
 
     Logic:
-      - Look up max(event_date) in acled_events.
+      - Look up max(event_date) in acled_events for this ISO3.
       - If empty: start from MIN_START_DATE.
       - Else:
           * If backfill_days > 0: go back that many days (to catch late updates),
@@ -219,38 +226,47 @@ def sync_acled_for_sudan(backfill_days: int = DEFAULT_BACKFILL_DAYS) -> None:
       - Fetch pages from ACLED.
       - Transform → upsert, skipping duplicates via ON CONFLICT(event_id) DO NOTHING.
     """
+    cfg = get_country_config(country_iso3)
+    acled_country = cfg.acled_country_name
+
     engine = get_engine()
     client = ACLEDClient()
 
-    last_date = get_last_acled_event_date(engine)
+    last_date = get_last_acled_event_date(engine, cfg.iso3)
 
     if last_date is None:
-        # Table empty → full historical sync
+        # Table empty for this country → full historical sync from MIN_START_DATE
         start_date = MIN_START_DATE
-        print(f"ℹ️ acled_events is empty; starting full sync from {start_date}.")
+        print(
+            f"ℹ️ acled_events has no rows yet for {cfg.iso3}; "
+            f"starting full sync from {start_date}."
+        )
     else:
         backfill_days = max(0, int(backfill_days))
         if backfill_days > 0:
             candidate = last_date - timedelta(days=backfill_days)
             start_date = max(candidate, MIN_START_DATE)
             print(
-                f"ℹ️ Latest ACLED event in DB: {last_date} – "
+                f"ℹ️ Latest ACLED event in DB for {cfg.iso3}: {last_date} – "
                 f"re-syncing from {start_date} (backfill {backfill_days} days)."
             )
         else:
             start_date = last_date + timedelta(days=1)
             print(
-                f"ℹ️ Latest ACLED event in DB: {last_date} – "
+                f"ℹ️ Latest ACLED event in DB for {cfg.iso3}: {last_date} – "
                 f"requesting events AFTER this date (exclusive)."
             )
 
     start_str = start_date.strftime("%Y-%m-%d")
-    print(f"🔍 Fetching ACLED events for Sudan from {start_str} onwards...")
+    print(
+        f"🔍 Fetching ACLED events for {acled_country} ({cfg.iso3}) "
+        f"from {start_str} onwards..."
+    )
 
     try:
         rows = client.fetch_events_dicts(
             params={
-                "country": "Sudan",
+                "country": acled_country,
                 "event_date": start_str,
                 "event_date_where": "AFTER",
                 "terms": "accept",
@@ -266,10 +282,13 @@ def sync_acled_for_sudan(backfill_days: int = DEFAULT_BACKFILL_DAYS) -> None:
         print("   Try again later or test the URL with curl to confirm.")
         return
 
-    df = transform_acled_rows_to_df(rows)
+    df = transform_acled_rows_to_df(rows, country_iso3=cfg.iso3)
 
     if df.empty:
-        print("✅ ACLED sync completed: no new events to insert (API returned 0 rows).")
+        print(
+            f"✅ ACLED sync completed: no new events to insert "
+            f"(API returned 0 rows for {cfg.iso3})."
+        )
         return
 
     inserted = upsert_acled_events(engine, df)
@@ -281,7 +300,15 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Sync ACLED Sudan events into Postgres incrementally."
+        description=(
+            "Sync ACLED events for a single country into Postgres incrementally."
+        )
+    )
+    parser.add_argument(
+        "--country-iso3",
+        type=str,
+        default="SDN",
+        help="ISO3 code of the country to sync (e.g. SDN, SOM). Default: SDN.",
     )
     parser.add_argument(
         "--backfill-days",
@@ -294,4 +321,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    sync_acled_for_sudan(backfill_days=args.backfill_days)
+    iso3 = args.country_iso3.upper()
+    sync_acled_for_country(country_iso3=iso3, backfill_days=args.backfill_days)

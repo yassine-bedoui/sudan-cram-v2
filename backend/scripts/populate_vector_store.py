@@ -1,27 +1,47 @@
 from datetime import datetime, timedelta
+import os
 
 from backend.app.services.vector_store import VectorStore
 from backend.app.models.gdelt import GDELTEvent
 from backend.app.models.acled import ACLEDEvent
 from backend.database import SessionLocal
+from backend.app.config.countries import get_country_config
 
 
-def populate():
+def populate(country_iso3=None):
+    """
+    Populate the vector store for a single country.
+
+    Country is chosen by (in order of precedence):
+      - function argument `country_iso3`
+      - VECTOR_COUNTRY_ISO3 env var
+      - default: "SDN"
+    """
+    if country_iso3 is None:
+        country_iso3 = os.getenv("VECTOR_COUNTRY_ISO3", "SDN")
+
+    country_iso3 = country_iso3.upper()
+    cfg = get_country_config(country_iso3)
+
     print("=" * 60)
-    print("Sudan CRAM - Vector Store Population")
+    print(f"CRAM - Vector Store Population ({cfg.iso3})")
     print("=" * 60)
 
     db = SessionLocal()
     vs = VectorStore()
 
     cutoff = datetime.now() - timedelta(days=90)
-    print(f"\n📅 Fetching events since: {cutoff.strftime('%Y-%m-%d')}\n")
+    print(f"\n📅 Fetching events since: {cutoff.strftime('%Y-%m-%d')}")
+    print(f"🌍 Country: {cfg.iso3} ({getattr(cfg, 'name', cfg.iso3)})\n")
 
     # ---------------- GDELT ----------------
     print("🔍 Processing GDELT events...")
     gdelt_events = (
         db.query(GDELTEvent)
-        .filter(GDELTEvent.event_date >= cutoff)
+        .filter(
+            GDELTEvent.country_iso3 == cfg.iso3,
+            GDELTEvent.event_date >= cutoff,
+        )
         .order_by(GDELTEvent.event_date.desc())
         .all()
     )
@@ -35,6 +55,8 @@ def populate():
             text=text,
             metadata={
                 "source": "GDELT",
+                "country_iso3": cfg.iso3,
+                "country_name": getattr(cfg, "name", cfg.iso3),
                 "db_id": event.id,
                 "db_event_id": event.event_id,
                 "region": event.region,
@@ -51,7 +73,10 @@ def populate():
     print("\n🔍 Processing ACLED events...")
     acled_events = (
         db.query(ACLEDEvent)
-        .filter(ACLEDEvent.event_date >= cutoff.date())
+        .filter(
+            ACLEDEvent.country_iso3 == cfg.iso3,
+            ACLEDEvent.event_date >= cutoff.date(),
+        )
         .order_by(ACLEDEvent.event_date.desc())
         .all()
     )
@@ -68,6 +93,8 @@ def populate():
             text=text,
             metadata={
                 "source": "ACLED",
+                "country_iso3": cfg.iso3,
+                "country_name": getattr(cfg, "name", cfg.iso3),
                 "db_id": event.id,
                 "db_event_id": event.event_id,
                 "region": event.region,
@@ -87,6 +114,7 @@ def populate():
         f"   GDELT: {gdelt_added} | ACLED: {acled_added} | Total: {gdelt_added + acled_added}"
     )
     print(f"   Vector Store Count: {vs.get_event_count()}")
+    print(f"   Country: {cfg.iso3}")
     print("=" * 60)
 
     db.close()
