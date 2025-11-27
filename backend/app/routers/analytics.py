@@ -2,8 +2,10 @@
 """
 ✅ Enhanced Analytics Router - Conflict Proneness v2 + Conflict Risk
 FIXED: Proper numpy type conversion + dual conflict metrics
+Now supports country-specific CSVs via ?country_iso3=...
 """
-from fastapi import APIRouter, HTTPException
+
+from fastapi import APIRouter, HTTPException, Query
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -13,104 +15,131 @@ router = APIRouter()
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data" / "processed"
 
-CP_FILE = DATA_DIR / "conflict_proneness_v2.csv"
-CR_FILE = DATA_DIR / "conflict_risk_simple.csv"  # ✅ NEW
-ACLED_FILE = DATA_DIR / "acled_with_causes.csv"
+CP_BASENAME = "conflict_proneness_v2"
+CR_BASENAME = "conflict_risk_simple"
+ACLED_BASENAME = "acled_with_causes"
 
-_cp_cache = None
-_cr_cache = None  # ✅ NEW
-_acled_cache = None
-_monthly_cache = None
+# Caches per country_iso3
+_cp_cache = {}
+_cr_cache = {}
+_acled_cache = {}
+_monthly_cache = {}
 
 
-def load_conflict_proneness():
-    """Load CP v2 with caching"""
+def _get_country_file(base_name: str, country_iso3: str) -> Path:
+    """
+    Resolve a data file for a given base name and country.
+
+    Prefers <base_name>_<ISO3>.csv, falls back to legacy <base_name>.csv.
+    """
+    iso = country_iso3.upper()
+    candidate = DATA_DIR / f"{base_name}_{iso}.csv"
+    legacy = DATA_DIR / f"{base_name}.csv"
+    return candidate if candidate.exists() else legacy
+
+
+def load_conflict_proneness(country_iso3: str):
+    """Load CP v2 with caching, per country."""
     global _cp_cache
-    if _cp_cache is not None:
-        return _cp_cache
-    try:
-        df_cp = pd.read_csv(CP_FILE)
-        _cp_cache = df_cp
-        return df_cp
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"File not found: {CP_FILE}")
+    iso = country_iso3.upper()
+    if iso in _cp_cache:
+        return _cp_cache[iso]
+    file_path = _get_country_file(CP_BASENAME, iso)
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
+    df_cp = pd.read_csv(file_path)
+    _cp_cache[iso] = df_cp
+    return df_cp
 
 
-def load_conflict_risk():  # ✅ NEW
-    """Load Conflict Risk with caching"""
+def load_conflict_risk(country_iso3: str):
+    """Load Conflict Risk with caching, per country."""
     global _cr_cache
-    if _cr_cache is not None:
-        return _cr_cache
-    try:
-        df_cr = pd.read_csv(CR_FILE)
-        _cr_cache = df_cr
-        return df_cr
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"File not found: {CR_FILE}")
+    iso = country_iso3.upper()
+    if iso in _cr_cache:
+        return _cr_cache[iso]
+    file_path = _get_country_file(CR_BASENAME, iso)
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
+    df_cr = pd.read_csv(file_path)
+    _cr_cache[iso] = df_cr
+    return df_cr
 
 
-def load_acled_data():
-    """Load ACLED events data with caching"""
+def load_acled_data(country_iso3: str):
+    """Load ACLED events data with caching, per country."""
     global _acled_cache
-    if _acled_cache is not None:
-        return _acled_cache
-    try:
-        df_acled = pd.read_csv(ACLED_FILE)
-        _acled_cache = df_acled
-        return df_acled
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"File not found: {ACLED_FILE}")
+    iso = country_iso3.upper()
+    if iso in _acled_cache:
+        return _acled_cache[iso]
+    file_path = _get_country_file(ACLED_BASENAME, iso)
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
+    df_acled = pd.read_csv(file_path)
+    _acled_cache[iso] = df_acled
+    return df_acled
 
 
-def compute_monthly_trends():
-    """Aggregate ACLED events by month - returns real data"""
+def compute_monthly_trends(country_iso3: str):
+    """Aggregate ACLED events by month - returns real data (per country)."""
     global _monthly_cache
-    if _monthly_cache is not None:
-        return _monthly_cache
+    iso = country_iso3.upper()
+    if iso in _monthly_cache:
+        return _monthly_cache[iso]
 
     try:
-        df_acled = load_acled_data()
+        df_acled = load_acled_data(iso)
 
         # Find date column
         date_col = None
-        for col in ['event_date', 'WEEK', 'date', 'DATE']:
+        for col in ["event_date", "WEEK", "date", "DATE"]:
             if col in df_acled.columns:
                 date_col = col
                 break
 
         if date_col is None:
+            _monthly_cache[iso] = []
             return []
 
         # Parse dates and extract year-month
-        df_acled[date_col] = pd.to_datetime(df_acled[date_col], errors='coerce')
-        df_acled['year_month'] = df_acled[date_col].dt.strftime('%Y-%m')
+        df_acled[date_col] = pd.to_datetime(df_acled[date_col], errors="coerce")
+        df_acled["year_month"] = df_acled[date_col].dt.strftime("%Y-%m")
 
         # Group by month
-        monthly_agg = df_acled.groupby('year_month', as_index=False).agg({
-            'year_month': 'first',
-            'FATALITIES': ['sum', 'count']
-        }).reset_index(drop=True)
+        monthly_agg = (
+            df_acled.groupby("year_month", as_index=False).agg(
+                {
+                    "year_month": "first",
+                    "FATALITIES": ["sum", "count"],
+                }
+            )
+        ).reset_index(drop=True)
 
-        monthly_agg.columns = ['year_month', 'fatalities', 'events']
-        monthly_agg = monthly_agg.sort_values('year_month')
+        monthly_agg.columns = ["year_month", "fatalities", "events"]
+        monthly_agg = monthly_agg.sort_values("year_month")
 
         # Format response
         monthly_data = []
         for _, row in monthly_agg.iterrows():
             try:
-                monthly_data.append({
-                    'month': str(row['year_month']),
-                    'events': convert_to_native(int(row['events'])),
-                    'fatalities': convert_to_native(int(row['fatalities']) if pd.notna(row['fatalities']) else 0)
-                })
-            except:
+                monthly_data.append(
+                    {
+                        "month": str(row["year_month"]),
+                        "events": convert_to_native(int(row["events"])),
+                        "fatalities": convert_to_native(
+                            int(row["fatalities"]) if pd.notna(row["fatalities"]) else 0
+                        ),
+                    }
+                )
+            except Exception:
                 continue
 
-        _monthly_cache = monthly_data
+        _monthly_cache[iso] = monthly_data
         return monthly_data
 
     except Exception as e:
-        print(f"⚠️ Warning computing monthly trends: {e}")
+        print(f"⚠️ Warning computing monthly trends for {iso}: {e}")
+        _monthly_cache[iso] = []
         return []
 
 
@@ -142,43 +171,54 @@ def get_color_for_risk(level):
 
 
 @router.get("/conflict-proneness")
-async def get_conflict_proneness():
-    """Returns Conflict Proneness v2 with all 4 indicators breakdown"""
+async def get_conflict_proneness(
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    )
+):
+    """Returns Conflict Proneness v2 with all 4 indicators breakdown (per country)."""
     try:
-        df = load_conflict_proneness()
+        df = load_conflict_proneness(country_iso3)
 
         regions = {}
         for _, row in df.iterrows():
-            region_name = str(row['region']).strip()
+            region_name = str(row["region"]).strip()
 
             regions[region_name] = {
-                'region': region_name,
-                'proneness_score': convert_to_native(row['conflict_proneness']),
-                'proneness_level': str(row['proneness_level']).strip(),
-                'proneness_color': get_color_for_risk(row['proneness_level']),
-                'indicators': {
-                    'incidents': {
-                        'value': convert_to_native(row['incidents']),
-                        'label': 'Event Frequency'
+                "region": region_name,
+                "proneness_score": convert_to_native(row["conflict_proneness"]),
+                "proneness_level": str(row["proneness_level"]).strip(),
+                "proneness_color": get_color_for_risk(row["proneness_level"]),
+                "indicators": {
+                    "incidents": {
+                        "value": convert_to_native(row["incidents"]),
+                        "label": "Event Frequency",
                     },
-                    'causes_pct': {
-                        'value': round(convert_to_native(row['causes_pct']), 1),
-                        'label': 'High-Risk % (Political/Communal/Resource)'
+                    "causes_pct": {
+                        "value": round(convert_to_native(row["causes_pct"]), 1),
+                        "label": "High-Risk % (Political/Communal/Resource)",
                     },
-                    'num_actors': {
-                        'value': convert_to_native(row['num_actors']),
-                        'label': 'Distinct Organizations'
+                    "num_actors": {
+                        "value": convert_to_native(row["num_actors"]),
+                        "label": "Distinct Organizations",
                     },
-                    'trend_delta': {
-                        'value': convert_to_native(row['trend_delta']),
-                        'label': 'Recent Trend (+ = Increasing)'
-                    }
+                    "trend_delta": {
+                        "value": convert_to_native(row["trend_delta"]),
+                        "label": "Recent Trend (+ = Increasing)",
+                    },
                 },
-                'high_risk_events': convert_to_native(row['high_risk_events']),
-                'fatalities': convert_to_native(row['fatalities']),
-                'fatality_rate': round(convert_to_native(row['fatality_rate']), 3),
-                'climate_risk_score': round(convert_to_native(row['climate_risk_score']), 2),
-                'climate_risk_level': str(row['cdi_category']).strip()
+                "high_risk_events": convert_to_native(row["high_risk_events"]),
+                "fatalities": convert_to_native(row["fatalities"]),
+                "fatality_rate": round(
+                    convert_to_native(row["fatality_rate"]), 3
+                ),
+                "climate_risk_score": round(
+                    convert_to_native(row["climate_risk_score"]), 2
+                ),
+                "climate_risk_level": str(row["cdi_category"]).strip(),
             }
 
         return regions
@@ -186,26 +226,36 @@ async def get_conflict_proneness():
     except Exception as e:
         print(f"❌ ERROR in /api/conflict-proneness: {e}")
         import traceback
+
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/conflict-risk")  # ✅ NEW ENDPOINT
-async def get_conflict_risk():
-    """Returns Conflict Risk (simple incident-based)"""
+@router.get("/conflict-risk")
+async def get_conflict_risk(
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    )
+):
+    """Returns Conflict Risk (simple incident-based) per country."""
     try:
-        df = load_conflict_risk()
+        df = load_conflict_risk(country_iso3)
 
         regions = {}
         for _, row in df.iterrows():
-            region_name = str(row['region']).strip()
+            region_name = str(row["region"]).strip()
 
             regions[region_name] = {
-                'region': region_name,
-                'conflict_risk_score': convert_to_native(row['conflict_risk_score']),
-                'conflict_risk_level': str(row['conflict_risk_level']).strip(),
-                'incidents': convert_to_native(row['incidents']),
-                'fatalities': convert_to_native(row['fatalities']),
+                "region": region_name,
+                "conflict_risk_score": convert_to_native(
+                    row["conflict_risk_score"]
+                ),
+                "conflict_risk_level": str(row["conflict_risk_level"]).strip(),
+                "incidents": convert_to_native(row["incidents"]),
+                "fatalities": convert_to_native(row["fatalities"]),
             }
 
         return regions
@@ -213,69 +263,107 @@ async def get_conflict_risk():
     except Exception as e:
         print(f"❌ ERROR in /api/conflict-risk: {e}")
         import traceback
+
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/analytics")
-async def get_analytics():
-    """Returns summary analytics with 4-indicator breakdowns"""
+async def get_analytics(
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    )
+):
+    """Returns summary analytics with 4-indicator breakdowns."""
     try:
-        df = load_conflict_proneness()
+        df = load_conflict_proneness(country_iso3)
 
         summary = {
             "total_regions": convert_to_native(len(df)),
-            "avg_conflict_proneness": round(convert_to_native(df['conflict_proneness'].mean()), 2),
-            "avg_climate_risk": round(convert_to_native(df['climate_risk_score'].mean()), 2),
-            "total_events": convert_to_native(df['incidents'].sum()),
-            "total_fatalities": convert_to_native(df['fatalities'].sum()),
-            "highest_risk_region": str(df.loc[df['conflict_proneness'].idxmax(), 'region']),
-            "high_proneness_count": convert_to_native((df['proneness_level'].isin(['EXTREME', 'VERY HIGH'])).sum()),
+            "avg_conflict_proneness": round(
+                convert_to_native(df["conflict_proneness"].mean()), 2
+            ),
+            "avg_climate_risk": round(
+                convert_to_native(df["climate_risk_score"].mean()), 2
+            ),
+            "total_events": convert_to_native(df["incidents"].sum()),
+            "total_fatalities": convert_to_native(df["fatalities"].sum()),
+            "highest_risk_region": str(
+                df.loc[df["conflict_proneness"].idxmax(), "region"]
+            ),
+            "high_proneness_count": convert_to_native(
+                (df["proneness_level"].isin(["EXTREME", "VERY HIGH"])).sum()
+            ),
         }
 
         indicator_averages = {
-            "avg_incidents": round(convert_to_native(df['incidents'].mean()), 1),
-            "avg_causes_pct": round(convert_to_native(df['causes_pct'].mean()), 1),
-            "avg_actors": round(convert_to_native(df['num_actors'].mean()), 1),
-            "avg_trend": round(convert_to_native(df['trend_delta'].mean()), 1)
+            "avg_incidents": round(convert_to_native(df["incidents"].mean()), 1),
+            "avg_causes_pct": round(convert_to_native(df["causes_pct"].mean()), 1),
+            "avg_actors": round(convert_to_native(df["num_actors"].mean()), 1),
+            "avg_trend": round(convert_to_native(df["trend_delta"].mean()), 1),
         }
 
         distribution = {
-            'EXTREME': convert_to_native((df['proneness_level'] == 'EXTREME').sum()),
-            'VERY_HIGH': convert_to_native((df['proneness_level'] == 'VERY HIGH').sum()),
-            'HIGH': convert_to_native((df['proneness_level'] == 'HIGH').sum()),
-            'MODERATE': convert_to_native((df['proneness_level'] == 'MODERATE').sum()),
-            'LOW': convert_to_native((df['proneness_level'] == 'LOW').sum()),
+            "EXTREME": convert_to_native(
+                (df["proneness_level"] == "EXTREME").sum()
+            ),
+            "VERY_HIGH": convert_to_native(
+                (df["proneness_level"] == "VERY HIGH").sum()
+            ),
+            "HIGH": convert_to_native(
+                (df["proneness_level"] == "HIGH").sum()
+            ),
+            "MODERATE": convert_to_native(
+                (df["proneness_level"] == "MODERATE").sum()
+            ),
+            "LOW": convert_to_native((df["proneness_level"] == "LOW").sum()),
         }
 
-        climate_dist = df['cdi_category'].value_counts()
-        conflict_dist = df['proneness_level'].value_counts()
+        climate_dist = df["cdi_category"].value_counts()
+        conflict_dist = df["proneness_level"].value_counts()
 
         risk_distribution = {
-            "climate": {str(cat): convert_to_native(count) for cat, count in climate_dist.items()},
-            "conflict": {str(cat): convert_to_native(count) for cat, count in conflict_dist.items()}
+            "climate": {
+                str(cat): convert_to_native(count)
+                for cat, count in climate_dist.items()
+            },
+            "conflict": {
+                str(cat): convert_to_native(count)
+                for cat, count in conflict_dist.items()
+            },
         }
 
         top_regions = [
             {
-                'region': str(row['region']),
-                'climate_risk_score': round(convert_to_native(row['climate_risk_score']), 2),
-                'political_risk_score': round(convert_to_native(row['conflict_proneness']), 2),
-                'cdi_category': str(row['cdi_category']),
-                'risk_category': str(row['proneness_level']),
-                'events_6m': convert_to_native(row['incidents']),
-                'fatalities_6m': convert_to_native(row['fatalities']),
+                "region": str(row["region"]),
+                "climate_risk_score": round(
+                    convert_to_native(row["climate_risk_score"]), 2
+                ),
+                "political_risk_score": round(
+                    convert_to_native(row["conflict_proneness"]), 2
+                ),
+                "cdi_category": str(row["cdi_category"]),
+                "risk_category": str(row["proneness_level"]),
+                "events_6m": convert_to_native(row["incidents"]),
+                "fatalities_6m": convert_to_native(row["fatalities"]),
             }
-            for _, row in df.nlargest(10, 'conflict_proneness').iterrows()
+            for _, row in df.nlargest(10, "conflict_proneness").iterrows()
         ]
 
         regional_data = [
             {
-                'region': str(row['region']),
-                'climate_risk_score': round(convert_to_native(row['climate_risk_score']), 2),
-                'political_risk_score': round(convert_to_native(row['conflict_proneness']), 2),
-                'events_6m': convert_to_native(row['incidents']),
-                'fatalities_6m': convert_to_native(row['fatalities']),
+                "region": str(row["region"]),
+                "climate_risk_score": round(
+                    convert_to_native(row["climate_risk_score"]), 2
+                ),
+                "political_risk_score": round(
+                    convert_to_native(row["conflict_proneness"]), 2
+                ),
+                "events_6m": convert_to_native(row["incidents"]),
+                "fatalities_6m": convert_to_native(row["fatalities"]),
             }
             for _, row in df.iterrows()
         ]
@@ -286,62 +374,96 @@ async def get_analytics():
             "distribution": distribution,
             "risk_distribution": risk_distribution,
             "top_regions": top_regions,
-            "regional_data": regional_data
+            "regional_data": regional_data,
         }
 
     except Exception as e:
         print(f"❌ ERROR in /api/analytics: {e}")
         import traceback
+
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/regions")
-async def get_regions():
-    """Returns bivariate region data for regions/page.tsx"""
+async def get_regions(
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    )
+):
+    """Returns bivariate region data for regions/page.tsx (per country)."""
     try:
-        df = load_conflict_proneness()
+        df = load_conflict_proneness(country_iso3)
 
         regions = []
         for _, row in df.iterrows():
-            regions.append({
-                'region': str(row['region']),
-                'climate_risk_score': round(convert_to_native(row['climate_risk_score']), 2),
-                'cdi_category': str(row['cdi_category']),
-                'political_risk_score': round(convert_to_native(row['conflict_proneness']), 2),
-                'risk_category': str(row['proneness_level']),
-                'bivariate_category': f"{row['proneness_level']}_{row['cdi_category']}",
-                'events_6m': convert_to_native(row['incidents']),
-                'fatalities_6m': convert_to_native(row['fatalities']),
-                'trend': 'stable',
-            })
+            regions.append(
+                {
+                    "region": str(row["region"]),
+                    "climate_risk_score": round(
+                        convert_to_native(row["climate_risk_score"]), 2
+                    ),
+                    "cdi_category": str(row["cdi_category"]),
+                    "political_risk_score": round(
+                        convert_to_native(row["conflict_proneness"]), 2
+                    ),
+                    "risk_category": str(row["proneness_level"]),
+                    "bivariate_category": f"{row['proneness_level']}_{row['cdi_category']}",
+                    "events_6m": convert_to_native(row["incidents"]),
+                    "fatalities_6m": convert_to_native(row["fatalities"]),
+                    "trend": "stable",
+                }
+            )
 
-        regions = sorted(regions, key=lambda x: x['political_risk_score'], reverse=True)
+        regions = sorted(
+            regions, key=lambda x: x["political_risk_score"], reverse=True
+        )
 
-        climate_summary = {str(cat): convert_to_native((df['cdi_category'] == cat).sum()) for cat in df['cdi_category'].unique()}
-        conflict_summary = {str(cat): convert_to_native((df['proneness_level'] == cat).sum()) for cat in df['proneness_level'].unique()}
+        climate_summary = {
+            str(cat): convert_to_native(
+                (df["cdi_category"] == cat).sum()
+            )
+            for cat in df["cdi_category"].unique()
+        }
+        conflict_summary = {
+            str(cat): convert_to_native(
+                (df["proneness_level"] == cat).sum()
+            )
+            for cat in df["proneness_level"].unique()
+        }
 
         return {
             "regions": regions,
             "total_count": len(regions),
             "risk_summary": {
                 "climate": climate_summary,
-                "conflict": conflict_summary
-            }
+                "conflict": conflict_summary,
+            },
         }
 
     except Exception as e:
         print(f"❌ ERROR in /api/regions: {e}")
         import traceback
+
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/monthly-trend")
-async def get_monthly_trend():
-    """Returns REAL monthly conflict trend data from ACLED events"""
+async def get_monthly_trend(
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    )
+):
+    """Returns REAL monthly conflict trend data from ACLED events (per country)."""
     try:
-        monthly_data = compute_monthly_trends()
+        monthly_data = compute_monthly_trends(country_iso3)
 
         if not monthly_data:
             return {
@@ -349,19 +471,41 @@ async def get_monthly_trend():
                 "summary": {
                     "avg_monthly_events": 0,
                     "avg_monthly_fatalities": 0,
-                    "trend": "unknown"
-                }
+                    "trend": "unknown",
+                },
             }
 
-        events_list = [m['events'] for m in monthly_data if isinstance(m['events'], (int, float))]
-        fatalities_list = [m['fatalities'] for m in monthly_data if isinstance(m['fatalities'], (int, float))]
+        events_list = [
+            m["events"]
+            for m in monthly_data
+            if isinstance(m["events"], (int, float))
+        ]
+        fatalities_list = [
+            m["fatalities"]
+            for m in monthly_data
+            if isinstance(m["fatalities"], (int, float))
+        ]
 
-        avg_events = round(sum(events_list) / len(events_list), 1) if events_list else 0
-        avg_fatalities = round(sum(fatalities_list) / len(fatalities_list), 1) if fatalities_list else 0
+        avg_events = (
+            round(sum(events_list) / len(events_list), 1) if events_list else 0
+        )
+        avg_fatalities = (
+            round(sum(fatalities_list) / len(fatalities_list), 1)
+            if fatalities_list
+            else 0
+        )
 
         if len(events_list) >= 2:
-            recent_avg = sum(events_list[-3:]) / 3 if len(events_list) >= 3 else events_list[-1]
-            earlier_avg = sum(events_list[:3]) / 3 if len(events_list) >= 3 else events_list[0]
+            recent_avg = (
+                sum(events_list[-3:]) / 3
+                if len(events_list) >= 3
+                else events_list[-1]
+            )
+            earlier_avg = (
+                sum(events_list[:3]) / 3
+                if len(events_list) >= 3
+                else events_list[0]
+            )
             trend = "increasing" if recent_avg > earlier_avg else "decreasing"
         else:
             trend = "stable"
@@ -372,12 +516,13 @@ async def get_monthly_trend():
                 "avg_monthly_events": avg_events,
                 "avg_monthly_fatalities": avg_fatalities,
                 "trend": trend,
-                "total_months": len(monthly_data)
-            }
+                "total_months": len(monthly_data),
+            },
         }
 
     except Exception as e:
         print(f"❌ ERROR in /api/monthly-trend: {e}")
         import traceback
+
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

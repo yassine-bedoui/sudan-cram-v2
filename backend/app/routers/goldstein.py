@@ -57,43 +57,35 @@ def get_latest_file(pattern: str) -> Optional[str]:
 
 
 @router.get("/escalation-risk")
-async def get_escalation_risk():
+async def get_escalation_risk(
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    ),
+):
     """
-    Get current escalation risk by location (from precomputed CSV).
-
-    Returns shape:
-    {
-      "last_updated": "...",
-      "locations": {
-        "<location>": {
-          "risk_score": float,
-          "risk_level": str,
-          "avg_goldstein": float,
-          "trend": float,
-          "trend_direction": "escalating" | "de-escalating",
-          "event_count": int,
-          "media_mentions": int,
-          "last_seen": "YYYY-MM-DD"
-        },
-        ...
-      }
-    }
+    Get current escalation risk by location (from precomputed CSV)
+    for the selected country.
     """
     try:
-        risk_file = get_latest_file("goldstein_escalation_risk_*.csv")
+        iso3 = country_iso3.upper()
+        risk_file = get_latest_file(f"goldstein_escalation_risk_{iso3}_*.csv")
 
         if not risk_file:
             raise HTTPException(
                 status_code=404,
                 detail=(
-                    "No Goldstein analysis found. "
-                    "Run: python backend/scripts/analyze_goldstein_trends.py"
+                    "No Goldstein analysis found for this country. "
+                    "Run: COUNTRY_ISO3=<ISO3> python backend/scripts/analyze_goldstein_trends.py"
                 ),
             )
 
         df = pd.read_csv(risk_file)
 
         result: Dict[str, Any] = {
+            "country_iso3": iso3,
             "last_updated": datetime.fromtimestamp(os.path.getctime(risk_file)).isoformat(),
             "locations": {},
         }
@@ -121,13 +113,22 @@ async def get_escalation_risk():
 
 
 @router.get("/timeline")
-async def get_goldstein_timeline(hours: int = 24):
+async def get_goldstein_timeline(
+    hours: int = 24,
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    ),
+):
     """
-    Get hourly Goldstein timeline (for charts).
-    Reads precomputed goldstein_hourly_timeline_*.csv.
+    Get hourly Goldstein timeline (for charts) for the selected country.
+    Reads precomputed goldstein_hourly_timeline_<ISO3>_*.csv.
     """
     try:
-        timeline_file = get_latest_file("goldstein_hourly_timeline_*.csv")
+        iso3 = country_iso3.upper()
+        timeline_file = get_latest_file(f"goldstein_hourly_timeline_{iso3}_*.csv")
 
         if not timeline_file:
             raise HTTPException(status_code=404, detail="No timeline data found")
@@ -139,6 +140,7 @@ async def get_goldstein_timeline(hours: int = 24):
         df = df[df["timestamp"] >= cutoff]
 
         return {
+            "country_iso3": iso3,
             "timestamps": df["timestamp"].dt.strftime("%Y-%m-%d %H:%M").tolist(),
             "goldstein_scores": df["avg_goldstein"].tolist(),
             "event_counts": df["event_count"].tolist(),
@@ -152,10 +154,19 @@ async def get_goldstein_timeline(hours: int = 24):
 
 
 @router.get("/top-risks")
-async def get_top_risks(limit: int = 10):
-    """Get top N highest-risk locations (from precomputed escalation CSV)."""
+async def get_top_risks(
+    limit: int = 10,
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code (e.g. 'SDN', 'SOM').",
+    ),
+):
+    """Get top N highest-risk locations (from precomputed escalation CSV) for the selected country."""
     try:
-        risk_file = get_latest_file("goldstein_escalation_risk_*.csv")
+        iso3 = country_iso3.upper()
+        risk_file = get_latest_file(f"goldstein_escalation_risk_{iso3}_*.csv")
 
         if not risk_file:
             raise HTTPException(status_code=404, detail="No risk data")
@@ -163,6 +174,7 @@ async def get_top_risks(limit: int = 10):
         df = pd.read_csv(risk_file).head(limit)
 
         return {
+            "country_iso3": iso3,
             "top_risks": df.to_dict("records"),
         }
 
@@ -183,22 +195,33 @@ def get_gdelt_events(
     region: Optional[str] = Query(
         None, description="Optional exact region filter (e.g. 'Khartoum, Al Khartum, Sudan')."
     ),
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code for filtering events.",
+    ),
     limit: int = Query(2000, ge=1, le=10000, description="Max number of events to return."),
     db: Session = Depends(get_db),
 ):
     """
-    Return recent GDELT events (point data) from Postgres.
+    Return recent GDELT events (point data) from Postgres for a given country.
 
     This is meant for:
     - Maps / heatmaps (lat/lon points)
     - Detailed event timelines per region
 
-    Example: GET /api/goldstein/events?days=7&limit=1000
+    Example: GET /api/goldstein/events?days=7&limit=1000&country_iso3=SDN
     """
     try:
         cutoff = datetime.utcnow() - timedelta(days=days)
+        iso3 = country_iso3.upper()
 
-        query = db.query(GDELTEvent).filter(GDELTEvent.event_date >= cutoff)
+        query = (
+            db.query(GDELTEvent)
+            .filter(GDELTEvent.country_iso3 == iso3)
+            .filter(GDELTEvent.event_date >= cutoff)
+        )
 
         if region:
             query = query.filter(GDELTEvent.region == region)
@@ -226,6 +249,7 @@ def get_gdelt_events(
             )
 
         return {
+            "country_iso3": iso3,
             "window_days": days,
             "region_filter": region,
             "total": len(out_events),
@@ -277,58 +301,34 @@ def get_political_environment_risk(
     region: Optional[str] = Query(
         None, description="Optional exact region filter (e.g. 'Khartoum, Al Khartum, Sudan')."
     ),
+    country_iso3: str = Query(
+        "SDN",
+        min_length=3,
+        max_length=3,
+        description="ISO3 country code for filtering events.",
+    ),
     db: Session = Depends(get_db),
 ):
     """
-    Compute a Political Environment Risk score per region from GDELT events.
+    Compute a Political Environment Risk score per region from GDELT events
+    for the selected country.
 
     This uses the gdelt_events table in Postgres directly.
-
-    For each region in the last `days`:
-      - event_count
-      - avg_goldstein (negative = more conflict)
-      - conflict_share (quad_class >= 3)
-      - avg_tone (negative = more worrying)
-
-    Then it builds a 0–10 score (higher = more political risk):
-
-        raw = 0.4 * events_norm
-            + 0.3 * neg_gold_norm
-            + 0.2 * conflict_share
-            + 0.1 * neg_tone_norm
-
-        political_risk_score = clip(raw * 10, 0, 10)
-
-    Returns:
-    {
-      "window_days": 30,
-      "cutoff": "2025-10-24T12:00:00",
-      "region_filter": null,
-      "regions": {
-        "<region>": {
-          "political_risk_score": float,
-          "political_risk_level": "LOW|MODERATE|HIGH|VERY HIGH|EXTREME",
-          "event_count": int,
-          "conflict_event_share": float,
-          "avg_goldstein": float,
-          "avg_tone": float,
-          "first_seen": "ISO-8601",
-          "last_seen": "ISO-8601"
-        },
-        ...
-      }
-    }
     """
     try:
         cutoff = datetime.utcnow() - timedelta(days=days)
+        iso3 = country_iso3.upper()
 
-        query = db.query(GDELTEvent).filter(GDELTEvent.event_date >= cutoff)
+        query = db.query(GDELTEvent).filter(GDELTEvent.country_iso3 == iso3).filter(
+            GDELTEvent.event_date >= cutoff
+        )
         if region:
             query = query.filter(GDELTEvent.region == region)
 
         events = query.all()
         if not events:
             return {
+                "country_iso3": iso3,
                 "window_days": days,
                 "cutoff": cutoff.isoformat(),
                 "region_filter": region,
@@ -391,6 +391,7 @@ def get_political_environment_risk(
 
         if not region_stats:
             return {
+                "country_iso3": iso3,
                 "window_days": days,
                 "cutoff": cutoff.isoformat(),
                 "region_filter": region,
@@ -435,6 +436,7 @@ def get_political_environment_risk(
             }
 
         return {
+            "country_iso3": iso3,
             "window_days": days,
             "cutoff": cutoff.isoformat(),
             "region_filter": region,

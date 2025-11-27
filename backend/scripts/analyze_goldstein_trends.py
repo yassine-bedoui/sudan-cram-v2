@@ -4,10 +4,10 @@ Analyze Goldstein Scale trends to detect escalation.
 
 NEW:
 - Prefer reading from Postgres `gdelt_events` table (live pipeline).
-- Fallback to the latest CSV under data/gdelt/ if DB is not available.
-- Outputs the same processed CSVs used by the FastAPI router:
-    - data/processed/goldstein_escalation_risk_YYYYMMDD.csv
-    - data/processed/goldstein_hourly_timeline_YYYYMMDD.csv
+- Fallback to the latest country-specific CSV under data/gdelt/ if DB is not available.
+- Outputs the same processed CSVs used by the FastAPI router, now per-country:
+    - data/processed/goldstein_escalation_risk_<ISO3>_YYYYMMDD.csv
+    - data/processed/goldstein_hourly_timeline_<ISO3>_YYYYMMDD.csv
 """
 
 import glob
@@ -18,10 +18,13 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine, text
 
+DEFAULT_COUNTRY_ISO3 = os.getenv("COUNTRY_ISO3", "SDN").upper()
+
 
 # -------------------------------------------------------------------
 # DB helpers
 # -------------------------------------------------------------------
+
 
 def get_engine():
     """
@@ -37,7 +40,9 @@ def get_engine():
     return create_engine(db_url)
 
 
-def load_gdelt_from_db(hours_back: int = 72) -> pd.DataFrame:
+def load_gdelt_from_db(
+    hours_back: int = 72, country_iso3: str = DEFAULT_COUNTRY_ISO3
+) -> pd.DataFrame:
     """
     Load recent GDELT events from Postgres and return a DataFrame
     with the columns expected by the analysis functions:
@@ -50,10 +55,12 @@ def load_gdelt_from_db(hours_back: int = 72) -> pd.DataFrame:
         - goldstein  <- gdelt_events.goldstein_scale
         - event_code <- gdelt_events.event_code
         - num_mentions <- 1 (DB schema doesn't store NumMentions yet)
+
+    Filtered by country_iso3.
     """
     engine = get_engine()
-
     cutoff = datetime.utcnow() - timedelta(hours=hours_back)
+    iso3 = country_iso3.upper()
 
     with engine.connect() as conn:
         # Pull the raw events
@@ -67,18 +74,19 @@ def load_gdelt_from_db(hours_back: int = 72) -> pd.DataFrame:
                     goldstein_scale AS goldstein,
                     avg_tone
                 FROM gdelt_events
-                WHERE event_date >= :cutoff
+                WHERE country_iso3 = :country_iso3
+                  AND event_date >= :cutoff
                 ORDER BY event_date
                 """
             ),
             conn,
-            params={"cutoff": cutoff},
+            params={"cutoff": cutoff, "country_iso3": iso3},
         )
 
     if df.empty:
         print(
             f"⚠️ No GDELT rows found in DB within the last {hours_back} hours "
-            f"(cutoff={cutoff.isoformat()})"
+            f"for {iso3} (cutoff={cutoff.isoformat()})"
         )
         return df
 
@@ -89,7 +97,7 @@ def load_gdelt_from_db(hours_back: int = 72) -> pd.DataFrame:
     df["num_mentions"] = 1
 
     print(
-        f"✅ Loaded {len(df)} GDELT events from DB "
+        f"✅ Loaded {len(df)} GDELT events from DB for {iso3} "
         f"({df['date'].min()} → {df['date'].max()})"
     )
     return df
@@ -99,39 +107,48 @@ def load_gdelt_from_db(hours_back: int = 72) -> pd.DataFrame:
 # Legacy CSV loader (fallback)
 # -------------------------------------------------------------------
 
-def load_latest_gdelt_csv() -> pd.DataFrame:
+
+def load_latest_gdelt_csv(country_iso3: str = DEFAULT_COUNTRY_ISO3) -> pd.DataFrame:
     """
-    Legacy loader: load the most recent GDELT Sudan events CSV
-    from data/gdelt/sudan_events_*.csv.
+    Legacy loader: load the most recent country-specific GDELT events CSV
+    from data/gdelt/<iso3>_events_*.csv.
 
     Expects columns:
         date, location, goldstein, event_code, num_mentions, ...
     """
-    gdelt_files = glob.glob("data/gdelt/sudan_events_*.csv")
+    iso3 = country_iso3.upper()
+    gdelt_files = glob.glob(f"data/gdelt/{iso3.lower()}_events_*.csv")
+
+    # Backwards compatibility with old Sudan-only naming
+    if not gdelt_files and iso3 == "SDN":
+        gdelt_files = glob.glob("data/gdelt/sudan_events_*.csv")
 
     if not gdelt_files:
         raise FileNotFoundError(
-            "No GDELT data found in DB and no CSVs under data/gdelt/. "
+            f"No GDELT data found in DB or CSVs for {iso3}. "
             "Run the GDELT ETL first."
         )
 
     latest_file = max(gdelt_files, key=os.path.getctime)
-    print(f"📂 Falling back to CSV. Loading: {latest_file}")
+    print(f"📂 Falling back to CSV for {iso3}. Loading: {latest_file}")
 
     df = pd.read_csv(latest_file)
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     return df
 
 
-def load_latest_gdelt_data(hours_back: int = 72) -> pd.DataFrame:
+def load_latest_gdelt_data(
+    hours_back: int = 72, country_iso3: str = DEFAULT_COUNTRY_ISO3
+) -> pd.DataFrame:
     """
     Main loader:
 
-    1. Try Postgres (gdelt_events) for last `hours_back` hours.
+    1. Try Postgres (gdelt_events) for last `hours_back` hours for country_iso3.
     2. If that fails (connection error, missing table, etc.), fall back to CSV.
     """
+    iso3 = country_iso3.upper()
     try:
-        df = load_gdelt_from_db(hours_back=hours_back)
+        df = load_gdelt_from_db(hours_back=hours_back, country_iso3=iso3)
         if not df.empty:
             return df
         else:
@@ -141,12 +158,13 @@ def load_latest_gdelt_data(hours_back: int = 72) -> pd.DataFrame:
         print("   Falling back to latest CSV in data/gdelt/ ...")
 
     # Fallback
-    return load_latest_gdelt_csv()
+    return load_latest_gdelt_csv(country_iso3=iso3)
 
 
 # -------------------------------------------------------------------
 # Analysis functions (mostly unchanged)
 # -------------------------------------------------------------------
+
 
 def calculate_escalation_risk(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -266,13 +284,15 @@ def generate_hourly_timeline(df: pd.DataFrame) -> pd.DataFrame:
 # Main entrypoint
 # -------------------------------------------------------------------
 
+
 def main() -> tuple[pd.DataFrame, pd.DataFrame]:
+    country_iso3 = DEFAULT_COUNTRY_ISO3
     print("=" * 70)
-    print("GOLDSTEIN SCALE TREND ANALYSIS (DB-first)")
+    print(f"GOLDSTEIN SCALE TREND ANALYSIS (DB-first) – {country_iso3}")
     print("=" * 70)
 
     # Load data (DB preferred, fallback to CSV)
-    df = load_latest_gdelt_data(hours_back=72)
+    df = load_latest_gdelt_data(hours_back=72, country_iso3=country_iso3)
 
     if df.empty:
         print("❌ No GDELT data available for analysis. Aborting.")
@@ -288,7 +308,7 @@ def main() -> tuple[pd.DataFrame, pd.DataFrame]:
     os.makedirs("data/processed", exist_ok=True)
     today_str = datetime.now().strftime("%Y%m%d")
 
-    risk_file = f"data/processed/goldstein_escalation_risk_{today_str}.csv"
+    risk_file = f"data/processed/goldstein_escalation_risk_{country_iso3}_{today_str}.csv"
     risk_df.to_csv(risk_file, index=False)
 
     # Display results
@@ -313,7 +333,9 @@ def main() -> tuple[pd.DataFrame, pd.DataFrame]:
 
     # Generate hourly timeline
     timeline = generate_hourly_timeline(df)
-    timeline_file = f"data/processed/goldstein_hourly_timeline_{today_str}.csv"
+    timeline_file = (
+        f"data/processed/goldstein_hourly_timeline_{country_iso3}_{today_str}.csv"
+    )
     timeline.to_csv(timeline_file, index=False)
 
     print("\n" + "=" * 70)

@@ -11,6 +11,7 @@ import pandas as pd
 from app.services.dtm_client import DTMClient, DTMClientError
 from app.services.ipc_client import IPCClient, IPCClientError
 from app.services.idmc_client import IDMCClient, IDMCSnapshot, IDMCClientError
+from app.config.countries import get_country_config
 
 
 class HumanitarianServiceError(Exception):
@@ -38,7 +39,7 @@ class HumanitarianRegionSummary:
 
 class HumanitarianService:
     """
-    Service that combines:
+    Service that combines, for a single country (country_iso3):
       - DTM: internal displacement (IDPs) per admin1
       - IPC: food insecurity phase per admin1
       - IDMC: country-level GIDD snapshot
@@ -47,27 +48,50 @@ class HumanitarianService:
 
     def __init__(
         self,
+        country_iso3: str = "SDN",
         dtm_client: Optional[DTMClient] = None,
         ipc_client: Optional[IPCClient] = None,
         idmc_client: Optional[IDMCClient] = None,
     ) -> None:
+        """
+        Args:
+            country_iso3: ISO3 country code (e.g. "SDN", "SOM").
+        """
+        self.country_iso3 = country_iso3.upper()
+        # Centralised per-country configuration (Step 2)
+        self.country_config = get_country_config(self.country_iso3)
+
+        # DTM is required – we fail fast if it cannot be initialised
         try:
-            self.dtm_client = dtm_client or DTMClient()
+            self.dtm_client = dtm_client or DTMClient(
+                country_name=self.country_config.dtm_country_name
+            )
         except DTMClientError as e:
-            raise HumanitarianServiceError(f"Failed to init DTM client: {e}") from e
+            raise HumanitarianServiceError(
+                f"Failed to init DTM client for {self.country_iso3}: {e}"
+            ) from e
 
         # IPC is optional – if it fails, we just operate without it
         try:
-            self.ipc_client = ipc_client or IPCClient()
+            self.ipc_client = ipc_client or IPCClient(
+                country_code=self.country_config.ipc_country_code
+            )
         except Exception as e:
-            print(f"[HumanitarianService] IPC client init error: {e}")
+            print(
+                f"[HumanitarianService] IPC client init error for {self.country_iso3}: {e}"
+            )
             self.ipc_client = None
 
         # IDMC is also optional – summary still works without it
         try:
-            self.idmc_client = idmc_client or IDMCClient()
+            self.idmc_client = idmc_client or IDMCClient(
+                country_iso3=self.country_config.idmc_country_iso3,
+                country_name=self.country_config.idmc_country_name,
+            )
         except Exception as e:
-            print(f"[HumanitarianService] IDMC client init error: {e}")
+            print(
+                f"[HumanitarianService] IDMC client init error for {self.country_iso3}: {e}"
+            )
             self.idmc_client = None
 
     # ---------------------- Helpers ---------------------- #
@@ -115,7 +139,7 @@ class HumanitarianService:
 
     def get_dtm_snapshot(self) -> pd.DataFrame:
         """
-        Fetch latest DTM IDP data and normalize to:
+        Fetch latest DTM IDP data for the configured country and normalize to:
 
             region, idps, dtm_reporting_date
 
@@ -288,7 +312,7 @@ class HumanitarianService:
 
     def get_idmc_snapshot(self) -> Optional[Dict[str, Any]]:
         """
-        Country-level GIDD snapshot from IDMC.
+        Country-level GIDD snapshot from IDMC for the configured country.
 
         Returns:
             dict or None if IDMC not configured / no data.

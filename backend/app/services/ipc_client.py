@@ -35,7 +35,7 @@ class IPCClient:
         IPC_API_KEY          - required API key (used as ?key= in query string)
         IPC_BASE_URL         - e.g. https://api.ipcinfo.org
         IPC_COUNTRY_ENDPOINT - e.g. /country  (MUST be a path, not full URL)
-        IPC_COUNTRY_CODE     - e.g. SDN
+        IPC_COUNTRY_CODE     - default ISO3 code (e.g. SDN) if not provided explicitly
     """
 
     def __init__(
@@ -71,8 +71,8 @@ class IPCClient:
 
         self.country_endpoint = raw_endpoint
 
-        # Country code (likely ISO3)
-        self.country_code = country_code or os.getenv("IPC_COUNTRY_CODE", "SDN")
+        # Country code (likely ISO3) – can be overridden by constructor or per-call
+        self.country_code = (country_code or os.getenv("IPC_COUNTRY_CODE", "SDN")).upper()
 
         # Simple requests session
         self.session = requests.Session()
@@ -86,10 +86,15 @@ class IPCClient:
     def _country_url(self) -> str:
         return f"{self.base_url}{self.country_endpoint}"
 
-    def fetch_latest_country_analysis(self) -> pd.DataFrame:
+    def fetch_latest_country_analysis(
+        self,
+        country_code: Optional[str] = None,
+    ) -> pd.DataFrame:
         """
-        Fetch the latest IPC analysis for the configured country and
-        normalize it to one row per admin region.
+        Fetch the latest IPC analysis for a country and normalize it
+        to one row per admin region.
+
+        If country_code is None, uses the instance's configured country_code.
 
         Returns DataFrame with:
             region
@@ -99,12 +104,13 @@ class IPCClient:
             analysis_period (str)
         """
         url = self._country_url()
+        code = (country_code or self.country_code).upper()
 
         # Key point: IPC API wants ?key= in QUERY STRING
         params: Dict[str, Any] = {
             # Country parameter name may vary, so we send both common variants.
-            "code": self.country_code,
-            "countryCode": self.country_code,
+            "code": code,
+            "countryCode": code,
             # Auth:
             "key": self.api_key,
             # "latest" flag – if IPC supports it
