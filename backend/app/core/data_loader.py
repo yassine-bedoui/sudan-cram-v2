@@ -1,13 +1,14 @@
 """
 Data Loading and Preparation Module for Sudan CRAM Dashboard
 
-This module handles loading, caching, and preparing data from the 
+This module handles loading, caching, and preparing data from the
 processed datasets for visualization in the Streamlit dashboard.
 
 Author: Sudan CRAM Team
 Date: November 2025
 """
 
+import os
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -28,6 +29,23 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / 'data' / 'processed'
 RAW_DATA_DIR = PROJECT_ROOT / 'data' / 'raw'
 
+# Default country (ISO3) for dashboard; used to pick country-specific files
+DEFAULT_COUNTRY_ISO3 = os.getenv("DEFAULT_COUNTRY_ISO3", "SDN").upper()
+
+
+def _country_specific_path(basename: str, ext: str = ".csv") -> Path:
+    """
+    Resolve a processed data file with optional country suffix.
+
+    Preference:
+      1. <basename>_<ISO3>.csv (e.g. conflict_proneness_v2_with_causes_SDN.csv)
+      2. <basename>.csv        (legacy single-country file)
+    """
+    country_file = DATA_DIR / f"{basename}_{DEFAULT_COUNTRY_ISO3}{ext}"
+    if country_file.exists():
+        return country_file
+    return DATA_DIR / f"{basename}{ext}"
+
 
 # ============================================================================
 # HELPER FUNCTIONS FOR COLUMN DETECTION
@@ -36,11 +54,11 @@ RAW_DATA_DIR = PROJECT_ROOT / 'data' / 'raw'
 def find_column(df: pd.DataFrame, possible_names: List[str]) -> Optional[str]:
     """
     Find the first matching column name from a list of possibilities.
-    
+
     Args:
         df: DataFrame to search
         possible_names: List of possible column names
-        
+
     Returns:
         Column name if found, None otherwise
     """
@@ -58,26 +76,26 @@ def find_column(df: pd.DataFrame, possible_names: List[str]) -> Optional[str]:
 def load_conflict_proneness() -> pd.DataFrame:
     """
     Load Conflict Proneness v2 scores by state.
-    
+
     Returns:
         DataFrame with columns: ADM1_NAME, conflict_proneness_v2, smoothed_causes_pct, etc.
     """
     try:
-        path = DATA_DIR / 'conflict_proneness_v2_with_causes.csv'
+        path = _country_specific_path('conflict_proneness_v2_with_causes')
         df = pd.read_csv(path)
-        
+
         # Ensure numeric columns
         if 'conflict_proneness_v2' in df.columns:
             df['conflict_proneness_v2'] = pd.to_numeric(df['conflict_proneness_v2'], errors='coerce')
-        
+
         if 'smoothed_causes_pct' in df.columns:
             df['smoothed_causes_pct'] = pd.to_numeric(df['smoothed_causes_pct'], errors='coerce')
-        
+
         # ✅ NORMALIZE STATE NAMES
         df = normalize_dataframe_states(df, state_column='state')
-        
+
         return df
-    
+
     except FileNotFoundError:
         st.error(f"⚠️ Could not find conflict proneness data at: {path}")
         return pd.DataFrame()
@@ -90,19 +108,19 @@ def load_conflict_proneness() -> pd.DataFrame:
 def load_acled_events() -> pd.DataFrame:
     """
     Load ACLED event-level data with cause classifications.
-    
+
     Returns:
         DataFrame with event details, dates, locations, and cause classifications.
     """
     try:
-        path = DATA_DIR / 'acled_with_causes.csv'
+        path = _country_specific_path('acled_with_causes')
         df = pd.read_csv(path)
-        
+
         # Find and convert date column
         date_col = find_column(df, ['event_date', 'date', 'EVENT_DATE', 'Date', 'event_date_str'])
         if date_col:
             df['event_date'] = pd.to_datetime(df[date_col], errors='coerce')
-        
+
         # Find and ensure numeric fatalities
         fatality_col = find_column(df, ['fatalities', 'FATALITIES', 'Fatalities', 'deaths', 'casualties', 'CASUALTIES'])
         if fatality_col:
@@ -110,12 +128,12 @@ def load_acled_events() -> pd.DataFrame:
         else:
             # If no fatality column found, create one with zeros
             df['fatalities'] = 0
-        
+
         # ✅ NORMALIZE STATE NAMES
         df = normalize_dataframe_states(df, state_column='ADMIN1')
-        
+
         return df
-    
+
     except FileNotFoundError:
         st.error(f"⚠️ Could not find ACLED events data at: {path}")
         return pd.DataFrame()
@@ -128,28 +146,28 @@ def load_acled_events() -> pd.DataFrame:
 def load_causes_by_state() -> pd.DataFrame:
     """
     Load causes distribution aggregated by state.
-    
+
     Returns:
         DataFrame with state-level causes breakdown.
     """
     try:
-        path = DATA_DIR / 'causes_by_state.csv'
+        path = _country_specific_path('causes_by_state')
         df = pd.read_csv(path)
-        
+
         # Ensure numeric columns
-        numeric_cols = ['total_events', 'high_risk_events', 'political_events', 
-                       'communal_events', 'resource_events', 'raw_causes_pct', 
+        numeric_cols = ['total_events', 'high_risk_events', 'political_events',
+                       'communal_events', 'resource_events', 'raw_causes_pct',
                        'smoothed_causes_pct']
-        
+
         for col in numeric_cols:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
-        
+
         # ✅ NORMALIZE STATE NAMES
         df = normalize_dataframe_states(df, state_column='state')
-        
+
         return df
-    
+
     except FileNotFoundError:
         st.warning(f"⚠️ Could not find causes by state data at: {path}")
         return pd.DataFrame()
@@ -166,14 +184,14 @@ def load_causes_by_state() -> pd.DataFrame:
 def get_summary_stats() -> Dict[str, any]:
     """
     Calculate summary statistics for the entire dataset.
-    
+
     Returns:
-        Dictionary with key metrics: total_events, total_fatalities, 
+        Dictionary with key metrics: total_events, total_fatalities,
         states_affected, date_range, etc.
     """
     df_events = load_acled_events()
     df_cp = load_conflict_proneness()
-    
+
     if df_events.empty:
         return {
             'total_events': 0,
@@ -183,20 +201,20 @@ def get_summary_stats() -> Dict[str, any]:
             'avg_cp_score': 0,
             'high_risk_states': 0
         }
-    
+
     # Find fatalities column
     fatality_col = find_column(df_events, ['fatalities', 'FATALITIES', 'Fatalities', 'deaths', 'casualties'])
     total_fatalities = int(df_events[fatality_col].sum()) if fatality_col else 0
-    
+
     # Find state/admin column
     state_col = find_column(df_events, ['admin1', 'ADM1_NAME', 'state', 'State', 'ADMIN1', 'region', 'Region'])
     states_affected = df_events[state_col].nunique() if state_col else len(df_cp)
-    
+
     # Find date column
     date_col = find_column(df_events, ['event_date', 'date', 'EVENT_DATE', 'Date'])
     if date_col and 'event_date' not in df_events.columns:
         df_events['event_date'] = pd.to_datetime(df_events[date_col], errors='coerce')
-    
+
     # Calculate date range
     if 'event_date' in df_events.columns:
         min_date = df_events['event_date'].min()
@@ -204,7 +222,7 @@ def get_summary_stats() -> Dict[str, any]:
         date_range = f"{min_date.strftime('%b %Y')} - {max_date.strftime('%b %Y')}"
     else:
         date_range = 'N/A'
-    
+
     stats = {
         'total_events': len(df_events),
         'total_fatalities': total_fatalities,
@@ -213,7 +231,7 @@ def get_summary_stats() -> Dict[str, any]:
         'avg_cp_score': round(df_cp['conflict_proneness_v2'].mean(), 2) if not df_cp.empty and 'conflict_proneness_v2' in df_cp.columns else 0,
         'high_risk_states': len(df_cp[df_cp['conflict_proneness_v2'] >= 7]) if not df_cp.empty and 'conflict_proneness_v2' in df_cp.columns else 0
     }
-    
+
     return stats
 
 
@@ -225,15 +243,15 @@ def get_summary_stats() -> Dict[str, any]:
 def get_events_by_month() -> pd.DataFrame:
     """
     Aggregate events by month for time series analysis.
-    
+
     Returns:
         DataFrame with monthly event counts and fatalities.
     """
     df = load_acled_events()
-    
+
     if df.empty:
         return pd.DataFrame(columns=['month', 'events', 'fatalities'])
-    
+
     # Ensure event_date exists
     if 'event_date' not in df.columns:
         date_col = find_column(df, ['event_date', 'date', 'EVENT_DATE', 'Date'])
@@ -241,22 +259,22 @@ def get_events_by_month() -> pd.DataFrame:
             df['event_date'] = pd.to_datetime(df[date_col], errors='coerce')
         else:
             return pd.DataFrame(columns=['month', 'events', 'fatalities'])
-    
+
     # Remove rows with invalid dates
     df = df[df['event_date'].notna()]
-    
+
     if df.empty:
         return pd.DataFrame(columns=['month', 'events', 'fatalities'])
-    
+
     # Group by month
     df['year_month'] = df['event_date'].dt.to_period('M')
-    
+
     # Find event ID column
     event_id_col = find_column(df, ['event_id_cnty', 'event_id', 'id', 'EVENT_ID'])
-    
+
     # Find fatalities column
     fatality_col = find_column(df, ['fatalities', 'FATALITIES', 'Fatalities', 'deaths'])
-    
+
     # Aggregate
     agg_dict = {}
     if event_id_col:
@@ -265,19 +283,19 @@ def get_events_by_month() -> pd.DataFrame:
         # If no ID column, just count rows
         df['_count'] = 1
         agg_dict['_count'] = 'sum'
-    
+
     if fatality_col:
         agg_dict[fatality_col] = 'sum'
-    
+
     monthly = df.groupby('year_month').agg(agg_dict).reset_index()
-    
+
     # Rename columns
     monthly.columns = ['month', 'events', 'fatalities'] if fatality_col else ['month', 'events']
     if 'fatalities' not in monthly.columns:
         monthly['fatalities'] = 0
-    
+
     monthly['month'] = monthly['month'].dt.to_timestamp()
-    
+
     return monthly
 
 
@@ -285,24 +303,24 @@ def get_events_by_month() -> pd.DataFrame:
 def get_events_by_cause() -> pd.DataFrame:
     """
     Aggregate events by cause classification.
-    
+
     Returns:
         DataFrame with event counts by cause type.
     """
     df = load_acled_events()
-    
+
     if df.empty:
         return pd.DataFrame(columns=['cause', 'events'])
-    
+
     # Find cause column
     cause_col = find_column(df, ['classified_cause', 'cause', 'CAUSE', 'Cause', 'cause_type'])
-    
+
     if not cause_col:
         return pd.DataFrame(columns=['cause', 'events'])
-    
+
     cause_counts = df[cause_col].value_counts().reset_index()
     cause_counts.columns = ['cause', 'events']
-    
+
     return cause_counts
 
 
@@ -313,43 +331,43 @@ def get_events_by_cause() -> pd.DataFrame:
 def filter_events_by_state(state: str) -> pd.DataFrame:
     """
     Filter events for a specific state.
-    
+
     Args:
         state: State name to filter by
-        
+
     Returns:
         Filtered DataFrame
     """
     df = load_acled_events()
-    
+
     if df.empty:
         return pd.DataFrame()
-    
+
     # Find state column
     state_col = find_column(df, ['admin1', 'ADM1_NAME', 'state', 'State', 'ADMIN1'])
-    
+
     if not state_col:
         return pd.DataFrame()
-    
+
     return df[df[state_col] == state].copy()
 
 
 def filter_events_by_date_range(start_date: pd.Timestamp, end_date: pd.Timestamp) -> pd.DataFrame:
     """
     Filter events within a date range.
-    
+
     Args:
         start_date: Start date (inclusive)
         end_date: End date (inclusive)
-        
+
     Returns:
         Filtered DataFrame
     """
     df = load_acled_events()
-    
+
     if df.empty:
         return pd.DataFrame()
-    
+
     # Ensure event_date exists
     if 'event_date' not in df.columns:
         date_col = find_column(df, ['event_date', 'date', 'EVENT_DATE', 'Date'])
@@ -357,7 +375,7 @@ def filter_events_by_date_range(start_date: pd.Timestamp, end_date: pd.Timestamp
             df['event_date'] = pd.to_datetime(df[date_col], errors='coerce')
         else:
             return pd.DataFrame()
-    
+
     mask = (df['event_date'] >= start_date) & (df['event_date'] <= end_date)
     return df[mask].copy()
 
@@ -365,24 +383,24 @@ def filter_events_by_date_range(start_date: pd.Timestamp, end_date: pd.Timestamp
 def filter_events_by_cause(cause_type: str) -> pd.DataFrame:
     """
     Filter events by cause classification.
-    
+
     Args:
         cause_type: One of 'Political', 'Communal', 'Resource-based'
-        
+
     Returns:
         Filtered DataFrame
     """
     df = load_acled_events()
-    
+
     if df.empty:
         return pd.DataFrame()
-    
+
     # Find cause column
     cause_col = find_column(df, ['classified_cause', 'cause', 'CAUSE', 'Cause'])
-    
+
     if not cause_col:
         return pd.DataFrame()
-    
+
     return df[df[cause_col] == cause_type].copy()
 
 
@@ -393,10 +411,10 @@ def filter_events_by_cause(cause_type: str) -> pd.DataFrame:
 def get_risk_category(cp_score: float) -> str:
     """
     Categorize CP score into risk levels.
-    
+
     Args:
         cp_score: Conflict Proneness score (1-10)
-        
+
     Returns:
         Risk category string
     """
@@ -417,10 +435,10 @@ def get_risk_category(cp_score: float) -> str:
 def get_risk_color(cp_score: float) -> str:
     """
     Get color code for CP score visualization.
-    
+
     Args:
         cp_score: Conflict Proneness score (1-10)
-        
+
     Returns:
         Hex color code
     """
@@ -441,11 +459,11 @@ def get_risk_color(cp_score: float) -> str:
 def add_risk_category_column(df: pd.DataFrame, cp_col: str = 'conflict_proneness_v2') -> pd.DataFrame:
     """
     Add risk category column to DataFrame.
-    
+
     Args:
         df: DataFrame with CP scores
         cp_col: Name of CP score column
-        
+
     Returns:
         DataFrame with added 'risk_category' column
     """
@@ -462,7 +480,7 @@ def add_risk_category_column(df: pd.DataFrame, cp_col: str = 'conflict_proneness
 def validate_data_availability() -> Dict[str, bool]:
     """
     Check which datasets are available and properly loaded.
-    
+
     Returns:
         Dictionary of dataset availability status.
     """
@@ -471,21 +489,21 @@ def validate_data_availability() -> Dict[str, bool]:
         'acled_events': not load_acled_events().empty,
         'causes_by_state': not load_causes_by_state().empty
     }
-    
+
     return status
 
 
 def get_data_info() -> Dict[str, any]:
     """
     Get detailed information about loaded datasets.
-    
+
     Returns:
         Dictionary with dataset details.
     """
     df_cp = load_conflict_proneness()
     df_events = load_acled_events()
     df_causes = load_causes_by_state()
-    
+
     info = {
         'conflict_proneness': {
             'rows': len(df_cp),
@@ -503,7 +521,7 @@ def get_data_info() -> Dict[str, any]:
             'available': not df_causes.empty
         }
     }
-    
+
     return info
 
 
@@ -514,11 +532,11 @@ def get_data_info() -> Dict[str, any]:
 def export_to_csv(df: pd.DataFrame, filename: str) -> bytes:
     """
     Convert DataFrame to CSV bytes for download.
-    
+
     Args:
         df: DataFrame to export
         filename: Suggested filename
-        
+
     Returns:
         CSV data as bytes
     """
@@ -534,10 +552,11 @@ if __name__ == "__main__":
     print("=" * 80)
     print("TESTING DATA LOADER")
     print("=" * 80)
-    
+
     print(f"\nProject Root: {PROJECT_ROOT}")
     print(f"Data Directory: {DATA_DIR}")
-    
+    print(f"DEFAULT_COUNTRY_ISO3: {DEFAULT_COUNTRY_ISO3}")
+
     print("\n" + "-" * 80)
     print("CONFLICT PRONENESS DATA")
     print("-" * 80)
@@ -547,8 +566,9 @@ if __name__ == "__main__":
         print(f"Columns: {cp_df.columns.tolist()}")
         print("\nFirst 5 rows:")
         print(cp_df.head())
-        print(f"\nCP Score Range: {cp_df['conflict_proneness_v2'].min():.2f} - {cp_df['conflict_proneness_v2'].max():.2f}")
-    
+        if 'conflict_proneness_v2' in cp_df.columns:
+            print(f"\nCP Score Range: {cp_df['conflict_proneness_v2'].min():.2f} - {cp_df['conflict_proneness_v2'].max():.2f}")
+
     print("\n" + "-" * 80)
     print("ACLED EVENTS DATA")
     print("-" * 80)
@@ -558,7 +578,7 @@ if __name__ == "__main__":
         print(f"Columns: {events_df.columns.tolist()}")
         print("\nFirst 5 rows:")
         print(events_df.head())
-    
+
     print("\n" + "-" * 80)
     print("CAUSES BY STATE DATA")
     print("-" * 80)
@@ -568,14 +588,14 @@ if __name__ == "__main__":
         print(f"Columns: {causes_df.columns.tolist()}")
         print("\nFirst 5 rows:")
         print(causes_df.head())
-    
+
     print("\n" + "-" * 80)
     print("SUMMARY STATISTICS")
     print("-" * 80)
     stats = get_summary_stats()
     for key, value in stats.items():
         print(f"{key}: {value}")
-    
+
     print("\n" + "-" * 80)
     print("DATA AVAILABILITY")
     print("-" * 80)
@@ -583,7 +603,7 @@ if __name__ == "__main__":
     for dataset, available in availability.items():
         status = "✅ Available" if available else "❌ Missing"
         print(f"{dataset}: {status}")
-    
+
     print("\n" + "-" * 80)
     print("EVENTS BY MONTH")
     print("-" * 80)
@@ -591,7 +611,7 @@ if __name__ == "__main__":
     print(f"Monthly data points: {len(monthly_df)}")
     if not monthly_df.empty:
         print(monthly_df.head(10))
-    
+
     print("\n" + "=" * 80)
     print("TESTING COMPLETE")
     print("=" * 80)

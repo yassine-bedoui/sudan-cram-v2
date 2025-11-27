@@ -21,6 +21,8 @@ router = APIRouter(
 
 
 class IntelligenceRequest(BaseModel):
+    # NEW: make the pipeline explicitly country-aware
+    country_iso3: str = Field("SDN", min_length=3, max_length=3)
     region: str
     raw_data: Optional[str] = None
     interventions: List[str] = Field(default_factory=list)
@@ -28,6 +30,7 @@ class IntelligenceRequest(BaseModel):
 
 class IntelligenceResponse(BaseModel):
     run_id: Optional[int]
+    country_iso3: str  # NEW: surface the country in the API response
     region: str
     timestamp: datetime
     events: List[Dict[str, Any]] = Field(default_factory=list)
@@ -42,6 +45,7 @@ class IntelligenceResponse(BaseModel):
 
 class AnalysisRunSummary(BaseModel):
     id: int
+    country_iso3: str  # NEW: include country in run summaries
     region: str
     created_at: datetime
     trend_classification: Optional[str]
@@ -65,12 +69,20 @@ def analyze(
     """
     Run the LangGraph pipeline and log a summary row into analysis_runs.
     """
+    # Normalize / resolve country ISO3
+    country_iso3 = (payload.country_iso3 or "SDN").upper()
 
     result = run_analysis(
+        country_iso3=country_iso3,  # NEW: pass through to the agent workflow
         region=payload.region,
         raw_data=payload.raw_data,
         interventions=payload.interventions,
     )
+
+    # Prefer whatever the workflow returns, if present
+    result_country_iso3 = result.get("country_iso3")
+    if result_country_iso3:
+        country_iso3 = str(result_country_iso3).upper()
 
     # --- Unpack pieces from the pipeline result ---
     events = result.get("events") or []  # 👈 IMPORTANT FIX: expose the timeline
@@ -128,6 +140,7 @@ def analyze(
 
     # --- Persist to analysis_runs ---
     db_run = AnalysisRun(
+        country_iso3=country_iso3,  # NEW: persist the country per run
         region=result["region"],
         has_raw_data=has_raw_data,
         interventions=interventions_json,
@@ -156,6 +169,7 @@ def analyze(
 
     return IntelligenceResponse(
         run_id=db_run.id,
+        country_iso3=country_iso3,
         region=result["region"],
         timestamp=ts,
         events=events,  # 👈 now the frontend gets the actual timeline
@@ -172,15 +186,26 @@ def analyze(
 @router.get("/runs", response_model=List[AnalysisRunSummary])
 def list_runs(
     limit: int = Query(10, ge=1, le=100),
+    country_iso3: Optional[str] = Query(
+        None,
+        min_length=3,
+        max_length=3,
+        description="Optional ISO3 country filter (e.g. SDN, SOM).",
+    ),
     db: Session = Depends(get_db),
 ) -> List[AnalysisRunSummary]:
     """
     Lightweight history endpoint for the last N analysis runs.
+    Optionally filter by country_iso3.
     """
 
+    query = db.query(AnalysisRun)
+
+    if country_iso3:
+        query = query.filter(AnalysisRun.country_iso3 == country_iso3.upper())
+
     rows = (
-        db.query(AnalysisRun)
-        .order_by(AnalysisRun.created_at.desc())
+        query.order_by(AnalysisRun.created_at.desc())
         .limit(limit)
         .all()
     )
@@ -188,6 +213,7 @@ def list_runs(
     return [
         AnalysisRunSummary(
             id=row.id,
+            country_iso3=row.country_iso3,
             region=row.region,
             created_at=row.created_at,
             trend_classification=row.trend_classification,
