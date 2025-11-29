@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import json
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -21,7 +21,7 @@ router = APIRouter(
 
 
 class IntelligenceRequest(BaseModel):
-    # NEW: make the pipeline explicitly country-aware
+    # country-aware API, defaulting to SDN if not provided
     country_iso3: str = Field("SDN", min_length=3, max_length=3)
     region: str
     raw_data: Optional[str] = None
@@ -30,7 +30,7 @@ class IntelligenceRequest(BaseModel):
 
 class IntelligenceResponse(BaseModel):
     run_id: Optional[int]
-    country_iso3: str  # NEW: surface the country in the API response
+    country_iso3: str
     region: str
     timestamp: datetime
     events: List[Dict[str, Any]] = Field(default_factory=list)
@@ -45,7 +45,7 @@ class IntelligenceResponse(BaseModel):
 
 class AnalysisRunSummary(BaseModel):
     id: int
-    country_iso3: str  # NEW: include country in run summaries
+    country_iso3: str
     region: str
     created_at: datetime
     trend_classification: Optional[str]
@@ -69,11 +69,12 @@ def analyze(
     """
     Run the LangGraph pipeline and log a summary row into analysis_runs.
     """
-    # Normalize / resolve country ISO3
+    # Normalize / resolve country ISO3 from request body
     country_iso3 = (payload.country_iso3 or "SDN").upper()
 
+    # run_analysis is now country-aware
     result = run_analysis(
-        country_iso3=country_iso3,  # NEW: pass through to the agent workflow
+        country_iso3=country_iso3,
         region=payload.region,
         raw_data=payload.raw_data,
         interventions=payload.interventions,
@@ -85,7 +86,7 @@ def analyze(
         country_iso3 = str(result_country_iso3).upper()
 
     # --- Unpack pieces from the pipeline result ---
-    events = result.get("events") or []  # 👈 IMPORTANT FIX: expose the timeline
+    events = result.get("events") or []
     trends = result.get("trend_analysis") or {}
     scenarios = result.get("scenarios") or {}
     validation = result.get("validation") or {}
@@ -140,7 +141,7 @@ def analyze(
 
     # --- Persist to analysis_runs ---
     db_run = AnalysisRun(
-        country_iso3=country_iso3,  # NEW: persist the country per run
+        country_iso3=country_iso3,
         region=result["region"],
         has_raw_data=has_raw_data,
         interventions=interventions_json,
@@ -154,7 +155,7 @@ def analyze(
         validation_status=validation_status,
         issue_count=issue_count,
         overall_confidence=overall_confidence,
-        explainability=explainability_json,
+        explainability=explainability_json,  # ✅ fixed typo here
     )
     db.add(db_run)
     db.commit()
@@ -172,7 +173,7 @@ def analyze(
         country_iso3=country_iso3,
         region=result["region"],
         timestamp=ts,
-        events=events,  # 👈 now the frontend gets the actual timeline
+        events=events,
         trends=trends,
         scenarios=scenarios,
         validation=validation,
@@ -181,6 +182,7 @@ def analyze(
         messages=result.get("messages") or [],
         explainability=explainability,
     )
+
 
 
 @router.get("/runs", response_model=List[AnalysisRunSummary])
@@ -198,7 +200,6 @@ def list_runs(
     Lightweight history endpoint for the last N analysis runs.
     Optionally filter by country_iso3.
     """
-
     query = db.query(AnalysisRun)
 
     if country_iso3:

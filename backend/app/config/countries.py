@@ -13,7 +13,7 @@ class CountryConfig:
     name: str
 
     # ACLED filters
-    acled_country_name: str      # 👈 name matches script usage
+    acled_country_name: str      # name used by ACLED
     acled_iso3: str
 
     # Geo/admin1
@@ -26,6 +26,8 @@ class CountryConfig:
     # DTM / IPC / IDMC
     dtm_country_name: Optional[str] = None
     ipc_country_code: Optional[str] = None
+
+    # Preferred IDMC fields
     idmc_iso3: Optional[str] = None
     idmc_country_name: Optional[str] = None
 
@@ -34,10 +36,26 @@ class CountryConfig:
     wapor_rain_measure: Optional[str] = None
     wapor_rain_time_dimension: Optional[str] = None
 
-    # Optional convenience alias (in case you ever call .acled_country)
+    # Convenience alias (in case code ever calls .acled_country)
     @property
     def acled_country(self) -> str:
         return self.acled_country_name
+
+    # ---- Backwards-compat aliases for IDMC ----
+    @property
+    def idmc_country_iso3(self) -> Optional[str]:
+        """
+        Backwards-compat alias for older code which still expects
+        `country_config.idmc_country_iso3`. Prefer `idmc_iso3` instead.
+        """
+        return self.idmc_iso3 or self.iso3
+
+    @property
+    def idmc_country(self) -> str:
+        """
+        Backwards-compat alias for any code expecting `country_config.idmc_country`.
+        """
+        return self.idmc_country_name or self.name
 
 
 def _sdn_from_env() -> CountryConfig:

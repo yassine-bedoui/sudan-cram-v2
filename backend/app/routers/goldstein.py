@@ -60,6 +60,7 @@ def get_latest_file(pattern: str) -> Optional[str]:
 async def get_escalation_risk(
     country_iso3: str = Query(
         "SDN",
+        alias="country",  # 👈 allows ?country=SOM
         min_length=3,
         max_length=3,
         description="ISO3 country code (e.g. 'SDN', 'SOM').",
@@ -68,6 +69,10 @@ async def get_escalation_risk(
     """
     Get current escalation risk by location (from precomputed CSV)
     for the selected country.
+
+    Example:
+      /api/goldstein/escalation-risk?country=SDN
+      /api/goldstein/escalation-risk?country=SOM
     """
     try:
         iso3 = country_iso3.upper()
@@ -117,6 +122,7 @@ async def get_goldstein_timeline(
     hours: int = 24,
     country_iso3: str = Query(
         "SDN",
+        alias="country",  # 👈 allows ?country=SOM
         min_length=3,
         max_length=3,
         description="ISO3 country code (e.g. 'SDN', 'SOM').",
@@ -125,6 +131,10 @@ async def get_goldstein_timeline(
     """
     Get hourly Goldstein timeline (for charts) for the selected country.
     Reads precomputed goldstein_hourly_timeline_<ISO3>_*.csv.
+
+    Example:
+      /api/goldstein/timeline?country=SDN&hours=24
+      /api/goldstein/timeline?country=SOM&hours=48
     """
     try:
         iso3 = country_iso3.upper()
@@ -158,12 +168,20 @@ async def get_top_risks(
     limit: int = 10,
     country_iso3: str = Query(
         "SDN",
+        alias="country",  # 👈 allows ?country=SOM
         min_length=3,
         max_length=3,
         description="ISO3 country code (e.g. 'SDN', 'SOM').",
     ),
 ):
-    """Get top N highest-risk locations (from precomputed escalation CSV) for the selected country."""
+    """
+    Get top N highest-risk locations (from precomputed escalation CSV)
+    for the selected country.
+
+    Example:
+      /api/goldstein/top-risks?country=SDN&limit=5
+      /api/goldstein/top-risks?country=SOM&limit=10
+    """
     try:
         iso3 = country_iso3.upper()
         risk_file = get_latest_file(f"goldstein_escalation_risk_{iso3}_*.csv")
@@ -185,7 +203,7 @@ async def get_top_risks(
 
 
 # ----------------------------------------------------------------------
-# NEW: Raw GDELT event points (for heatmaps / timelines)
+# Raw GDELT event points (for heatmaps / timelines)
 # ----------------------------------------------------------------------
 
 
@@ -197,6 +215,7 @@ def get_gdelt_events(
     ),
     country_iso3: str = Query(
         "SDN",
+        alias="country",  # 👈 allows ?country=SOM
         min_length=3,
         max_length=3,
         description="ISO3 country code for filtering events.",
@@ -211,7 +230,9 @@ def get_gdelt_events(
     - Maps / heatmaps (lat/lon points)
     - Detailed event timelines per region
 
-    Example: GET /api/goldstein/events?days=7&limit=1000&country_iso3=SDN
+    Example:
+      GET /api/goldstein/events?days=7&limit=1000&country=SDN
+      GET /api/goldstein/events?days=7&limit=1000&country=SOM
     """
     try:
         cutoff = datetime.utcnow() - timedelta(days=days)
@@ -261,7 +282,7 @@ def get_gdelt_events(
 
 
 # ----------------------------------------------------------------------
-# NEW: Political Environment Risk (GDELT + Goldstein → 0–10 score)
+# Political Environment Risk (GDELT + Goldstein → 0–10 score)
 # ----------------------------------------------------------------------
 
 
@@ -303,6 +324,7 @@ def get_political_environment_risk(
     ),
     country_iso3: str = Query(
         "SDN",
+        alias="country",  # 👈 allows ?country=SOM
         min_length=3,
         max_length=3,
         description="ISO3 country code for filtering events.",
@@ -314,6 +336,10 @@ def get_political_environment_risk(
     for the selected country.
 
     This uses the gdelt_events table in Postgres directly.
+
+    Example:
+      /api/goldstein/political-risk?country=SDN&days=30
+      /api/goldstein/political-risk?country=SOM&days=30
     """
     try:
         cutoff = datetime.utcnow() - timedelta(days=days)

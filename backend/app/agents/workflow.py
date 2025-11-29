@@ -129,7 +129,7 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
 
     ✅ Behavior:
     - Try exact payload filter on region field first: {"region": region}
-    - If that fails, run Sudan-wide semantic search and THEN:
+    - If that fails, run national semantic search and THEN:
         • If region provided: prefer hits whose metadata.region contains the region string.
         • Otherwise: treat as national context.
     - Store retrieval query + filter mode in `state["retrieval_context"]` for explainability.
@@ -140,11 +140,19 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
     region_raw = state.get("region") or ""
     region = region_raw.strip()
 
+    # NEW: country-aware query text + logging
+    country_iso3 = (state.get("country_iso3") or "SDN").upper()
+    country_name_map = {
+        "SDN": "Sudan",
+        "SOM": "Somalia",
+    }
+    country_name = country_name_map.get(country_iso3, country_iso3)
+
     # Base query text
     if region:
         query_text = f"recent conflict events in {region}"
     else:
-        query_text = "recent conflict events in Sudan"
+        query_text = f"recent conflict events in {country_name}"
 
     results: List[Dict[str, Any]] = []
     retrieval_filters_for_log: Dict[str, Any] = {}
@@ -166,6 +174,7 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
             # We actually got exact region hits
             results = region_results
             retrieval_filters_for_log = {
+                "country_iso3": country_iso3,
                 "region": region,
                 "mode": "region_exact",
             }
@@ -203,6 +212,7 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
             if region_semantic:
                 results = region_semantic[:20]
                 retrieval_filters_for_log = {
+                    "country_iso3": country_iso3,
                     "region": region,
                     "mode": "semantic_region_filter",
                 }
@@ -213,11 +223,12 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
                 # Nothing clearly region-specific → treat as national context
                 results = fallback_results
                 retrieval_filters_for_log = {
-                    "region": "Sudan",
+                    "country_iso3": country_iso3,
+                    "region": country_name,
                     "mode": "national_fallback",
                 }
                 state["messages"].append(
-                    "No region-specific matches; used Sudan-wide context instead"
+                    f"No region-specific matches; used {country_name}-wide context instead"
                 )
                 state["messages"].append(
                     f"Retrieved {len(results)} events for region {region}"
@@ -226,11 +237,12 @@ def rag_retrieval_node(state: SudanCRAMState) -> SudanCRAMState:
             # No region given OR no results at all
             results = fallback_results
             retrieval_filters_for_log = {
-                "region": "Sudan" if region else "Sudan (no_region_specified)",
+                "country_iso3": country_iso3,
+                "region": country_name if region else f"{country_name} (no_region_specified)",
                 "mode": "national" if region else "national_no_region",
             }
             state["messages"].append(
-                f"Retrieved {len(results)} Sudan-wide events "
+                f"Retrieved {len(results)} {country_name}-wide events "
                 f"({'no region specified' if not region else 'fallback'})"
             )
 
@@ -777,6 +789,7 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
 
     explainability: Dict[str, Any] = {
         "input": {
+            "country_iso3": state.get("country_iso3"),  # NEW
             "region": state.get("region"),
             "has_raw_data": bool(state.get("raw_data")),
             "interventions_count": len(state.get("interventions") or []),
@@ -830,6 +843,7 @@ def _build_explainability_payload(state: SudanCRAMState) -> Dict[str, Any]:
 
 
 def run_analysis(
+    country_iso3: str,
     region: str,
     raw_data: Optional[str] = None,
     interventions: Optional[List[str]] = None,
@@ -839,7 +853,10 @@ def run_analysis(
     print(f"🚀 LANGGRAPH WORKFLOW START: {region}")
     print("=" * 60)
 
+    normalized_iso3 = (country_iso3 or "SDN").upper()
+
     initial_state: SudanCRAMState = {
+        "country_iso3": normalized_iso3,
         "region": region,
         "raw_data": raw_data,
         "interventions": interventions or [],
@@ -905,6 +922,7 @@ def run_analysis(
     explainability["meta"]["audit_log_path"] = audit_log_path
 
     return {
+        "country_iso3": normalized_iso3,
         "region": final_state["region"],
         "raw_data": final_state.get("raw_data"),
         "interventions": final_state.get("interventions") or [],

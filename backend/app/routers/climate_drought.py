@@ -79,6 +79,7 @@ def _load_drought_df(country_iso3: str) -> tuple[pd.DataFrame, Path]:
 async def list_drought_regions(
     country_iso3: str | None = Query(
         None,
+        alias="country",  # 👈 so ?country=SOM works
         description="ISO3 country code (defaults to COUNTRY_ISO3 env var).",
     ),
 ) -> Dict[str, Any]:
@@ -86,7 +87,7 @@ async def list_drought_regions(
     Get latest WaPOR-based drought index per region for a given country.
 
     Query params:
-      - country_iso3: ISO3 code, e.g. SDN, SOM (optional; defaults from env).
+      - country: ISO3 code, e.g. SDN, SOM (optional; defaults from env).
 
     Returns:
         {
@@ -140,6 +141,7 @@ async def top_driest(
     limit: int = 5,
     country_iso3: str | None = Query(
         None,
+        alias="country",  # 👈 so ?limit=5&country=SOM works
         description="ISO3 country code (defaults to COUNTRY_ISO3 env var).",
     ),
 ) -> Dict[str, Any]:
@@ -163,6 +165,7 @@ async def get_region_drought(
     region_name: str,
     country_iso3: str | None = Query(
         None,
+        alias="country",  # 👈 so /Bay?country=SOM uses SOM
         description="ISO3 country code (defaults to COUNTRY_ISO3 env var).",
     ),
 ) -> Dict[str, Any]:

@@ -1,3 +1,5 @@
+# app/models/analysis.py
+
 from sqlalchemy import (
     Column,
     Integer,

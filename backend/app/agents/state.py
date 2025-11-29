@@ -14,9 +14,10 @@ class SudanCRAMState(TypedDict, total=False):
     """
 
     # ---- Core inputs ----
-    region: str                      # e.g. "Khartoum"
-    raw_data: Optional[str]          # Optional raw text report for Agent A
-    interventions: List[str]         # Candidate interventions for Agent C
+    country_iso3: str               # NEW: country context, e.g. "SDN", "SOM"
+    region: str                     # e.g. "Khartoum", "Banadir"
+    raw_data: Optional[str]         # Optional raw text report for Agent A
+    interventions: List[str]        # Candidate interventions for Agent C
 
     # ---- RAG context ----
     # Raw hits from the vector store (Qdrant)
@@ -56,7 +57,11 @@ class SudanCRAMState(TypedDict, total=False):
     # Set by rag_retrieval_node:
     # {
     #   "query": "recent conflict events in Khartoum",
-    #   "filters": {"region": "Khartoum", "mode": "semantic_region_filter"}
+    #   "filters": {
+    #       "country_iso3": "SDN",
+    #       "region": "Khartoum",
+    #       "mode": "semantic_region_filter"
+    #   }
     # }
     retrieval_context: Optional[Dict[str, Any]]
 

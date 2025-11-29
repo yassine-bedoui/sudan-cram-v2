@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -21,6 +21,21 @@ def _service_or_500(country_iso3: str) -> HumanitarianService:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def _normalized_country_iso3(
+    country_iso3: str,
+    country: Optional[str],
+) -> str:
+    """
+    Prefer the explicit `country` query param if provided (backwards compat),
+    otherwise fall back to `country_iso3`. Always return upper-cased ISO3.
+    """
+    code = (country or country_iso3 or "").strip()
+    if not code:
+        # Should never happen because of defaults, but just in case.
+        raise HTTPException(status_code=400, detail="country_iso3 is required")
+    return code.upper()
+
+
 @router.get("/dtm")
 async def get_dtm_humanitarian_layer(
     country_iso3: str = Query(
@@ -29,11 +44,19 @@ async def get_dtm_humanitarian_layer(
         max_length=3,
         description="ISO3 country code (e.g. 'SDN', 'SOM').",
     ),
+    # Backwards-compat alias: /dtm?country=SDN
+    country: Optional[str] = Query(
+        None,
+        min_length=3,
+        max_length=3,
+        include_in_schema=False,
+    ),
 ) -> Dict[str, Any]:
     """
     Latest DTM displacement snapshot (Admin1-level) for the selected country.
     """
-    svc = _service_or_500(country_iso3.upper())
+    iso3 = _normalized_country_iso3(country_iso3, country)
+    svc = _service_or_500(iso3)
 
     try:
         df = svc.get_dtm_snapshot()
@@ -65,6 +88,13 @@ async def get_ipc_humanitarian_layer(
         max_length=3,
         description="ISO3 country code (e.g. 'SDN', 'SOM').",
     ),
+    # Backwards-compat alias: /ipc?country=SDN
+    country: Optional[str] = Query(
+        None,
+        min_length=3,
+        max_length=3,
+        include_in_schema=False,
+    ),
 ) -> Dict[str, Any]:
     """
     Latest IPC food insecurity snapshot (Admin-level) for the selected country.
@@ -72,19 +102,25 @@ async def get_ipc_humanitarian_layer(
     If IPC API is not working or not configured, this will simply return
     an empty "regions" list.
     """
-    svc = _service_or_500(country_iso3.upper())
+    iso3 = _normalized_country_iso3(country_iso3, country)
+    svc = _service_or_500(iso3)
 
     try:
         df = svc.get_ipc_snapshot()
     except HumanitarianServiceError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    # Prefer IPC client's own code if it has one; otherwise use the service ISO3.
+    country_code = (
+        getattr(svc.ipc_client, "country_code", svc.country_iso3)
+        if svc.ipc_client
+        else svc.country_iso3
+    )
+
     if df is None or df.empty:
         return {
             "country_iso3": svc.country_iso3,
-            "country_code": getattr(svc.ipc_client, "country_code", "SDN")
-            if svc.ipc_client
-            else "SDN",
+            "country_code": country_code,
             "regions": [],
         }
 
@@ -104,9 +140,7 @@ async def get_ipc_humanitarian_layer(
 
     return {
         "country_iso3": svc.country_iso3,
-        "country_code": getattr(svc.ipc_client, "country_code", "SDN")
-        if svc.ipc_client
-        else "SDN",
+        "country_code": country_code,
         "regions": regions,
     }
 
@@ -119,11 +153,19 @@ async def get_idmc_humanitarian_layer(
         max_length=3,
         description="ISO3 country code (e.g. 'SDN', 'SOM').",
     ),
+    # Backwards-compat alias: /idmc?country=SDN
+    country: Optional[str] = Query(
+        None,
+        min_length=3,
+        max_length=3,
+        include_in_schema=False,
+    ),
 ) -> Dict[str, Any]:
     """
     Country-level IDMC GIDD displacement snapshot.
     """
-    svc = _service_or_500(country_iso3.upper())
+    iso3 = _normalized_country_iso3(country_iso3, country)
+    svc = _service_or_500(iso3)
 
     snapshot = svc.get_idmc_snapshot()
     if not snapshot:
@@ -161,12 +203,20 @@ async def get_humanitarian_summary(
         max_length=3,
         description="ISO3 country code (e.g. 'SDN', 'SOM').",
     ),
+    # Backwards-compat alias: /summary?country=SDN
+    country: Optional[str] = Query(
+        None,
+        min_length=3,
+        max_length=3,
+        include_in_schema=False,
+    ),
 ) -> Dict[str, Any]:
     """
     Combined humanitarian layer (DTM + IPC + IDMC) with a simple risk score
     for the selected country.
     """
-    svc = _service_or_500(country_iso3.upper())
+    iso3 = _normalized_country_iso3(country_iso3, country)
+    svc = _service_or_500(iso3)
 
     # We deliberately call this directly so we know if IPC is working.
     ipc_df = svc.get_ipc_snapshot()
